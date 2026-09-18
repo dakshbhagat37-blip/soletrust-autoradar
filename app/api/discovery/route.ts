@@ -1,4 +1,5 @@
 import { getDiscoveryProvider, runDiscovery } from "@/lib/discovery";
+import { DatabaseError, saveDiscoveredCompanies } from "@/lib/leads/save";
 import { z } from "zod";
 
 const discoveryRequestSchema = z.object({
@@ -31,17 +32,33 @@ export async function POST(request: Request) {
     return errorResponse(400, "Invalid discovery request", parsed.error.flatten());
   }
 
+  const query = parsed.data;
+  let discovered;
+
   try {
-    const result = await runDiscovery(parsed.data, getDiscoveryProvider("mock"));
+    discovered = await runDiscovery(query, getDiscoveryProvider("mock"));
+  } catch {
+    return errorResponse(502, "Discovery provider error");
+  }
+
+  try {
+    const saved = await saveDiscoveredCompanies(discovered.companies, {
+      requestedServiceTrack: query.serviceTrack,
+      requestedIndustry: query.industry,
+    });
 
     return Response.json({
       success: true,
-      provider: result.provider,
-      total: result.total,
-      companies: result.companies,
+      provider: discovered.provider,
+      discovered: discovered.total,
+      inserted: saved.inserted.length,
+      duplicates: saved.duplicates.length,
+      leads: saved.leads,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Discovery failed";
-    return errorResponse(500, message);
+    if (error instanceof DatabaseError) {
+      return errorResponse(500, "Database error");
+    }
+    return errorResponse(500, "Unexpected error");
   }
 }
