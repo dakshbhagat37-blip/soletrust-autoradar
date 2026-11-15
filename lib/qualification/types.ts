@@ -1,12 +1,28 @@
+import type {
+  QualificationScores,
+  ScoreComponent,
+} from "../types/qualification.ts";
+
 export type QualificationContext = {
-  requestedServiceTrack: string;
   requestedIndustry: string;
+  requestedCity?: string;
+  requestedCountry?: string;
+  requestedServiceTrack?: string; // e.g. "creative+technical", "creative", "technical"
+  minOverallScore?: number;
 };
 
-export type QualificationResult = {
+export type ServiceFitSignal = {
+  id: string;
+  label: string;
+  points: number;
+  type: "opportunity" | "readiness" | "neutral";
+  evidenceText: string;
+};
+
+export type ServiceFitResult = {
   score: number;
-  status: "new" | "qualified";
+  signals: ServiceFitSignal[];
   reasons: string[];
 };
 
-export const QUALIFIED_MIN_SCORE = 60;
+export type { QualificationScores, ScoreComponent };

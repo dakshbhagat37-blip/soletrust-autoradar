@@ -1,6 +1,6 @@
-import { websiteDomain } from "@/lib/discovery/normalize";
-import type { DiscoveredCompany } from "@/lib/discovery/types";
-import type { QualificationContext } from "./types";
+import { websiteDomain } from "../discovery/normalize.ts";
+import type { DiscoveredCompany } from "../discovery/types.ts";
+import type { QualificationContext } from "./types.ts";
 
 const SERVICE_TRACK_INDUSTRY_HINTS: Record<string, readonly string[]> = {
   creative: [
@@ -84,10 +84,10 @@ export function scoreIcpFit(
   let points = 0;
   const reasons: string[] = [];
 
-  if (serviceTrackFitsIndustry(company.industry, context.requestedServiceTrack)) {
+  if (serviceTrackFitsIndustry(company.industry, context.requestedServiceTrack || "")) {
     points += 20;
     reasons.push(
-      `ICP: industry aligns with requested service track "${context.requestedServiceTrack}" (+20)`,
+      `ICP: industry aligns with requested service track "${context.requestedServiceTrack || ""}" (+20)`,
     );
   }
 

@@ -1,34 +1,36 @@
-import { dedupeCompanies } from "./dedupe";
-import { normalizeCompany } from "./normalize";
-import { MOCK_PROVIDER_ID, mockDiscover } from "./providers/mock";
-import type { DiscoveryQuery, DiscoveryResult } from "./types";
+export * from "./types.ts";
+export * from "./normalize.ts";
+export * from "./dedupe.ts";
+export * from "./candidate-normalize.ts";
+export * from "./filter.ts";
+export * from "./dedupe-candidates.ts";
+export * from "./queries.ts";
+export * from "./pipeline.ts";
 
-export type { DiscoveredCompany, DiscoveryQuery, DiscoveryResult } from "./types";
-export { normalizeCompany } from "./normalize";
-export { dedupeCompanies } from "./dedupe";
-export { MOCK_PROVIDER_ID } from "./providers/mock";
+// Legacy exports for backward compatibility
+import { dedupeCompanies } from "./dedupe.ts";
+import { normalizeCompany } from "./normalize.ts";
+import { MOCK_PROVIDER_ID, mockDiscover } from "./providers/mock.ts";
+import type { DiscoveryQuery, DiscoveryResult } from "./types.ts";
 
-/**
- * Provider contract. New sources (Google Places, Apollo, Hunter, search)
- * should implement this interface and register in PROVIDERS — the pipeline
- * below stays unchanged.
- */
-export type DiscoveryProvider = {
+export { MOCK_PROVIDER_ID } from "./providers/mock.ts";
+
+export type LegacyDiscoveryProvider = {
   readonly id: string;
   discover(query: DiscoveryQuery): Promise<DiscoveryResult>;
 };
 
-export const mockProvider: DiscoveryProvider = {
+export const legacyMockProvider: LegacyDiscoveryProvider = {
   id: MOCK_PROVIDER_ID,
   discover: mockDiscover,
 };
 
-const PROVIDERS: Record<string, DiscoveryProvider> = {
-  [MOCK_PROVIDER_ID]: mockProvider,
+const LEGACY_PROVIDERS: Record<string, LegacyDiscoveryProvider> = {
+  [MOCK_PROVIDER_ID]: legacyMockProvider,
 };
 
-export function getDiscoveryProvider(id: string = MOCK_PROVIDER_ID): DiscoveryProvider {
-  const provider = PROVIDERS[id];
+export function getDiscoveryProvider(id: string = MOCK_PROVIDER_ID): LegacyDiscoveryProvider {
+  const provider = LEGACY_PROVIDERS[id];
   if (!provider) {
     throw new Error(`Unknown discovery provider: ${id}`);
   }
@@ -37,7 +39,7 @@ export function getDiscoveryProvider(id: string = MOCK_PROVIDER_ID): DiscoveryPr
 
 export async function runDiscovery(
   query: DiscoveryQuery,
-  provider: DiscoveryProvider = mockProvider,
+  provider: LegacyDiscoveryProvider = legacyMockProvider,
 ): Promise<DiscoveryResult> {
   const raw = await provider.discover(query);
   const normalized = raw.companies
