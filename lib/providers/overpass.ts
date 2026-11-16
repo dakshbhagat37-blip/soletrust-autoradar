@@ -14,7 +14,7 @@ const OVERPASS_ENDPOINTS = [
 ];
 
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
-const REQUEST_TIMEOUT_MS = 8_000;
+const REQUEST_TIMEOUT_MS = 45_000;
 
 type NominatimResult = {
   lat?: string;
@@ -145,16 +145,16 @@ export function getOsmTagFiltersForIndustry(industry: string): string[] {
       `way["amenity"="hospital"]`,
       `node["healthcare"="hospital"]`,
       `way["healthcare"="hospital"]`,
-      `node["amenity"~"clinic|doctors"]`,
-      `way["amenity"~"clinic|doctors"]`,
     ];
   }
   if (lower.includes("dermatol") || lower.includes("skin") || lower.includes("cosmet")) {
     return [
-      `node["amenity"~"clinic|hospital|doctors"]`,
-      `way["amenity"~"clinic|hospital|doctors"]`,
-      `node["healthcare"]`,
-      `way["healthcare"]`,
+      `node["healthcare:speciality"~"dermatology|skin"]`,
+      `way["healthcare:speciality"~"dermatology|skin"]`,
+      `node["amenity"~"clinic|doctors"]`,
+      `way["amenity"~"clinic|doctors"]`,
+      `node["healthcare"="clinic"]`,
+      `way["healthcare"="clinic"]`,
     ];
   }
   if (lower.includes("law") || lower.includes("legal") || lower.includes("advocate")) {
@@ -180,7 +180,7 @@ export function getOsmTagFiltersForIndustry(industry: string): string[] {
   ];
 }
 
-function buildOverpassQuery(lat: number, lon: number, industry: string, radiusDeg = 0.12): string {
+function buildOverpassQuery(lat: number, lon: number, industry: string, radiusDeg = 0.10): string {
   const south = (lat - radiusDeg).toFixed(5);
   const west = (lon - radiusDeg).toFixed(5);
   const north = (lat + radiusDeg).toFixed(5);
@@ -191,7 +191,7 @@ function buildOverpassQuery(lat: number, lon: number, industry: string, radiusDe
   const queries = filters.map((f) => `    ${f}(${bbox});`).join("\n");
 
   return `
-    [out:json][timeout:15];
+    [out:json][timeout:35];
     (
 ${queries}
     );
@@ -314,9 +314,12 @@ export class OverpassDiscoveryProvider implements DiscoveryProvider {
       const phone = tags.phone || tags["contact:phone"] || null;
 
       const addressParts = [
+        tags["addr:full"],
         tags["addr:housenumber"],
         tags["addr:street"],
         tags["addr:suburb"],
+        tags["addr:place"],
+        tags["addr:district"],
       ].filter(Boolean);
       const address = addressParts.length > 0 ? addressParts.join(", ") : null;
 
