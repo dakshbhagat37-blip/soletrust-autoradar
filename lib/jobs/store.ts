@@ -64,12 +64,16 @@ export function getAllBusinesses(): Business[] {
 }
 
 export function findExistingActiveJob(query: SearchJobQuery): SearchJob | null {
+  const now = Date.now();
   for (const job of inMemoryJobs.values()) {
+    const jobAgeMs = now - new Date(job.createdAt || job.startedAt).getTime();
+    // Only consider jobs created within the last 5 minutes as currently active
     const isActive =
-      job.status === "pending" ||
-      job.status === "discovering" ||
-      job.status === "verifying" ||
-      job.status === "enriching";
+      jobAgeMs < 5 * 60 * 1000 &&
+      (job.status === "pending" ||
+        job.status === "discovering" ||
+        job.status === "verifying" ||
+        job.status === "enriching");
 
     if (
       isActive &&

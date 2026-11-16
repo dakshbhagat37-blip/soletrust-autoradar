@@ -86,12 +86,86 @@ const INDUSTRY_CLUSTERS: Record<string, { strongTerms: string[]; supportingTerms
     supportingTerms: ["tech", "software", "api", "mobile app", "platform", "systems"],
     negativeTerms: ["clinic", "hair salon", "restaurant", "dermatology", "hotel"],
   },
+  dental: {
+    strongTerms: [
+      "dental clinic",
+      "dental",
+      "dentist",
+      "dentistry",
+      "dental hospital",
+      "orthodontics",
+      "orthodontic",
+      "dental care",
+      "teeth whitening",
+      "dental implant",
+      "dental implants",
+      "implant clinic",
+      "root canal",
+    ],
+    supportingTerms: ["dental", "dentist", "oral", "teeth", "clinic", "doctor", "smile", "implant"],
+    negativeTerms: ["automotive", "software", "restaurant", "hotel", "law firm"],
+  },
+  hospital: {
+    strongTerms: [
+      "hospital",
+      "super specialty hospital",
+      "multispecialty hospital",
+      "medical center",
+      "medical college",
+      "healthcare institute",
+      "nursing home",
+      "clinical care",
+    ],
+    supportingTerms: ["hospital", "healthcare", "medical", "doctor", "patients", "clinic", "health", "care", "surgery"],
+    negativeTerms: ["software", "dealership", "restaurant", "furniture", "hotel"],
+  },
+  automotive: {
+    strongTerms: [
+      "car dealership",
+      "automotive dealership",
+      "dealership",
+      "automobile showroom",
+      "motor dealership",
+      "car showroom",
+      "vehicles",
+      "auto sales",
+      "automotive",
+      "motors",
+    ],
+    supportingTerms: ["motors", "automotive", "cars", "vehicles", "dealership", "auto", "showroom", "sales", "service center"],
+    negativeTerms: ["hospital", "clinic", "skin", "dental", "doctor", "pharmacy"],
+  },
+  legal: {
+    strongTerms: [
+      "law firm",
+      "advocates",
+      "legal associates",
+      "attorneys",
+      "legal consultancy",
+      "solicitors",
+      "law chambers",
+    ],
+    supportingTerms: ["legal", "law", "advocate", "counsel", "court", "litigation", "corporate law"],
+    negativeTerms: ["hospital", "clinic", "automotive", "restaurant"],
+  },
 };
 
 function inferClusterKey(industryQuery: string): string | null {
   const lower = industryQuery.toLowerCase();
   if (lower.includes("dermatol") || lower.includes("skin") || lower.includes("cosmetol")) {
     return "dermatology";
+  }
+  if (lower.includes("dentist") || lower.includes("dental") || lower.includes("teeth") || lower.includes("orthodont")) {
+    return "dental";
+  }
+  if (lower.includes("hospital") || lower.includes("healthcare") || lower.includes("medical center") || lower.includes("nursing home")) {
+    return "hospital";
+  }
+  if (lower.includes("auto") || lower.includes("car") || lower.includes("dealer") || lower.includes("vehicle") || lower.includes("motor")) {
+    return "automotive";
+  }
+  if (lower.includes("law") || lower.includes("legal") || lower.includes("advocate") || lower.includes("attorney")) {
+    return "legal";
   }
   if (lower.includes("creative") || lower.includes("marketing") || lower.includes("design") || lower.includes("advertising")) {
     return "creative";
@@ -166,13 +240,28 @@ export function verifyIndustry(
       reasons.push(`Supporting industry terms observed: [${foundSupporting.join(", ")}] (+${supportingBonus})`);
     }
 
-    // 5. Provider Tag Match (e.g. Overpass healthcare:speciality=dermatology)
+    // 5. Provider Tag Match (e.g. Overpass healthcare:speciality, amenity, shop, office)
     if (candidate.rawMetadata?.tags && typeof candidate.rawMetadata.tags === "object") {
       const tags = candidate.rawMetadata.tags as Record<string, string>;
-      const speciality = tags["healthcare:speciality"]?.toLowerCase();
-      if (speciality && (speciality.includes("dermatology") || speciality.includes("skin"))) {
+      const tagValues = [
+        tags["healthcare:speciality"],
+        tags.amenity,
+        tags.shop,
+        tags.office,
+        tags.healthcare,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      const matchesTag =
+        cluster.strongTerms.some((t) => tagValues.includes(t)) ||
+        cluster.supportingTerms.some((t) => tagValues.includes(t)) ||
+        (clusterKey && tagValues.includes(clusterKey));
+
+      if (matchesTag) {
         score += 25;
-        reasons.push(`OpenStreetMap ground-truth tag verified: healthcare:speciality=${speciality} (+25)`);
+        reasons.push(`OpenStreetMap ground-truth tag verified: [${tagValues}] (+25)`);
       }
     }
   } else {

@@ -1,6 +1,23 @@
 import type { ContactOwnershipType, PhoneVerificationResult } from "./types.ts";
 
-const GUJARAT_STD_CODES: Record<string, string> = {
+const INDIAN_STD_CODES: Record<string, string> = {
+  "011": "Delhi",
+  "022": "Mumbai",
+  "033": "Kolkata",
+  "044": "Chennai",
+  "040": "Hyderabad",
+  "080": "Bangalore",
+  "020": "Pune",
+  "0141": "Jaipur",
+  "0191": "Jammu",
+  "0194": "Srinagar",
+  "0172": "Chandigarh",
+  "0522": "Lucknow",
+  "0512": "Kanpur",
+  "0731": "Indore",
+  "0755": "Bhopal",
+  "0612": "Patna",
+  "0712": "Nagpur",
   "0265": "Vadodara",
   "079": "Ahmedabad",
   "0261": "Surat",
@@ -11,6 +28,10 @@ const GUJARAT_STD_CODES: Record<string, string> = {
   "02642": "Bharuch",
   "02692": "Anand",
   "02762": "Mehsana",
+  "0484": "Kochi",
+  "0471": "Trivandrum",
+  "0422": "Coimbatore",
+  "0891": "Visakhapatnam",
 };
 
 export type VerifyPhoneOptions = {
@@ -116,8 +137,8 @@ export function verifyPhone(
   ) {
     const stdCandidate = digits.length === 12 ? digits.slice(2) : digits;
 
-    // Check known Gujarat STD codes
-    for (const [code, city] of Object.entries(GUJARAT_STD_CODES)) {
+    // Check known Indian STD codes
+    for (const [code, city] of Object.entries(INDIAN_STD_CODES)) {
       if (stdCandidate.startsWith(code)) {
         stdAreaCode = code;
         phoneType = "landline";

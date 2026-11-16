@@ -32,7 +32,7 @@ export function evaluateServiceFit(
     }
 
     // Missing SEO Title or Description
-    if (intelligence?.signals.includes("missing_title") || !intelligence?.title) {
+    if (intelligence?.signals?.includes("missing_title") || !intelligence?.title) {
       signals.push({
         id: "missing_title",
         label: "Missing Page Title",
@@ -44,7 +44,7 @@ export function evaluateServiceFit(
       reasons.push("Technical Opportunity: Missing SEO title tag (+10).");
     }
 
-    if (intelligence?.signals.includes("missing_meta_description") || !intelligence?.description) {
+    if (intelligence?.signals?.includes("missing_meta_description") || !intelligence?.description) {
       signals.push({
         id: "missing_meta_desc",
         label: "Missing Meta Description",
@@ -73,7 +73,7 @@ export function evaluateServiceFit(
     }
 
     // Missing Social Media Presence
-    if (intelligence && intelligence.socialLinks.length === 0) {
+    if (intelligence && (intelligence.socialLinks?.length ?? 0) === 0) {
       signals.push({
         id: "missing_social",
         label: "Lacks Connected Social Links",
@@ -86,7 +86,7 @@ export function evaluateServiceFit(
     }
 
     // Sparse Content
-    if (intelligence && intelligence.links.length < 5) {
+    if (intelligence && (intelligence.links?.length ?? 0) < 5) {
       signals.push({
         id: "sparse_website",
         label: "Sparse Website Content",

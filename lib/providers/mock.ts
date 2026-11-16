@@ -25,6 +25,8 @@ export type MockFixture = {
   websiteHost?: string;
   phone?: string;
   address?: string;
+  city?: string;
+  country?: string;
   industry?: string;
   decisionMaker?: MockFixtureDecisionMaker;
 };
@@ -267,6 +269,107 @@ export const DEFAULT_MOCK_FIXTURES: MockFixture[] = [
     address: "Innovation District",
     industry: "Design",
   },
+  // Multi-City Regional Fixtures (For multi-location development & regression testing)
+  {
+    name: "Aura Skin & Hair Clinic Ahmedabad",
+    slug: "aura-skin-ahmedabad",
+    employeeRange: "11-50",
+    websiteHost: "auraskinahmedabad.com",
+    phone: "+91 79 2640 1122",
+    address: "Navrangpura, Ahmedabad",
+    city: "Ahmedabad",
+    country: "India",
+    industry: "Dermatology",
+    decisionMaker: {
+      name: "Dr. Krunal Patel",
+      role: "medical_director",
+      roleLabel: "Medical Director & Senior Dermatologist",
+      credentials: ["MBBS", "MD"],
+      specialization: "Laser Dermatology",
+      department: "Dermatology",
+      email: "dr.krunal@auraskinahmedabad.com",
+    },
+  },
+  {
+    name: "Surat Cosmetology & Laser Centre",
+    slug: "surat-cosmetology",
+    employeeRange: "11-50",
+    websiteHost: "suratcosmetology.com",
+    phone: "+91 261 245 3344",
+    address: "Ghod Dod Road, Surat",
+    city: "Surat",
+    country: "India",
+    industry: "Dermatology",
+    decisionMaker: {
+      name: "Dr. Ramesh Jariwala",
+      role: "founder",
+      roleLabel: "Founder & Consultant Dermatologist",
+      credentials: ["MBBS", "DVD"],
+      specialization: "Aesthetic Cosmetology",
+      department: "Aesthetic Medicine",
+      email: "dr.ramesh@suratcosmetology.com",
+    },
+  },
+  {
+    name: "Pink City Dental & Implant Clinic",
+    slug: "pink-city-dental",
+    employeeRange: "1-10",
+    websiteHost: "pinkcitydental.in",
+    phone: "+91 141 236 5500",
+    address: "C-Scheme, Jaipur",
+    city: "Jaipur",
+    country: "India",
+    industry: "Dental",
+    decisionMaker: {
+      name: "Dr. Alok Shekhawat",
+      role: "clinic_director",
+      roleLabel: "Clinic Director & Chief Implantologist",
+      credentials: ["BDS", "MDS"],
+      specialization: "Implantology & Cosmetic Dentistry",
+      department: "Dental Surgery",
+      email: "dr.alok@pinkcitydental.in",
+    },
+  },
+  {
+    name: "Jammu Healthcare Super Specialty Hospital",
+    slug: "jammu-healthcare-hospital",
+    employeeRange: "51-200",
+    websiteHost: "jammuhealthcare.org",
+    phone: "+91 191 254 7788",
+    address: "Resham Ghar Colony, Jammu",
+    city: "Jammu",
+    country: "India",
+    industry: "Hospital",
+    decisionMaker: {
+      name: "Dr. Rajiv Raina",
+      role: "medical_director",
+      roleLabel: "Medical Director & Chief Administrator",
+      credentials: ["MBBS", "MS", "MCh"],
+      specialization: "Surgical Services & Administration",
+      department: "Hospital Administration",
+      email: "director@jammuhealthcare.org",
+    },
+  },
+  {
+    name: "Capital Automotive Motors & Dealership",
+    slug: "capital-automotive-delhi",
+    employeeRange: "51-200",
+    websiteHost: "capitalautomotivedelhi.com",
+    phone: "+91 11 2341 8899",
+    address: "Connaught Place, Delhi",
+    city: "Delhi",
+    country: "India",
+    industry: "Automotive",
+    decisionMaker: {
+      name: "Vikram Malhotra",
+      role: "managing_director",
+      roleLabel: "Managing Director & Dealer Principal",
+      credentials: ["MBA"],
+      specialization: "Automotive Retail & Commercial Operations",
+      department: "Executive Management",
+      email: "vikram@capitalautomotivedelhi.com",
+    },
+  },
 ];
 
 export class MockDiscoveryProvider implements DiscoveryProvider {
@@ -339,9 +442,23 @@ export class MockDiscoveryProvider implements DiscoveryProvider {
     }
 
     let matching = DEFAULT_MOCK_FIXTURES;
+
+    // Filter by city first if specified
+    if (query.city) {
+      const qCity = query.city.toLowerCase().trim();
+      const cityFiltered = matching.filter((f) => {
+        const cCity = (f.city || f.address || "").toLowerCase();
+        return cCity.includes(qCity);
+      });
+      if (cityFiltered.length > 0) {
+        matching = cityFiltered;
+      }
+    }
+
+    // Filter by industry
     if (query.industry) {
       const qInd = query.industry.toLowerCase();
-      const filtered = DEFAULT_MOCK_FIXTURES.filter((f) => {
+      const filtered = matching.filter((f) => {
         const ind = (f.industry || "").toLowerCase();
         return ind.includes(qInd) || qInd.includes(ind);
       });
@@ -361,8 +478,8 @@ export class MockDiscoveryProvider implements DiscoveryProvider {
         domain: host,
         phone: f.phone ?? null,
         address: f.address ?? null,
-        city: query.city,
-        country: query.country,
+        city: f.city ?? query.city,
+        country: f.country ?? query.country,
         industry: f.industry ?? query.industry,
         employeeRange: f.employeeRange,
         source: this.id,

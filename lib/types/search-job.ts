@@ -48,6 +48,7 @@ export type SearchJobQuery = {
   serviceTrack?: string;
   limit: number;
   keyword?: string;
+  provider?: string;
 };
 
 export type SearchJob = {

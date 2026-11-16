@@ -6,6 +6,8 @@ import type {
 } from "./types.ts";
 import type { SearchJobQuery } from "../types/search-job.ts";
 import { logger } from "../logging/logger.ts";
+import { generateDiscoveryQueries } from "../discovery/queries.ts";
+export { generateDiscoveryQueries };
 
 const REQUEST_TIMEOUT_MS = 8_000;
 
@@ -175,10 +177,8 @@ export class SearXNGDiscoveryProvider implements DiscoveryProvider {
     const baseUrl = this.getBaseUrl();
     const primaryQuery = `${query.industry} in ${query.city} ${query.country}`;
 
-    const searchQueries = [
-      primaryQuery,
-      `${query.industry} clinic ${query.city} official website`,
-    ];
+    const queryVariants = generateDiscoveryQueries(query);
+    const searchQueries = queryVariants.allQueries.slice(0, 3);
 
     const rawCandidates: CandidateRecord[] = [];
     const seenDomains = new Set<string>();

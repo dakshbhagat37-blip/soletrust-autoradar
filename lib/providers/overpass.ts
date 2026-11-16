@@ -51,10 +51,38 @@ function normalizeUrl(urlStr: string | null): string | null {
   return trimmed.startsWith("http") ? trimmed : `https://${trimmed}`;
 }
 
+export const KNOWN_CITY_COORDINATES: Record<string, { lat: number; lon: number }> = {
+  vadodara: { lat: 22.3072, lon: 73.1812 },
+  ahmedabad: { lat: 23.0225, lon: 72.5714 },
+  surat: { lat: 21.1702, lon: 72.8311 },
+  rajkot: { lat: 22.3039, lon: 70.8022 },
+  jaipur: { lat: 26.9124, lon: 75.7873 },
+  jammu: { lat: 32.7266, lon: 74.8570 },
+  delhi: { lat: 28.6139, lon: 77.2090 },
+  "new delhi": { lat: 28.6139, lon: 77.2090 },
+  mumbai: { lat: 19.0760, lon: 72.8777 },
+  bangalore: { lat: 12.9716, lon: 77.5946 },
+  bengaluru: { lat: 12.9716, lon: 77.5946 },
+  pune: { lat: 18.5204, lon: 73.8567 },
+  hyderabad: { lat: 17.3850, lon: 78.4867 },
+  chennai: { lat: 13.0827, lon: 80.2707 },
+  kolkata: { lat: 22.5726, lon: 88.3639 },
+  lucknow: { lat: 26.8467, lon: 80.9462 },
+  chandigarh: { lat: 30.7333, lon: 76.7794 },
+  indore: { lat: 22.7196, lon: 75.8577 },
+  bhopal: { lat: 23.2599, lon: 77.4126 },
+  patna: { lat: 25.5941, lon: 85.1376 },
+};
+
 async function geocodeCity(
   city: string,
   country: string,
 ): Promise<{ lat: number; lon: number } | null> {
+  const cleanCity = city.toLowerCase().trim();
+  if (KNOWN_CITY_COORDINATES[cleanCity]) {
+    return KNOWN_CITY_COORDINATES[cleanCity];
+  }
+
   const query = `${city}, ${country}`;
   const params = new URLSearchParams({
     q: query,
@@ -92,20 +120,80 @@ async function geocodeCity(
   }
 }
 
-function buildOverpassQuery(lat: number, lon: number, radiusDeg = 0.08): string {
+export function getOsmTagFiltersForIndustry(industry: string): string[] {
+  const lower = industry.toLowerCase();
+  if (lower.includes("car") || lower.includes("auto") || lower.includes("vehicle") || lower.includes("dealer")) {
+    return [
+      `node["shop"~"car|car_repair|motorcycle"]`,
+      `way["shop"~"car|car_repair|motorcycle"]`,
+      `node["amenity"~"car_rental|car_wash"]`,
+    ];
+  }
+  if (lower.includes("dental") || lower.includes("dentist") || lower.includes("teeth")) {
+    return [
+      `node["amenity"="dentist"]`,
+      `way["amenity"="dentist"]`,
+      `node["healthcare:speciality"~"dentist|orthodontics|dental"]`,
+      `way["healthcare:speciality"~"dentist|orthodontics|dental"]`,
+      `node["amenity"~"clinic|doctors"]`,
+      `way["amenity"~"clinic|doctors"]`,
+    ];
+  }
+  if (lower.includes("hospital")) {
+    return [
+      `node["amenity"="hospital"]`,
+      `way["amenity"="hospital"]`,
+      `node["healthcare"="hospital"]`,
+      `way["healthcare"="hospital"]`,
+      `node["amenity"~"clinic|doctors"]`,
+      `way["amenity"~"clinic|doctors"]`,
+    ];
+  }
+  if (lower.includes("dermatol") || lower.includes("skin") || lower.includes("cosmet")) {
+    return [
+      `node["amenity"~"clinic|hospital|doctors"]`,
+      `way["amenity"~"clinic|hospital|doctors"]`,
+      `node["healthcare"]`,
+      `way["healthcare"]`,
+    ];
+  }
+  if (lower.includes("law") || lower.includes("legal") || lower.includes("advocate")) {
+    return [
+      `node["office"~"lawyer|legal|notary"]`,
+      `way["office"~"lawyer|legal|notary"]`,
+      `node["office"="company"]`,
+    ];
+  }
+  if (lower.includes("tech") || lower.includes("software") || lower.includes("it") || lower.includes("agency")) {
+    return [
+      `node["office"~"it|company|software|telecommunication"]`,
+      `way["office"~"it|company|software|telecommunication"]`,
+    ];
+  }
+  return [
+    `node["amenity"~"clinic|hospital|doctors|dentist|bank|restaurant"]`,
+    `way["amenity"~"clinic|hospital|doctors|dentist|bank|restaurant"]`,
+    `node["shop"]`,
+    `way["shop"]`,
+    `node["office"]`,
+    `way["office"]`,
+  ];
+}
+
+function buildOverpassQuery(lat: number, lon: number, industry: string, radiusDeg = 0.12): string {
   const south = (lat - radiusDeg).toFixed(5);
   const west = (lon - radiusDeg).toFixed(5);
   const north = (lat + radiusDeg).toFixed(5);
   const east = (lon + radiusDeg).toFixed(5);
   const bbox = `${south},${west},${north},${east}`;
 
+  const filters = getOsmTagFiltersForIndustry(industry);
+  const queries = filters.map((f) => `    ${f}(${bbox});`).join("\n");
+
   return `
-    [out:json][timeout:10];
+    [out:json][timeout:15];
     (
-      node["amenity"~"clinic|hospital|doctors"](${bbox});
-      way["amenity"~"clinic|hospital|doctors"](${bbox});
-      node["healthcare"](${bbox});
-      way["healthcare"](${bbox});
+${queries}
     );
     out center tags;
   `;
@@ -179,7 +267,7 @@ export class OverpassDiscoveryProvider implements DiscoveryProvider {
       };
     }
 
-    const ql = buildOverpassQuery(coords.lat, coords.lon);
+    const ql = buildOverpassQuery(coords.lat, coords.lon, query.industry);
     let elements: OverpassElement[] = [];
 
     for (const endpoint of OVERPASS_ENDPOINTS) {

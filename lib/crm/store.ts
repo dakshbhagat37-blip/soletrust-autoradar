@@ -212,7 +212,7 @@ export function createOrUpdateLeadFromBusiness(business: Business): CrmLead {
     recordActivity(
       newLead.id,
       "business_discovered",
-      `Discovered via ${business.sources?.[0]?.sourceType || "search"} in ${business.city || "Vadodara"}`
+      `Discovered via ${business.sources?.[0]?.sourceType || "search"} in ${business.city || "Target Location"}`
     );
     if (business.identityStatus === "verified") {
       recordActivity(newLead.id, "business_verified", `Identity verified with score ${business.identityScore}`);

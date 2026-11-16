@@ -16,6 +16,15 @@ type SearchFormProps = {
   isLoading: boolean;
 };
 
+const PRESETS = [
+  { label: "Vadodara (Dermatology)", industry: "Dermatology clinics", city: "Vadodara", country: "India" },
+  { label: "Ahmedabad (Dermatology)", industry: "Dermatology clinics", city: "Ahmedabad", country: "India" },
+  { label: "Surat (Dermatology)", industry: "Dermatology clinics", city: "Surat", country: "India" },
+  { label: "Jaipur (Dental)", industry: "Dental clinics", city: "Jaipur", country: "India" },
+  { label: "Jammu (Hospitals)", industry: "Hospitals", city: "Jammu", country: "India" },
+  { label: "Delhi (Automotive)", industry: "Automotive dealerships", city: "Delhi", country: "India" },
+];
+
 export function SearchForm({ onSubmit, isLoading }: SearchFormProps) {
   const [formData, setFormData] = useState<SearchFormData>({
     industry: "Dermatology clinics",
@@ -33,27 +42,38 @@ export function SearchForm({ onSubmit, isLoading }: SearchFormProps) {
 
   return (
     <div className="rounded-2xl border border-gray-800 bg-gray-900/70 p-6 shadow-xl backdrop-blur-sm">
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
         <div>
           <h2 className="text-base font-semibold text-white">Prospecting Search Parameters</h2>
           <p className="text-xs text-gray-400">Configure target industry, location, and intelligence filters.</p>
         </div>
-        <button
-          type="button"
-          onClick={() =>
-            setFormData({
-              industry: "Dermatology clinics",
-              city: "Vadodara",
-              country: "India",
-              limit: 10,
-              serviceTrack: "creative+technical",
-              provider: "waterfall",
-            })
-          }
-          className="text-xs text-indigo-400 hover:text-indigo-300 transition"
-        >
-          Reset to Vadodara Use Case
-        </button>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] text-gray-500">Quick Presets:</span>
+          <div className="flex flex-wrap gap-1.5">
+            {PRESETS.map((p) => (
+              <button
+                key={p.label}
+                type="button"
+                onClick={() =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    industry: p.industry,
+                    city: p.city,
+                    country: p.country,
+                  }))
+                }
+                className={`text-[11px] px-2 py-0.5 rounded-md border transition ${
+                  formData.city.toLowerCase() === p.city.toLowerCase() &&
+                  formData.industry.toLowerCase() === p.industry.toLowerCase()
+                    ? "bg-indigo-600/30 border-indigo-500 text-indigo-200"
+                    : "border-gray-800 bg-gray-950/60 text-gray-400 hover:text-gray-200 hover:border-gray-700"
+                }`}
+              >
+                {p.city}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">

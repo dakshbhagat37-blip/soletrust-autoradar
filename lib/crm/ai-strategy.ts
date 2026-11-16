@@ -16,7 +16,7 @@ export function generateAiSalesStrategy(business: Business, lead?: CrmLead): AiS
 
   const companyName = business.canonicalName || "Clinic";
   const industry = business.industry || "Medical & Healthcare";
-  const city = business.city || "Vadodara";
+  const city = business.city || "Target Location";
   const serviceTrack = business.serviceTrack || "creative+technical";
 
   // Analyze opportunity signals from qualification

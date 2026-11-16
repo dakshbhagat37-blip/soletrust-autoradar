@@ -259,7 +259,44 @@ export function extractContactsFromHtml(
 
   // 4. Address snippet search
   let addressSnippet: string | null = null;
-  const addressKeywords = ["vadodara", "baroda", "gujarat", "floor", "opp.", "opposite", "road", "b/h", "near", "circle", "complex"];
+  const addressKeywords = [
+    "floor",
+    "opp.",
+    "opposite",
+    "road",
+    "rd",
+    "b/h",
+    "behind",
+    "near",
+    "circle",
+    "complex",
+    "plaza",
+    "building",
+    "tower",
+    "center",
+    "centre",
+    "street",
+    "lane",
+    "avenue",
+    "marg",
+    "nagar",
+    "block",
+    "sector",
+    "plot",
+    "course",
+    "pincode",
+    "pin",
+    "suite",
+    "vadodara",
+    "baroda",
+    "gujarat",
+    "ahmedabad",
+    "surat",
+    "jaipur",
+    "jammu",
+    "delhi",
+    "mumbai",
+  ];
   $("footer, .footer, #footer, .contact-info, .contact-details, .address, address").each((_, el) => {
     if (addressSnippet) return;
     const text = $(el).text().replace(/\s+/g, " ").trim();

@@ -431,6 +431,24 @@ export default function Home() {
 
             {businesses.length > 0 && (
               <div className="space-y-6">
+                {searchJob && (
+                  <div className="flex flex-wrap items-center gap-2 px-3.5 py-2 rounded-xl bg-gray-900/80 border border-gray-800 text-xs text-gray-300">
+                    <span className="text-gray-500 font-medium">Target Query:</span>
+                    <span className="font-semibold text-white">{searchJob.query.industry}</span>
+                    <span className="text-gray-600">•</span>
+                    <span className="font-semibold text-indigo-400">{searchJob.query.city}, {searchJob.query.country}</span>
+                    <span className="text-gray-600">•</span>
+                    <span className="text-gray-400">Track: <span className="text-gray-200 capitalize">{searchJob.query.serviceTrack}</span></span>
+                    {searchJob.query.provider && (
+                      <>
+                        <span className="text-gray-600">•</span>
+                        <span className="text-gray-400">Provider: <span className="font-mono text-amber-300 uppercase">{searchJob.query.provider}</span></span>
+                      </>
+                    )}
+                    <span className="text-gray-600">•</span>
+                    <span className="text-gray-400">Status: <span className="text-emerald-400 uppercase font-mono">{searchJob.status}</span></span>
+                  </div>
+                )}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-800 pb-4">
                   <div>
                     <h2 className="text-xl font-bold text-white flex items-center gap-2">
@@ -539,7 +557,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-base font-semibold text-white">No active prospecting search</h3>
                 <p className="text-xs text-gray-400 max-w-md mx-auto mt-1.5">
-                  Launch an AutoRadar search above to discover dermatology clinics in Vadodara, identify decision makers, verify official contact channels, and rank sales opportunities.
+                  Launch an AutoRadar search above to discover verified local businesses in any target city and industry, identify decision makers, verify official contact channels, and rank sales opportunities.
                 </p>
               </div>
             )}
