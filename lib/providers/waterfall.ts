@@ -17,8 +17,9 @@ export class WaterfallOrchestrator {
       overpassProvider,
       searxngProvider,
     ];
-    // In production, mock provider is excluded unless explicitly enabled via ENABLE_MOCK_PROVIDER=true
-    if (process.env.NODE_ENV !== "production" || process.env.ENABLE_MOCK_PROVIDER === "true") {
+    // In production, mock provider is strictly and unconditionally excluded,
+    // even if ENABLE_MOCK_PROVIDER is set to true.
+    if (process.env.NODE_ENV !== "production") {
       list.push(mockProvider);
     }
     return list;
@@ -81,6 +82,11 @@ export class WaterfallOrchestrator {
 
     if (providersToRun.length === 0) {
       providersToRun = this.listProviders();
+    }
+
+    // In production, unconditionally remove mock provider from execution chain
+    if (process.env.NODE_ENV === "production") {
+      providersToRun = providersToRun.filter((p) => p.id !== "mock");
     }
 
     const attemptedProviders: string[] = [];

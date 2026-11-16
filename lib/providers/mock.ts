@@ -275,7 +275,9 @@ export class MockDiscoveryProvider implements DiscoveryProvider {
   readonly priority = 999; // Fallback lowest priority in non-production
 
   get isEnabled(): boolean {
-    if (process.env.NODE_ENV === "production" && process.env.ENABLE_MOCK_PROVIDER !== "true") {
+    // Unconditional production restriction: production must NEVER use the mock discovery provider,
+    // even if ENABLE_MOCK_PROVIDER is set to true.
+    if (process.env.NODE_ENV === "production") {
       return false;
     }
     return true;
@@ -299,7 +301,7 @@ export class MockDiscoveryProvider implements DiscoveryProvider {
         providerName: this.name,
         status: "disabled",
         latencyMs: 0,
-        message: "Mock provider is disabled in production to uphold UNKNOWN > WRONG",
+        message: "Mock provider is strictly disabled in production to uphold UNKNOWN > WRONG",
         checkedAt: new Date().toISOString(),
       };
     }
@@ -315,9 +317,9 @@ export class MockDiscoveryProvider implements DiscoveryProvider {
   async discover(query: SearchJobQuery): Promise<RawDiscoveryResult> {
     const start = Date.now();
 
-    if (!this.isEnabled) {
+    if (process.env.NODE_ENV === "production" || !this.isEnabled) {
       throw new Error(
-        "MockDiscoveryProvider is disabled in production to uphold UNKNOWN > WRONG. " +
+        "MockDiscoveryProvider is strictly and unconditionally disabled in production to uphold UNKNOWN > WRONG. " +
         "Production provider failures must result in an honest failure or empty result, never fabricated businesses."
       );
     }

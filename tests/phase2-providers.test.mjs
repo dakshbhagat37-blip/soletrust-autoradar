@@ -140,5 +140,44 @@ describe("Phase 2: Provider and API Layer Verification Suite", () => {
     const mockCheck = body.data.providers.find((p) => p.providerId === "mock");
     assert.equal(mockCheck.status, "healthy");
   });
+
+  test("8. Unconditional Production Mock Guard: Mock is strictly disabled in NODE_ENV=production even with ENABLE_MOCK_PROVIDER=true", async () => {
+    const prevEnv = process.env.NODE_ENV;
+    const prevEnable = process.env.ENABLE_MOCK_PROVIDER;
+
+    try {
+      process.env.NODE_ENV = "production";
+      process.env.ENABLE_MOCK_PROVIDER = "true"; // Attempt bypass
+
+      const { MockDiscoveryProvider } = await import("../lib/providers/mock.ts");
+      const mock = new MockDiscoveryProvider();
+
+      assert.equal(mock.isEnabled, false, "Mock provider must be disabled in production unconditionally");
+
+      const health = await mock.checkHealth();
+      assert.equal(health.status, "disabled", "Health check must report disabled in production");
+
+      await assert.rejects(
+        () => mock.discover({ industry: "Dermatology", city: "Vadodara", country: "India", limit: 5 }),
+        /strictly and unconditionally disabled in production/,
+        "Mock discover() must throw and refuse execution in production"
+      );
+
+      const { WaterfallOrchestrator } = await import("../lib/providers/waterfall.ts");
+      const orchestrator = new WaterfallOrchestrator();
+      const providers = orchestrator.listProviders();
+      assert.ok(!providers.some((p) => p.id === "mock"), "Waterfall default providers must not include mock in production");
+
+      // Verify that even if explicitly requested, mock is purged in production
+      const summary = await orchestrator.runWaterfall(
+        { industry: "Dermatology", city: "Vadodara", country: "India", limit: 5 },
+        { requestedProviderId: "mock", customProviderOrder: ["mock"] }
+      );
+      assert.ok(!summary.attemptedProviders.includes("mock"), "Mock provider must not be attempted in production");
+    } finally {
+      process.env.NODE_ENV = prevEnv;
+      process.env.ENABLE_MOCK_PROVIDER = prevEnable;
+    }
+  });
 });
 

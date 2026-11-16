@@ -63,6 +63,26 @@ export function getAllBusinesses(): Business[] {
   return Array.from(inMemoryBusinesses.values());
 }
 
+export function findExistingActiveJob(query: SearchJobQuery): SearchJob | null {
+  for (const job of inMemoryJobs.values()) {
+    const isActive =
+      job.status === "pending" ||
+      job.status === "discovering" ||
+      job.status === "verifying" ||
+      job.status === "enriching";
+
+    if (
+      isActive &&
+      job.query.industry.toLowerCase().trim() === query.industry.toLowerCase().trim() &&
+      job.query.city.toLowerCase().trim() === query.city.toLowerCase().trim() &&
+      job.query.country.toLowerCase().trim() === query.country.toLowerCase().trim()
+    ) {
+      return job;
+    }
+  }
+  return null;
+}
+
 export function createInitialSearchJob(query: SearchJobQuery): SearchJob {
   const id = crypto.randomUUID();
   const now = new Date().toISOString();

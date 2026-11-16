@@ -11,16 +11,13 @@ import {
 
 import {
   createOrUpdateLeadFromBusiness,
-  getLeadById,
   recordActivity,
   createOutreachDraft,
   sendOrLogOutreach,
-  recordIncomingReply,
   scheduleFollowUp,
   createTask,
   createDeal,
   updateDealStage,
-  listCustomers,
 } from "../lib/crm/store.ts";
 
 import { loadJsonFromFile } from "../lib/persistence/file-store.ts";

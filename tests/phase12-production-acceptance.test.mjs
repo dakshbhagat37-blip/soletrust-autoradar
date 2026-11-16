@@ -78,8 +78,24 @@ test("Audit A: Production Mock Provider Guard - Never leaks into production", as
       "Mock discover must throw in production to prevent fake business generation"
     );
 
-    // Verify candidate records are explicitly tagged as mock
+    // Verify candidate records are rejected in production even with ENABLE_MOCK_PROVIDER="true"
     process.env.ENABLE_MOCK_PROVIDER = "true";
+    const prodMockWithFlag = new MockDiscoveryProvider();
+    assert.equal(prodMockWithFlag.isEnabled, false, "Mock provider must remain disabled in production even with ENABLE_MOCK_PROVIDER=true");
+    await assert.rejects(
+      async () => {
+        await prodMockWithFlag.discover({
+          industry: "Dermatology",
+          city: "Vadodara",
+          country: "India",
+        });
+      },
+      /strictly and unconditionally disabled in production/i,
+      "Mock discover must unconditionally reject in production"
+    );
+
+    // In non-production (development), mock provider is allowed and candidate records are tagged as mock
+    process.env.NODE_ENV = "development";
     const devMock = new MockDiscoveryProvider();
     const result = await devMock.discover({
       industry: "Dermatology",
