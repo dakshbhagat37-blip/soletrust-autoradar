@@ -1,7 +1,7 @@
 import type { Contact } from "./contact";
 import type { DecisionMaker } from "./decision-maker";
 import type { SourceEvidence } from "./evidence";
-import type { QualificationScores } from "./qualification";
+import type { QualificationScores, OpportunityIntelligence } from "./qualification";
 
 export type IdentityStatus =
   | "verified"
@@ -45,6 +45,10 @@ export type Business = {
   contacts: Contact[];
   decisionMakers: DecisionMaker[];
   qualification?: QualificationScores | null;
+  opportunity?: OpportunityIntelligence | null;
+  isBranch?: boolean;
+  branchLocality?: string | null;
+  parentBrand?: string | null;
   rawMetadata?: Record<string, unknown>;
 
   rejectionReason?: string | null;

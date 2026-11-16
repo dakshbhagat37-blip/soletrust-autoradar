@@ -131,6 +131,7 @@ export async function POST(_request: Request, { params }: RouteParams) {
         ...enrichedBiz,
         qualificationScore: qualScores.overallScore,
         qualification: qualScores,
+        opportunity: qualScores.opportunity || null,
         status: qualScores.status === "qualified" ? "qualified" : qualScores.status === "review" ? "review" : "rejected",
       };
 

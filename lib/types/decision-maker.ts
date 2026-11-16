@@ -11,6 +11,9 @@ export type DecisionMakerRole =
   | "clinic_director"
   | "clinical_director"
   | "partner"
+  | "director"
+  | "purchasing_head"
+  | "procurement_manager"
   | "ceo"
   | "cto"
   | "cmo"
@@ -66,5 +69,7 @@ export type DecisionMaker = {
   reason?: string | null;
   evidence: SourceEvidence[];
   contacts: Contact[];
+  companyAssociation?: string | null;
+  lastVerifiedAt?: string | null;
 };
 

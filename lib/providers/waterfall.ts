@@ -6,6 +6,7 @@ import type {
 } from "./types.ts";
 import type { SearchJobQuery } from "../types/search-job.ts";
 import { overpassProvider } from "./overpass.ts";
+import { nominatimProvider } from "./nominatim.ts";
 import { searxngProvider } from "./searxng.ts";
 import { mockProvider } from "./mock.ts";
 import { logger } from "../logging/logger.ts";
@@ -15,6 +16,7 @@ export class WaterfallOrchestrator {
   private get defaultProviders(): DiscoveryProvider[] {
     const list: DiscoveryProvider[] = [
       overpassProvider,
+      nominatimProvider,
       searxngProvider,
     ];
     // In production, mock provider is strictly and unconditionally excluded,

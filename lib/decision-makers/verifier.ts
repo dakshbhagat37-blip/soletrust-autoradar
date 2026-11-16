@@ -134,6 +134,8 @@ export function verifyDecisionMakerCandidate(
     reason,
     evidence: evidenceList,
     contacts: candidate.directContacts || [], // Strictly NEVER populated with generic receptionist lines!
+    companyAssociation: business.canonicalName,
+    lastVerifiedAt: now,
   };
 }
 

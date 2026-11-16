@@ -26,7 +26,7 @@ export function generateAiSalesStrategy(business: Business, lead?: CrmLead): AiS
   const primaryEvidence = business.sources?.map((s) => s.evidenceText || s.sourceUrl).filter(Boolean).slice(0, 3) || [];
 
   // Determine primary service offer
-  let primaryService = "Digital Experience & Patient Acquisition Architecture";
+  let primaryService = business.opportunity?.recommendedServices?.[0] || "Digital Experience & Patient Acquisition Architecture";
   let valueProposition = "Modernize digital patient acquisition and streamline clinic appointment bookings";
   let openingAngle = `enhancing digital patient accessibility for ${companyName} in ${city}`;
 
@@ -118,8 +118,10 @@ SoleTrust Client Partnerships`;
       summary: `${companyName} is an active ${industry} provider in ${city} exhibiting clear service enhancement opportunities.`,
       industryFit: `Matches the target ${industry} profile with clinical service offerings.`,
       locationRelevance: `Verified presence in ${city}, where local patient search intent for specialized care is high.`,
-      opportunityIdentified: oppReasons[0] || "Mobile appointment capture and visual trust signal modernization",
-      supportingEvidence: primaryEvidence.length > 0 ? primaryEvidence : ["Public domain presence and service listings"],
+      opportunityIdentified: business.opportunity?.suitabilityRationale || oppReasons[0] || "Mobile appointment capture and visual trust signal modernization",
+      supportingEvidence: (business.opportunity?.supportingEvidence && business.opportunity.supportingEvidence.length > 0)
+        ? business.opportunity.supportingEvidence
+        : (primaryEvidence.length > 0 ? primaryEvidence : ["Public domain presence and service listings"]),
       commercialRationale: `Upgrading booking accessibility directly reduces patient acquisition cost and prevents bounce to competitor clinics in ${city}.`,
     },
     whoContact: {

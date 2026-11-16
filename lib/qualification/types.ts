@@ -1,6 +1,8 @@
 import type {
   QualificationScores,
   ScoreComponent,
+  OpportunityIntelligence,
+  TargetDecisionMakerApproach,
 } from "../types/qualification.ts";
 
 export type QualificationContext = {
@@ -25,4 +27,4 @@ export type ServiceFitResult = {
   reasons: string[];
 };
 
-export type { QualificationScores, ScoreComponent };
+export type { QualificationScores, ScoreComponent, OpportunityIntelligence, TargetDecisionMakerApproach };

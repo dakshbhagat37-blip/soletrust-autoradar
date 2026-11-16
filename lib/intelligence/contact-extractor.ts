@@ -109,6 +109,33 @@ function classifyEmailOwnership(email: string): ContactOwnershipType {
   return "business_main";
 }
 
+function classifyPhoneOwnership(contextSnippet: string = ""): ContactOwnershipType {
+  const lower = contextSnippet.toLowerCase();
+  if (
+    lower.includes("reception") ||
+    lower.includes("front desk") ||
+    lower.includes("appointment") ||
+    lower.includes("booking") ||
+    lower.includes("help desk") ||
+    lower.includes("opd") ||
+    lower.includes("enquiry") ||
+    lower.includes("inquiry") ||
+    lower.includes("helpline")
+  ) {
+    return "reception";
+  }
+  if (
+    lower.includes("doctor") ||
+    lower.includes("consultant") ||
+    lower.includes("dr.") ||
+    lower.includes("direct line") ||
+    lower.includes("personal")
+  ) {
+    return "professional_direct";
+  }
+  return "business_main";
+}
+
 function cleanPhoneNumber(raw: string): { cleaned: string; digits: string; countryCode: string | null } | null {
   const trimmed = raw.trim();
 
@@ -210,13 +237,14 @@ export function extractContactsFromHtml(
     const tel = rawHref.replace(/^tel:/i, "").trim();
     const phoneRes = cleanPhoneNumber(tel);
     if (phoneRes) {
+      const contextSnippet = $(el).parent().text().replace(/\s+/g, " ").trim().slice(0, 150);
       phonesMap.set(phoneRes.digits, {
         phone: phoneRes.cleaned,
         rawPhone: tel,
         countryCode: phoneRes.countryCode,
-        ownershipType: "business_main",
+        ownershipType: classifyPhoneOwnership(contextSnippet),
         sourceUrl,
-        contextSnippet: $(el).parent().text().replace(/\s+/g, " ").trim().slice(0, 150),
+        contextSnippet,
       });
     }
   });

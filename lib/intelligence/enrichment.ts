@@ -4,6 +4,7 @@ import type { SourceEvidence } from "../types/evidence.ts";
 import { politeFetch, type PoliteFetchOptions } from "./crawler.ts";
 import { analyzeWebsite, type AnalyzeWebsiteOptions } from "./website.ts";
 import { extractContactsFromHtml } from "./contact-extractor.ts";
+import { verifyOfficialWebsite, isDirectoryOrThirdParty } from "./website-verifier.ts";
 import type { WebsiteIntelligence } from "./types.ts";
 import { logger } from "../logging/logger.ts";
 
@@ -63,6 +64,41 @@ export async function enrichBusinessFromWebsite(
     };
   }
 
+  // Pre-verification: Distinguish official websites from directories and third-party listings
+  if (isDirectoryOrThirdParty(websiteUrl)) {
+    const dummyIntelligence: WebsiteIntelligence = {
+      url: websiteUrl,
+      finalUrl: websiteUrl,
+      reachable: false,
+      statusCode: 403,
+      title: null,
+      description: null,
+      headings: [],
+      textSnippet: "",
+      metaTags: {},
+      links: [],
+      socialLinks: [],
+      discoveredPages: { contact: null, about: null, team: null, services: null },
+      hasHttps: websiteUrl.startsWith("https://"),
+      hasContactPage: false,
+      hasTeamPage: false,
+      hasCallToAction: false,
+      signals: ["third_party_directory_excluded"],
+      fetchedAt: new Date().toISOString(),
+    };
+
+    return {
+      business: {
+        ...business,
+        website: null,
+        domain: null,
+        rejectionReason: `Third-party directory domain excluded: ${websiteUrl}`,
+      },
+      intelligence: dummyIntelligence,
+      newContacts: [],
+    };
+  }
+
   const fetchSubpages = options.fetchSubpages ?? true;
   const mockHtml = options.mockHtmlByUrl?.[websiteUrl];
 
@@ -74,8 +110,17 @@ export async function enrichBusinessFromWebsite(
 
   const intelligence = await analyzeWebsite(websiteUrl, analyzeOpts);
 
+  // Verify official website identity
+  const verifyRes = await verifyOfficialWebsite(business, websiteUrl, {
+    htmlContent: mockHtml,
+    crawlOptions: options.crawlOptions,
+  });
+
   const accumulatedContacts: Contact[] = [];
   const accumulatedEvidence: SourceEvidence[] = [];
+  if (verifyRes.evidence) {
+    accumulatedEvidence.push(verifyRes.evidence);
+  }
   const subpagesHtmlMap: Record<string, string> = {};
   let crawledHomepageHtml = "";
 

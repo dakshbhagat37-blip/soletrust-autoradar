@@ -95,6 +95,42 @@ export const ROLE_DEFINITIONS: RoleDefinition[] = [
     category: "executive",
   },
   {
+    role: "director",
+    label: "Director",
+    patterns: [
+      /\bmanaging director\b/i,
+      /\bexecutive director\b/i,
+      /\bclinic director\b/i,
+      /\bdirector\b/i,
+    ],
+    priority: 89,
+    category: "executive",
+  },
+  {
+    role: "purchasing_head",
+    label: "Purchasing Head / Head of Procurement",
+    patterns: [
+      /\bpurchasing head\b/i,
+      /\bhead of purchasing\b/i,
+      /\bhead of procurement\b/i,
+      /\bpurchase manager\b/i,
+      /\bhead of supply chain\b/i,
+    ],
+    priority: 85,
+    category: "management",
+  },
+  {
+    role: "procurement_manager",
+    label: "Procurement Manager",
+    patterns: [
+      /\bprocurement manager\b/i,
+      /\bprocurement officer\b/i,
+      /\bmaterials manager\b/i,
+    ],
+    priority: 83,
+    category: "management",
+  },
+  {
     role: "ceo",
     label: "Chief Executive Officer",
     patterns: [
@@ -275,6 +311,9 @@ export const SERVICE_TRACK_RANKINGS: Record<string, Record<DecisionMakerRole, nu
     clinic_director: 60,
     clinical_director: 58,
     department_head: 55,
+    director: 89,
+    purchasing_head: 85,
+    procurement_manager: 83,
     clinician_doctor: 40,
     other: 30,
   },
@@ -302,6 +341,9 @@ export const SERVICE_TRACK_RANKINGS: Record<string, Record<DecisionMakerRole, nu
     clinic_director: 60,
     clinical_director: 58,
     department_head: 55,
+    director: 89,
+    purchasing_head: 85,
+    procurement_manager: 83,
     clinician_doctor: 40,
     other: 30,
   },
@@ -329,6 +371,9 @@ export const SERVICE_TRACK_RANKINGS: Record<string, Record<DecisionMakerRole, nu
     technical_director: 62,
     it_head: 60,
     technology_manager: 55,
+    director: 88,
+    purchasing_head: 82,
+    procurement_manager: 80,
     clinician_doctor: 50,
     other: 30,
   },
@@ -341,11 +386,14 @@ export const SERVICE_TRACK_RANKINGS: Record<string, Record<DecisionMakerRole, nu
     clinic_director: 92,
     clinical_director: 91,
     partner: 90,
+    director: 89,
     managing_partner: 89,
     ceo: 88,
     cto: 87,
     marketing_director: 85,
+    purchasing_head: 85,
     technical_director: 84,
+    procurement_manager: 83,
     it_head: 82,
     operations_head: 80,
     marketing_head: 78,
@@ -375,6 +423,9 @@ export function getAuthorityClassification(
     "ceo",
     "managing_director",
     "managing_partner",
+    "director",
+    "purchasing_head",
+    "procurement_manager",
     "medical_director",
     "clinic_director",
     "clinical_director",
@@ -400,7 +451,10 @@ export function getAuthorityClassification(
     };
   }
 
-  if (role === "clinician_doctor" || /dermatologist|doctor|physician/i.test(roleLabel)) {
+  if (
+    role === "clinician_doctor" ||
+    /dermatologist|doctor|physician|surgeon|dentist|orthodontist|cosmetologist|consultant\s+doctor/i.test(roleLabel)
+  ) {
     return {
       authorityType: "clinical_authority",
       isPurchasingAuthority: false,

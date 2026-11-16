@@ -2,6 +2,7 @@ import type { Business } from "../types/business.ts";
 import type { WebsiteIntelligence } from "../intelligence/types.ts";
 import type { QualificationContext, QualificationScores } from "./types.ts";
 import { evaluateServiceFit } from "./service-fit.ts";
+import { generateOpportunityIntelligence } from "./opportunity-intelligence.ts";
 
 export const FACTOR_WEIGHTS = {
   identity: 0.20,
@@ -249,6 +250,7 @@ export function calculateQualificationScores(
     reasons: allReasons,
     gateFailures,
     explanation,
+    opportunity: generateOpportunityIntelligence(business, intelligence, context),
   };
 }
 

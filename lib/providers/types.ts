@@ -28,6 +28,9 @@ export type CandidateRecord = {
   sourceUrl: string | null;
   provider: string;
   confidence: "high" | "medium" | "low";
+  isBranch?: boolean;
+  branchLocality?: string | null;
+  parentBrand?: string | null;
   rawMetadata?: Record<string, unknown>;
   isMock?: boolean;
 };

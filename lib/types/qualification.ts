@@ -5,6 +5,22 @@ export type ScoreComponent = {
   passed: boolean;
 };
 
+export type TargetDecisionMakerApproach = {
+  fullName?: string | null;
+  roleLabel?: string | null;
+  authorityType?: string | null;
+  approachRationale: string;
+};
+
+export type OpportunityIntelligence = {
+  suitabilityRationale: string;
+  recommendedServices: string[];
+  supportingEvidence: string[];
+  targetDecisionMaker: TargetDecisionMakerApproach | null;
+  unknownFields: string[];
+  serviceFitScore: number;
+};
+
 export type QualificationScores = {
   identityScore: number;
   industryScore: number;
@@ -18,5 +34,6 @@ export type QualificationScores = {
   reasons: string[];
   gateFailures: string[];
   explanation: string;
+  opportunity?: OpportunityIntelligence | null;
 };
 
