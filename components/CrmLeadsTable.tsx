@@ -131,7 +131,7 @@ export function CrmLeadsTable({
 
                   {/* Location */}
                   <td className="p-3.5 text-gray-300 whitespace-nowrap">
-                    📍 {lead.city || "Vadodara"}, {lead.country || "India"}
+                    📍 {lead.city || "Global Location"}{lead.country ? `, ${lead.country}` : ""}
                   </td>
 
                   {/* Industry */}

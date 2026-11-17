@@ -14,6 +14,7 @@ type DossierTab = "breakdown" | "strategy" | "people" | "contacts" | "evidence";
 
 export function LeadDossierModal({ business, onClose }: LeadDossierModalProps) {
   const [activeTab, setActiveTab] = useState<DossierTab>("breakdown");
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   if (!business) return null;
 
@@ -21,6 +22,14 @@ export function LeadDossierModal({ business, onClose }: LeadDossierModalProps) {
   const overallScore = business.qualificationScore || qual?.overallScore || 0;
   const status = business.status || qual?.status || "discovered";
   const strategy = generateAiSalesStrategy(business);
+
+  const handleCopy = (key: string, text: string) => {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 2500);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
@@ -47,7 +56,7 @@ export function LeadDossierModal({ business, onClose }: LeadDossierModalProps) {
             <div className="mt-1 flex items-center gap-2 text-xs text-gray-400">
               <span>{business.domain || "No domain"}</span>
               <span>•</span>
-              <span>{business.city || "Vadodara"}, {business.country || "India"}</span>
+              <span>{business.city || "Global Location"}{business.country ? `, ${business.country}` : ""}</span>
               <span>•</span>
               <span className="text-gray-300">{business.industry}</span>
             </div>
@@ -329,6 +338,13 @@ export function LeadDossierModal({ business, onClose }: LeadDossierModalProps) {
                 <div className="bg-gray-900 p-3.5 rounded-lg border border-gray-800 text-xs">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-mono uppercase text-indigo-400 font-bold">📧 Tailored Email Draft</span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy("email", `Subject: ${strategy.howApproach.emailDraft.subject}\n\n${strategy.howApproach.emailDraft.body}`)}
+                      className="text-[10px] font-mono px-2.5 py-1 rounded-md bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/40 transition flex items-center gap-1 cursor-pointer"
+                    >
+                      {copiedKey === "email" ? "✓ Copied Email" : "📋 Copy Email"}
+                    </button>
                   </div>
                   <p className="font-semibold text-white mb-2">Subject: {strategy.howApproach.emailDraft.subject}</p>
                   <pre className="text-gray-300 whitespace-pre-wrap font-sans text-xs bg-gray-950 p-3 rounded border border-gray-800/80 leading-relaxed">
@@ -338,13 +354,31 @@ export function LeadDossierModal({ business, onClose }: LeadDossierModalProps) {
 
                 {/* LinkedIn Draft */}
                 <div className="bg-gray-900 p-3 rounded-lg border border-gray-800 text-xs">
-                  <span className="text-[10px] font-mono uppercase text-cyan-400 font-bold block mb-1.5">💼 LinkedIn Connection Note</span>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[10px] font-mono uppercase text-cyan-400 font-bold block">💼 LinkedIn Connection Note</span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy("linkedin", strategy.howApproach.linkedinDraft.connectionNote)}
+                      className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-300 border border-cyan-500/40 transition flex items-center gap-1 cursor-pointer"
+                    >
+                      {copiedKey === "linkedin" ? "✓ Copied Note" : "📋 Copy Note"}
+                    </button>
+                  </div>
                   <p className="text-gray-300 italic">{strategy.howApproach.linkedinDraft.connectionNote}</p>
                 </div>
 
                 {/* Phone Call Script */}
                 <div className="bg-gray-900 p-3 rounded-lg border border-gray-800 text-xs space-y-1.5">
-                  <span className="text-[10px] font-mono uppercase text-amber-400 font-bold block">📞 Phone Introduction Script</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono uppercase text-amber-400 font-bold block">📞 Phone Introduction Script</span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy("phone", `Opener: ${strategy.howApproach.phoneScript.opener}\nHook: ${strategy.howApproach.phoneScript.hook}\nQuestions:\n${strategy.howApproach.phoneScript.qualifyingQuestions.map((q) => "- " + q).join("\n")}\nCTA: ${strategy.howApproach.phoneScript.callToAction}`)}
+                      className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-600/30 hover:bg-amber-600/50 text-amber-300 border border-amber-500/40 transition flex items-center gap-1 cursor-pointer"
+                    >
+                      {copiedKey === "phone" ? "✓ Copied Script" : "📋 Copy Script"}
+                    </button>
+                  </div>
                   <p className="text-gray-300"><strong className="text-gray-400">Opener:</strong> {strategy.howApproach.phoneScript.opener}</p>
                   <p className="text-gray-300"><strong className="text-gray-400">Hook:</strong> {strategy.howApproach.phoneScript.hook}</p>
                   <div className="pt-1">

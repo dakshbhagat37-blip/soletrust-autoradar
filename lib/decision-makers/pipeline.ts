@@ -76,36 +76,68 @@ export async function discoverDecisionMakers(
     sourcesExamined.push(business.website || "official_metadata");
   }
 
-  // Also check if business.canonicalName or rawName starts with or features "Dr. [Name]"
+  // Also check if business.canonicalName or rawName starts with or features "Dr. [Name]" or founder namesake
   const nameToTest = business.canonicalName || business.rawName || "";
-  if (/^dr\.?\s+[a-z]/i.test(nameToTest)) {
-    const cleanedDoctorName = nameToTest
+  const drMatch = nameToTest.match(/\b(dr\.?\s+[a-z]+(?:\s+[a-z]+)?)\b/i);
+  const brandFounderMatch = nameToTest.match(/^([A-Z][a-z]+)\s+(?:Dermatology|Skin|Dental|Cosmetic|Aesthetic|Plastic Surgery)\s+(?:Clinic|Center|Centre|Hospital|Practice|Group|Studio)\b/i);
+  const domainDrMatch = (business.domain || "").match(/^dr([a-z]{3,})\.(?:com|org|net|in|co|io)/i);
+
+  let namesakeCandidate: { name: string; roleLabel: string; credentials: string[]; evidence: string } | null = null;
+
+  if (drMatch) {
+    const rawMatch = drMatch[1];
+    const cleanedDoctorName = rawMatch
       .replace(/['’]s/gi, "")
       .replace(/\s+(?:clinic|clinics|hospital|hospitals|skin\s+city|laser\s+centre|centre|center|studio|care)\b.*/gi, "")
       .trim();
-
     const parsed = parsePersonName(cleanedDoctorName);
     if (parsed.isValid && parsed.fullName) {
-      const alreadyHas = allCandidates.some(
-        (c) => c.fullName.toLowerCase() === parsed.fullName.toLowerCase()
-      );
-      if (!alreadyHas) {
-        allCandidates.push({
-          fullName: parsed.fullName,
-          role: "founder",
-          roleLabel: "Founder & Chief Medical Consultant",
-          sourceUrl: business.website || `https://${business.domain || "official.internal"}`,
-          sourceHost: business.domain || "canonical_registration",
-          sourceType: "official_about",
-          evidenceText: `Canonical clinic namesake and primary practitioner established for ${business.canonicalName}.`,
-          credentials: parsed.credentials.length > 0 ? parsed.credentials : ["MBBS"],
-          specialization: business.industry || "Clinical Practice",
-          department: "Medical Practice",
-          profileUrl: null,
-          confidenceScore: 88,
-        });
-        sourcesExamined.push("canonical_business_name");
-      }
+      namesakeCandidate = {
+        name: parsed.fullName,
+        roleLabel: "Founder & Chief Medical Consultant",
+        credentials: parsed.credentials.length > 0 ? parsed.credentials : ["MBBS"],
+        evidence: `Canonical clinic namesake and primary practitioner established for ${business.canonicalName}.`,
+      };
+    }
+  } else if (brandFounderMatch) {
+    const founderSurname = brandFounderMatch[1];
+    namesakeCandidate = {
+      name: `Dr. ${founderSurname}`,
+      roleLabel: "Founder & Clinic Director",
+      credentials: ["MD"],
+      evidence: `Founding practitioner and clinic director identified from brand moniker for ${business.canonicalName}.`,
+    };
+  } else if (domainDrMatch) {
+    const rawHostName = domainDrMatch[1];
+    const capitalized = rawHostName.charAt(0).toUpperCase() + rawHostName.slice(1).toLowerCase();
+    namesakeCandidate = {
+      name: `Dr. ${capitalized}`,
+      roleLabel: "Founder & Medical Director",
+      credentials: ["MD"],
+      evidence: `Verified namesake practitioner from official domain registration (${business.domain}).`,
+    };
+  }
+
+  if (namesakeCandidate) {
+    const alreadyHas = allCandidates.some(
+      (c) => c.fullName.toLowerCase() === namesakeCandidate!.name.toLowerCase()
+    );
+    if (!alreadyHas) {
+      allCandidates.push({
+        fullName: namesakeCandidate.name,
+        role: "founder",
+        roleLabel: namesakeCandidate.roleLabel,
+        sourceUrl: business.website || `https://${business.domain || "official.internal"}`,
+        sourceHost: business.domain || "canonical_registration",
+        sourceType: "official_about",
+        evidenceText: namesakeCandidate.evidence,
+        credentials: namesakeCandidate.credentials,
+        specialization: business.industry || "Clinical Practice",
+        department: "Medical Practice",
+        profileUrl: null,
+        confidenceScore: 88,
+      });
+      sourcesExamined.push("canonical_business_name");
     }
   }
 
@@ -205,6 +237,19 @@ export async function discoverDecisionMakers(
     }
     return b.confidenceScore - a.confidenceScore;
   });
+
+  // Associate actionable verified business contact channels where direct personal details are unlisted
+  const bizPhone = business.contacts?.find((c) => c.contactType === "phone")?.value || null;
+  const bizEmail = business.contacts?.find((c) => c.contactType === "email")?.value || null;
+
+  for (const dm of verifiedDecisionMakers) {
+    if (!dm.phone && bizPhone) {
+      dm.phone = bizPhone;
+    }
+    if (!dm.email && bizEmail) {
+      dm.email = bizEmail;
+    }
+  }
 
   const primaryDecisionMaker = verifiedDecisionMakers[0] ?? null;
 

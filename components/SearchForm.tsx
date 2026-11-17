@@ -17,19 +17,20 @@ type SearchFormProps = {
 };
 
 const PRESETS = [
+  { label: "New York (Dermatology)", industry: "Dermatology clinics", city: "New York", country: "United States" },
+  { label: "London (Dental)", industry: "Dental clinics", city: "London", country: "United Kingdom" },
+  { label: "Dubai (Cosmetic)", industry: "Cosmetic clinics", city: "Dubai", country: "United Arab Emirates" },
+  { label: "Sydney (Healthcare)", industry: "Medical clinics", city: "Sydney", country: "Australia" },
+  { label: "Toronto (Dermatology)", industry: "Dermatology clinics", city: "Toronto", country: "Canada" },
+  { label: "Singapore (Clinics)", industry: "Medical clinics", city: "Singapore", country: "Singapore" },
   { label: "Vadodara (Dermatology)", industry: "Dermatology clinics", city: "Vadodara", country: "India" },
-  { label: "Ahmedabad (Dermatology)", industry: "Dermatology clinics", city: "Ahmedabad", country: "India" },
-  { label: "Surat (Dermatology)", industry: "Dermatology clinics", city: "Surat", country: "India" },
-  { label: "Jaipur (Dental)", industry: "Dental clinics", city: "Jaipur", country: "India" },
-  { label: "Jammu (Hospitals)", industry: "Hospitals", city: "Jammu", country: "India" },
-  { label: "Delhi (Automotive)", industry: "Automotive dealerships", city: "Delhi", country: "India" },
 ];
 
 export function SearchForm({ onSubmit, isLoading }: SearchFormProps) {
   const [formData, setFormData] = useState<SearchFormData>({
     industry: "Dermatology clinics",
-    city: "Vadodara",
-    country: "India",
+    city: "New York",
+    country: "United States",
     limit: 10,
     serviceTrack: "creative+technical",
     provider: "waterfall",
@@ -105,7 +106,7 @@ export function SearchForm({ onSubmit, isLoading }: SearchFormProps) {
               required
               value={formData.city}
               onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-              placeholder="e.g. Vadodara, Ahmedabad, Mumbai"
+              placeholder="e.g. New York, London, Dubai, Sydney, Vadodara"
               className="w-full rounded-xl border border-gray-700 bg-gray-950 px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition"
             />
           </div>
@@ -121,7 +122,7 @@ export function SearchForm({ onSubmit, isLoading }: SearchFormProps) {
               required
               value={formData.country}
               onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-              placeholder="e.g. India, United States"
+              placeholder="e.g. United States, United Kingdom, UAE, India"
               className="w-full rounded-xl border border-gray-700 bg-gray-950 px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition"
             />
           </div>

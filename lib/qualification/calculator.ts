@@ -168,7 +168,7 @@ export function calculateQualificationScores(
 
   if (targetCity && bizCity && targetCity !== bizCity) {
     locationScore = 20;
-  } else if (business.contacts?.some((c) => c.value.includes("0265") || c.countryCode === "+91")) {
+  } else if (business.address || business.contacts?.some((c) => c.contactType === "phone" || c.contactType === "email")) {
     locationScore = 90;
   }
 

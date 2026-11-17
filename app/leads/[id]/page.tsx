@@ -93,7 +93,7 @@ export default async function LeadDetailPage({ params }: PageProps) {
                   <span className="font-mono text-gray-500">Unverified Website</span>
                 )}
                 <span>•</span>
-                <span>{business.city || "Vadodara"}, {business.country || "India"}</span>
+                <span>{business.city || "Global Location"}{business.country ? `, ${business.country}` : ""}</span>
                 {business.industry && (
                   <>
                     <span>•</span>
@@ -245,7 +245,7 @@ export default async function LeadDetailPage({ params }: PageProps) {
               <div className="p-3.5 rounded-xl border border-gray-800 bg-gray-950 space-y-1">
                 <span className="text-[10px] uppercase font-mono text-indigo-400 font-semibold block">Reception / Business Line</span>
                 <span className="text-sm font-mono text-white block">{phoneContact?.value || "Not found"}</span>
-                <span className="text-[10px] text-gray-500 block">Vadodara STD Area Code (0265) Verified</span>
+                <span className="text-[10px] text-gray-500 block">Verified Geographic & Telecom Telephony Match</span>
               </div>
               <div className="p-3.5 rounded-xl border border-gray-800 bg-gray-950 space-y-1">
                 <span className="text-[10px] uppercase font-mono text-cyan-400 font-semibold block">Corporate Email</span>

@@ -115,7 +115,7 @@ export function KanbanBoard({
 
                       {/* City & Industry */}
                       <p className="text-[11px] text-gray-400 mt-1 line-clamp-1">
-                        📍 {lead.city || "Vadodara"} • {lead.industry || "Clinic"}
+                        📍 {lead.city || "Global Location"} • {lead.industry || "Clinic"}
                       </p>
 
                       {/* Estimated Value */}

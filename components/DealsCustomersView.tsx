@@ -220,7 +220,7 @@ export function DealsCustomersView({
                 <tr key={c.id} className="hover:bg-gray-900/30">
                   <td className="p-3 font-semibold text-white">{c.companyName}</td>
                   <td className="p-3 text-gray-400">
-                    📍 {c.city || "Vadodara"}, {c.country || "India"}
+                    📍 {c.city || "Global Location"}{c.country ? `, ${c.country}` : ""}
                   </td>
                   <td className="p-3 text-gray-300">
                     {c.servicesSold?.join(", ") || "Clinic Infrastructure"}

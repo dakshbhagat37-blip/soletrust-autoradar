@@ -72,6 +72,27 @@ export const KNOWN_CITY_COORDINATES: Record<string, { lat: number; lon: number }
   indore: { lat: 22.7196, lon: 75.8577 },
   bhopal: { lat: 23.2599, lon: 77.4126 },
   patna: { lat: 25.5941, lon: 85.1376 },
+  // Global Metropolises
+  "new york": { lat: 40.7128, lon: -74.0060 },
+  nyc: { lat: 40.7128, lon: -74.0060 },
+  manhattan: { lat: 40.7831, lon: -73.9712 },
+  london: { lat: 51.5074, lon: -0.1278 },
+  dubai: { lat: 25.2048, lon: 55.2708 },
+  sydney: { lat: -33.8688, lon: 151.2093 },
+  melbourne: { lat: -37.8136, lon: 144.9631 },
+  toronto: { lat: 43.6532, lon: -79.3832 },
+  vancouver: { lat: 49.2827, lon: -123.1207 },
+  singapore: { lat: 1.3521, lon: 103.8198 },
+  paris: { lat: 48.8566, lon: 2.3522 },
+  berlin: { lat: 52.5200, lon: 13.4050 },
+  tokyo: { lat: 35.6762, lon: 139.6503 },
+  "los angeles": { lat: 34.0522, lon: -118.2437 },
+  chicago: { lat: 41.8781, lon: -87.6298 },
+  "san francisco": { lat: 37.7749, lon: -122.4194 },
+  miami: { lat: 25.7617, lon: -80.1918 },
+  amsterdam: { lat: 52.3676, lon: 4.9041 },
+  dublin: { lat: 53.3498, lon: -6.2603 },
+  "hong kong": { lat: 22.3193, lon: 114.1694 },
 };
 
 async function geocodeCity(
@@ -180,11 +201,13 @@ export function getOsmTagFiltersForIndustry(industry: string): string[] {
   ];
 }
 
-function buildOverpassQuery(lat: number, lon: number, industry: string, radiusDeg = 0.10): string {
-  const south = (lat - radiusDeg).toFixed(5);
-  const west = (lon - radiusDeg).toFixed(5);
-  const north = (lat + radiusDeg).toFixed(5);
-  const east = (lon + radiusDeg).toFixed(5);
+function buildOverpassQuery(lat: number, lon: number, industry: string, radiusDeg?: number): string {
+  // Dense global metropolises have massive node counts; adapt radius to ensure sub-10s execution
+  const effectiveRadius = radiusDeg ?? (Math.abs(lon) > 50 || Math.abs(lat) > 35 ? 0.06 : 0.09);
+  const south = (lat - effectiveRadius).toFixed(5);
+  const west = (lon - effectiveRadius).toFixed(5);
+  const north = (lat + effectiveRadius).toFixed(5);
+  const east = (lon + effectiveRadius).toFixed(5);
   const bbox = `${south},${west},${north},${east}`;
 
   const filters = getOsmTagFiltersForIndustry(industry);
