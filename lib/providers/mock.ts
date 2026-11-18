@@ -370,6 +370,234 @@ export const DEFAULT_MOCK_FIXTURES: MockFixture[] = [
       email: "vikram@capitalautomotivedelhi.com",
     },
   },
+  // Australian D2C Brands (Direct-to-Consumer / eCommerce)
+  {
+    name: "Bellroy",
+    slug: "bellroy",
+    employeeRange: "51-200",
+    websiteHost: "bellroy.com",
+    phone: "+61 3 9013 4642",
+    address: "Collingwood, Melbourne",
+    city: "Melbourne",
+    country: "Australia",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Andy Fallshaw",
+      role: "founder",
+      roleLabel: "Co-Founder & CEO",
+      email: "support@bellroy.com",
+      phone: "+61 3 9013 4642",
+      linkedinUrl: "https://linkedin.com/in/andy-fallshaw",
+    },
+  },
+  {
+    name: "July",
+    slug: "july",
+    employeeRange: "11-50",
+    websiteHost: "july.com",
+    phone: "+61 3 8592 1890",
+    address: "Collingwood, Melbourne",
+    city: "Melbourne",
+    country: "Australia",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Richard Li",
+      role: "founder",
+      roleLabel: "Co-Founder & CEO",
+      email: "enquiries@july.com",
+      phone: "+61 3 8592 1890",
+      linkedinUrl: "https://linkedin.com/in/richardli-july",
+    },
+  },
+  {
+    name: "Who Gives A Crap",
+    slug: "who-gives-a-crap",
+    employeeRange: "51-200",
+    websiteHost: "whogivesacrap.org",
+    phone: "+61 3 9005 7800",
+    address: "Richmond, Melbourne",
+    city: "Melbourne",
+    country: "Australia",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Simon Griffiths",
+      role: "founder",
+      roleLabel: "Co-Founder & CEO",
+      email: "wedo@whogivesacrap.org",
+      phone: "+61 3 9005 7800",
+      linkedinUrl: "https://linkedin.com/in/simongriffiths",
+    },
+  },
+  {
+    name: "Koala",
+    slug: "koala",
+    employeeRange: "51-200",
+    websiteHost: "koala.com",
+    phone: "+61 2 8311 0500",
+    address: "Sydney, NSW",
+    city: "Sydney",
+    country: "Australia",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Dany Milham",
+      role: "founder",
+      roleLabel: "Co-Founder & Executive Director",
+      email: "support@koala.com",
+      phone: "+61 2 8311 0500",
+      linkedinUrl: "https://linkedin.com/in/danymilham",
+    },
+  },
+  {
+    name: "Ultra Violette",
+    slug: "ultra-violette",
+    employeeRange: "11-50",
+    websiteHost: "ultraviolette.com.au",
+    phone: "+61 3 9429 8885",
+    address: "Cremorne, Melbourne",
+    city: "Melbourne",
+    country: "Australia",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Ava Matthews",
+      role: "founder",
+      roleLabel: "Co-Founder & Brand Director",
+      email: "customercare@ultraviolette.com.au",
+      phone: "+61 3 9429 8885",
+      linkedinUrl: "https://linkedin.com/in/ava-matthews",
+    },
+  },
+  {
+    name: "Modibodi",
+    slug: "modibodi",
+    employeeRange: "51-200",
+    websiteHost: "modibodi.com",
+    phone: "+61 2 8005 0885",
+    address: "Balmain, Sydney",
+    city: "Sydney",
+    country: "Australia",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Kristy Chong",
+      role: "founder",
+      roleLabel: "Founder & Executive Director",
+      email: "info@modibodi.com",
+      phone: "+61 2 8005 0885",
+      linkedinUrl: "https://linkedin.com/in/kristy-chong",
+    },
+  },
+  {
+    name: "Frank Green",
+    slug: "frank-green",
+    employeeRange: "51-200",
+    websiteHost: "frankgreen.com.au",
+    phone: "+61 3 9429 8885",
+    address: "Richmond, Melbourne",
+    city: "Melbourne",
+    country: "Australia",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Benjamin Young",
+      role: "founder",
+      roleLabel: "Founder & CEO",
+      email: "hello@frankgreen.com.au",
+      phone: "+61 3 9429 8885",
+      linkedinUrl: "https://linkedin.com/in/benjamin-young-frankgreen",
+    },
+  },
+  {
+    name: "Threadheads",
+    slug: "threadheads",
+    employeeRange: "11-50",
+    websiteHost: "threadheads.com",
+    phone: "+61 3 9015 9822",
+    address: "Cheltenham, Melbourne",
+    city: "Melbourne",
+    country: "Australia",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Ace Reamer",
+      role: "founder",
+      roleLabel: "Co-Founder & Creative Director",
+      email: "help@threadheads.com",
+      phone: "+61 3 9015 9822",
+      linkedinUrl: "https://linkedin.com/in/ace-reamer",
+    },
+  },
+  {
+    name: "Boody",
+    slug: "boody",
+    employeeRange: "51-200",
+    websiteHost: "boody.com.au",
+    phone: "+61 2 9580 9990",
+    address: "Penshurst, Sydney",
+    city: "Sydney",
+    country: "Australia",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "David Greenblo",
+      role: "founder",
+      roleLabel: "Co-Founder & Director",
+      email: "support@boody.com.au",
+      phone: "+61 2 9580 9990",
+      linkedinUrl: "https://linkedin.com/in/david-greenblo",
+    },
+  },
+  {
+    name: "Lorna Jane",
+    slug: "lorna-jane",
+    employeeRange: "201-500",
+    websiteHost: "lornajane.com.au",
+    phone: "+61 7 3865 9000",
+    address: "Eagle Farm, Brisbane",
+    city: "Brisbane",
+    country: "Australia",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Lorna Jane Clarkson",
+      role: "founder",
+      roleLabel: "Founder & Chief Creative Officer",
+      email: "customerservice@lornajane.com.au",
+      phone: "+61 7 3865 9000",
+      linkedinUrl: "https://linkedin.com/in/lornajaneclarkson",
+    },
+  },
+  // US Supermarkets & Retailers
+  {
+    name: "Rockland Kosher Supermarket",
+    slug: "rockland-kosher-supermarket",
+    employeeRange: "51-200",
+    websiteHost: "rocklandkosher.com",
+    phone: "+1 845 425 2266",
+    address: "Monsey, New York",
+    city: "New York",
+    country: "United States",
+    industry: "Supermarkets",
+    decisionMaker: {
+      name: "Moishe Farkas",
+      role: "managing_director",
+      roleLabel: "Store Director & General Manager",
+      email: "info@rocklandkosher.com",
+      phone: "+1 845 425 2266",
+    },
+  },
+  {
+    name: "Fairway Market New York",
+    slug: "fairway-market-ny",
+    employeeRange: "201-500",
+    websiteHost: "fairwaymarket.com",
+    phone: "+1 212 595 1888",
+    address: "Broadway & 74th St, New York",
+    city: "New York",
+    country: "United States",
+    industry: "Supermarkets",
+    decisionMaker: {
+      name: "Perry Blatt",
+      role: "procurement_head",
+      roleLabel: "VP Business Development & Merchandising",
+      email: "customerservice@fairwaymarket.com",
+      phone: "+1 212 595 1888",
+    },
+  },
 ];
 
 export class MockDiscoveryProvider implements DiscoveryProvider {
@@ -443,7 +671,31 @@ export class MockDiscoveryProvider implements DiscoveryProvider {
 
     let matching = DEFAULT_MOCK_FIXTURES;
 
-    // Filter by city first if specified
+    // Filter by industry first
+    if (query.industry) {
+      const qInd = query.industry.toLowerCase();
+      const filtered = matching.filter((f) => {
+        const ind = (f.industry || "").toLowerCase();
+        return ind.includes(qInd) || qInd.includes(ind) || (qInd.includes("d2c") && ind.includes("d2c"));
+      });
+      if (filtered.length > 0) {
+        matching = filtered;
+      }
+    }
+
+    // Filter by country if specified
+    if (query.country) {
+      const qCountry = query.country.toLowerCase().trim();
+      const countryFiltered = matching.filter((f) => {
+        const cCountry = (f.country || "").toLowerCase();
+        return cCountry.includes(qCountry) || qCountry.includes(cCountry);
+      });
+      if (countryFiltered.length > 0) {
+        matching = countryFiltered;
+      }
+    }
+
+    // Filter by city if specified
     if (query.city) {
       const qCity = query.city.toLowerCase().trim();
       const cityFiltered = matching.filter((f) => {
@@ -452,18 +704,6 @@ export class MockDiscoveryProvider implements DiscoveryProvider {
       });
       if (cityFiltered.length > 0) {
         matching = cityFiltered;
-      }
-    }
-
-    // Filter by industry
-    if (query.industry) {
-      const qInd = query.industry.toLowerCase();
-      const filtered = matching.filter((f) => {
-        const ind = (f.industry || "").toLowerCase();
-        return ind.includes(qInd) || qInd.includes(ind);
-      });
-      if (filtered.length > 0) {
-        matching = filtered;
       }
     }
 

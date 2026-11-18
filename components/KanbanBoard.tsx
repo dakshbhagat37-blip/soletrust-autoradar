@@ -9,6 +9,7 @@ type KanbanBoardProps = {
   onStageChange: (leadId: string, newStage: LeadStage) => void;
   onSelectLead: (lead: CrmLead) => void;
   onOpenOutreachModal: (lead: CrmLead) => void;
+  onLaunchSearchPrompt?: (prompt: string) => void;
 };
 
 export function KanbanBoard({
@@ -16,8 +17,16 @@ export function KanbanBoard({
   onStageChange,
   onSelectLead,
   onOpenOutreachModal,
+  onLaunchSearchPrompt,
 }: KanbanBoardProps) {
   const [filterQuery, setFilterQuery] = useState("");
+  const [pipelinePrompt, setPipelinePrompt] = useState("");
+
+  const handlePromptSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pipelinePrompt.trim()) return;
+    onLaunchSearchPrompt?.(pipelinePrompt);
+  };
 
   const filtered = leads.filter(
     (l) =>
@@ -49,6 +58,35 @@ export function KanbanBoard({
           />
         </div>
       </div>
+
+      {/* AI Prompt Prospect Discovery Bar */}
+      <form
+        onSubmit={handlePromptSearch}
+        className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 rounded-xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/30 via-purple-950/20 to-gray-950/50"
+      >
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+          <span className="text-xs font-medium text-indigo-200">
+            Find & add new verified prospects directly into your pipeline:
+          </span>
+        </div>
+        <div className="flex items-center gap-2 w-full sm:w-auto flex-1 sm:max-w-lg">
+          <input
+            type="text"
+            value={pipelinePrompt}
+            onChange={(e) => setPipelinePrompt(e.target.value)}
+            placeholder="e.g. 'find D2C apparel brands in Australia for creative studio'"
+            className="flex-1 px-3 py-1.5 rounded-lg bg-gray-950/90 border border-indigo-500/40 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-indigo-400"
+          />
+          <button
+            type="submit"
+            disabled={!pipelinePrompt.trim()}
+            className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-semibold disabled:opacity-50 transition cursor-pointer whitespace-nowrap shadow"
+          >
+            ⚡ Find Leads
+          </button>
+        </div>
+      </form>
 
       {/* Columns Container */}
       <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-thin">

@@ -25,6 +25,8 @@ type HeaderProps = {
     contacted: number;
     dealsWon: number;
   };
+  onGlobalPromptSearch?: (prompt: string) => void;
+  isSearching?: boolean;
 };
 
 export function Header({
@@ -32,7 +34,16 @@ export function Header({
   activeTab,
   onTabChange,
   leadCounts,
+  onGlobalPromptSearch,
+  isSearching = false,
 }: HeaderProps) {
+  const [promptText, setPromptText] = React.useState("");
+
+  const handlePromptSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!promptText.trim() || isSearching) return;
+    onGlobalPromptSearch?.(promptText);
+  };
   const tabs: { id: NavTab; label: string; icon: string; count?: number }[] = [
     { id: "find_leads", label: "Find Leads", icon: "🔍" },
     { id: "pipeline", label: "Sales Pipeline", icon: "📊", count: leadCounts?.total },
@@ -64,6 +75,37 @@ export function Header({
             </div>
           </div>
         </div>
+
+        {/* Global AI Prompt Search Bar (Universal across all tabs) */}
+        <form onSubmit={handlePromptSubmit} className="flex-1 max-w-xl mx-0 md:mx-4">
+          <div className="relative flex items-center group">
+            <span className="absolute left-3 text-indigo-400 text-sm pointer-events-none">✨</span>
+            <input
+              type="text"
+              value={promptText}
+              onChange={(e) => setPromptText(e.target.value)}
+              disabled={isSearching}
+              placeholder="Ask AutoRadar: 'Find D2C brands in Australia for my studio' or 'Supermarkets in NY'..."
+              className="w-full pl-9 pr-24 py-2 text-xs text-white bg-gray-900/90 border border-indigo-500/40 rounded-xl placeholder-gray-500 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 shadow-inner group-hover:border-indigo-500/60 transition"
+            />
+            <button
+              type="submit"
+              disabled={isSearching || !promptText.trim()}
+              className="absolute right-1.5 px-3 py-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-[11px] font-semibold rounded-lg shadow disabled:opacity-50 transition flex items-center gap-1 cursor-pointer"
+            >
+              {isSearching ? (
+                <>
+                  <span className="w-2.5 h-2.5 border border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Searching</span>
+                </>
+              ) : (
+                <>
+                  <span>⚡ Find Leads</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
 
         {/* Right side: Principle & Provider status pills */}
         <div className="flex items-center gap-3 text-xs">

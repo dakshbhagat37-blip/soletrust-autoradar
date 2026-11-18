@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Header, type NavTab } from "../components/Header.tsx";
 import { SearchForm, type SearchFormData } from "../components/SearchForm.tsx";
+import { parseNaturalLanguagePrompt } from "../lib/discovery/prompt-parser.ts";
 import { StageTracker } from "../components/StageTracker.tsx";
 import { LeadCard } from "../components/LeadCard.tsx";
 import { LeadDossierModal } from "../components/LeadDossierModal.tsx";
@@ -200,6 +201,12 @@ export default function Home() {
     }
   };
 
+  const handleGlobalPromptSearch = async (prompt: string) => {
+    const res = parseNaturalLanguagePrompt(prompt);
+    setNavTab("find_leads");
+    await handleSearchSubmit(res.data);
+  };
+
   const handleReverifyLead = async (id: string) => {
     try {
       const res = await fetch(`/api/leads/${id}/verify`, { method: "POST" });
@@ -393,6 +400,8 @@ export default function Home() {
       <Header
         activeTab={navTab}
         onTabChange={(tab) => setNavTab(tab)}
+        onGlobalPromptSearch={handleGlobalPromptSearch}
+        isSearching={isLoading}
         leadCounts={{
           total: crmLeads.length,
           qualified: crmLeads.filter((l) => l.qualificationScore >= 60).length,
@@ -584,6 +593,7 @@ export default function Home() {
             onStageChange={handleStageChange}
             onSelectLead={handleOpenLeadDossierFromCrm}
             onOpenOutreachModal={() => setNavTab("outreach")}
+            onLaunchSearchPrompt={handleGlobalPromptSearch}
           />
         )}
 

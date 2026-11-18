@@ -109,6 +109,51 @@ export function SearchForm({ onSubmit, isLoading }: SearchFormProps) {
             <span>{detectedSummary}</span>
           </div>
         )}
+
+        {/* Example Prompt Chips */}
+        <div className="mt-3 pt-2.5 border-t border-indigo-500/20 flex flex-wrap items-center gap-1.5 text-[11px]">
+          <span className="text-gray-400 font-medium mr-1">Quick Prompts:</span>
+          {[
+            {
+              label: "🇦🇺 Australia D2C Brands (Studio)",
+              prompt: "find some lead for me i own a creative and technical studio so find some d to c business in australia for provide number and email of the decision maker with how and why to reach out to them",
+            },
+            {
+              label: "🇺🇸 New York Supermarkets (F&B)",
+              prompt: "find supermarket and grocery store owners in New York for retail food and beverage distribution",
+            },
+            {
+              label: "🇬🇧 London Law Firms (Legal)",
+              prompt: "find law firms in London UK with managing partner decision makers for client intake automation",
+            },
+            {
+              label: "🇩🇪 Munich Automotive (Dealers)",
+              prompt: "find automotive dealerships in Munich Germany for test-drive booking optimization",
+            },
+            {
+              label: "🇮🇳 Ahmedabad Dermatology (Doctors)",
+              prompt: "find dermatology clinics in Ahmedabad Gujarat with doctor decision makers",
+            },
+            {
+              label: "🇯🇵 Tokyo B2B SaaS (Tech)",
+              prompt: "find B2B SaaS software companies in Tokyo Japan for demo pipeline acceleration",
+            },
+          ].map((chip) => (
+            <button
+              key={chip.label}
+              type="button"
+              onClick={() => {
+                setPromptText(chip.prompt);
+                const res = parseNaturalLanguagePrompt(chip.prompt);
+                setFormData(res.data);
+                setDetectedSummary(res.summary);
+              }}
+              className="px-2.5 py-1 rounded-lg border border-indigo-500/30 bg-indigo-950/40 hover:bg-indigo-800/50 text-indigo-300 transition text-[11px] cursor-pointer"
+            >
+              {chip.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
