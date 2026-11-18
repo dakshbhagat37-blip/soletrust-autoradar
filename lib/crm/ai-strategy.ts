@@ -27,21 +27,26 @@ export function generateAiSalesStrategy(business: Business, lead?: CrmLead): AiS
 
   // Determine primary service offer & sector
   const lowerInd = industry.toLowerCase();
-  const isSupermarketRetail = /supermarket|grocery|retail|food|f&b|market|store/i.test(lowerInd);
-  const isAutomotive = /auto|car|dealer|motor|vehicle|showroom/i.test(lowerInd);
-  const isTechSaaS = /tech|software|saas|it|cloud|cyber|developer|platform/i.test(lowerInd);
-  const isLegal = /law|legal|attorney|advocate|solicitor|counsel/i.test(lowerInd);
-  const isHospitality = /restaurant|cafe|hotel|dining|bistro|culinary|food service|hospitality/i.test(lowerInd);
-  const isFitness = /gym|fitness|crossfit|yoga|pilates|athletic|wellness/i.test(lowerInd);
-  const isRealEstate = /real estate|realty|realtor|property|leasing/i.test(lowerInd);
-  const isAccounting = /account|cpa|tax|audit|bookkeep/i.test(lowerInd);
-  const isDental = /dentist|dental|teeth|orthodont/i.test(lowerInd);
+  const isDtc = /d2c|dtc|d to c|ecommerce|e-commerce|consumer brand|apparel|clothing|fashion|lifestyle brand|footwear|accessories|skincare/i.test(lowerInd);
+  const isSupermarketRetail = !isDtc && /supermarket|grocery|retail|food|f&b|market|store/i.test(lowerInd);
+  const isAutomotive = !isDtc && /\b(auto|car|dealer|motor|vehicle|showroom)\b/i.test(lowerInd);
+  const isTechSaaS = !isDtc && /\b(software|saas|\bit\b|cloud|cyber|developer|platform)\b/i.test(lowerInd);
+  const isLegal = !isDtc && /\b(law|legal|attorney|advocate|solicitor|counsel)\b/i.test(lowerInd);
+  const isHospitality = !isDtc && /\b(restaurant|cafe|hotel|dining|bistro|culinary|food service|hospitality)\b/i.test(lowerInd);
+  const isFitness = !isDtc && /\b(gym|fitness|crossfit|yoga|pilates|athletic|wellness)\b/i.test(lowerInd);
+  const isRealEstate = !isDtc && /\b(real estate|realty|realtor|property|leasing)\b/i.test(lowerInd);
+  const isAccounting = !isDtc && /\b(account|cpa|tax|audit|bookkeep)\b/i.test(lowerInd);
+  const isDental = !isDtc && /\b(dentist|dental|teeth|orthodont)\b/i.test(lowerInd);
 
   let primaryService = business.opportunity?.recommendedServices?.[0] || "Digital Experience & Inbound Lead Architecture";
   let valueProposition = "Modernize customer acquisition and streamline booking/inquiry workflows";
   let openingAngle = `enhancing accessibility and customer inquiry flow for ${companyName} in ${city}`;
 
-  if (isSupermarketRetail) {
+  if (isDtc) {
+    primaryService = "Custom Headless Shopify Plus & High-Conversion Digital Flagship Architecture";
+    valueProposition = "Scale direct-to-consumer revenue with sub-second mobile page loads, interactive 3D product visualizers, and conversion-optimized checkout UX that slashes customer acquisition costs";
+    openingAngle = `upgrading digital storefront performance, brand prestige, and mobile checkout conversion for ${companyName} in ${city}`;
+  } else if (isSupermarketRetail) {
     primaryService = "Premium F&B Retail Distribution & Shelf Placement";
     valueProposition = "Introduce high-margin, fast-moving Food & Beverage SKUs that maximize grocery basket value and retail shelf revenue";
     openingAngle = `securing high-margin retail shelf placement and direct store distribution with ${companyName} in ${city}`;
@@ -113,7 +118,8 @@ export function generateAiSalesStrategy(business: Business, lead?: CrmLead): AiS
     : "phone";
 
   // Build sector-specific outreach drafts
-  const defaultTitle = isSupermarketRetail ? "Store Director / Purchasing Manager" :
+  const defaultTitle = isDtc ? "Founder / Chief Executive Officer / Head of eCommerce" :
+    isSupermarketRetail ? "Store Director / Purchasing Manager" :
     isAutomotive ? "General Manager / Sales Director" :
     isTechSaaS ? "Founder / VP Growth" :
     isLegal ? "Managing Partner / Practice Director" :
@@ -168,7 +174,50 @@ SoleTrust Client Partnerships`;
     callToAction: `I'd like to email a 2-minute video walkthrough comparing your current mobile flow with top performers in your market. What is the best direct email address for you?`,
   };
 
-  if (isSupermarketRetail) {
+  if (isDtc) {
+    subject = dmName
+      ? `${companyName} — Creative & Technical Storefront Architecture & Checkout Conversion`
+      : `Scaling eCommerce Flagship Velocity & Mobile Conversion for ${companyName}`;
+
+    emailBody = `${salutation}
+
+I have been following ${companyName}'s brand presence in ${city} and took a close technical and visual dive into your digital flagship.
+
+As a creative and technical studio, we partner with premier direct-to-consumer (D2C) brands to elevate their digital storefront from standard eCommerce into an unforgettable, high-conversion flagship experience.
+
+Specifically, we help brands like ${companyName}:
+• Eliminate mobile checkout drop-off with sub-second page performance (<0.8s LCP) and custom Shopify Plus headless architecture
+• Boost average order value (AOV) and reduce product returns with interactive 3D product visualizers and immersive visual storytelling
+• Elevate brand prestige with custom editorial UI/UX design that converts first-time visitors into loyal repeat customers
+
+We put together an interactive 3-point visual & technical teardown of ${companyName}'s mobile storefront, highlighting 2 immediate conversion wins you can implement this month.
+
+Would you be open to an informal 10-minute walk-through this week?
+
+Best regards,
+Creative & Technical Studio Lead`;
+
+    linkedinNote = dmName
+      ? `Hi ${dmName.split(" ")[0]}, love what you've built at ${companyName}! As a creative & technical studio founder, put together a quick teardown on optimizing your mobile storefront conversion & speed. Would love to connect!`
+      : `Hello team at ${companyName}, connecting from a creative & technical studio regarding eCommerce flagship conversion and storefront speed in ${city}.`;
+
+    linkedinFollowup = dmName
+      ? `Thanks for connecting, ${dmName.split(" ")[0]}! We put together a brief visual & technical audit of ${companyName}'s storefront showing how sub-second performance and interactive UX can drive 15-20% higher mobile checkout conversion. Happy to send the 3-page teardown over if helpful.`
+      : `Thanks for connecting! We have prepared a tailored visual & performance audit for ${companyName}. Would you like us to send it over?`;
+
+    phoneScript = {
+      opener: dmName
+        ? `Good day, may I speak with ${dmName}? My name is [Your Name] from [Studio Name], calling regarding ${companyName}'s digital flagship and mobile eCommerce conversion.`
+        : `Good day, I'm calling for the founder or head of eCommerce at ${companyName} regarding your online store experience.`,
+      hook: `We run a creative and technical studio helping leading Australian D2C brands in ${city} turn mobile traffic into higher checkout conversion with sub-second page speeds and bespoke digital experiences.`,
+      qualifyingQuestions: [
+        `What is your team's biggest focus right now—elevating the brand visual experience or improving mobile checkout conversion rates?`,
+        `Are you currently running on Shopify Plus or custom headless infrastructure?`,
+        `Are you planning any major design revamps or international store expansions this year?`,
+      ],
+      callToAction: `I'd love to email our 3-point visual and performance audit of ${companyName}'s mobile store directly to you. What is the best direct email address for you?`,
+    };
+  } else if (isSupermarketRetail) {
     subject = dmName
       ? `${companyName} — F&B Retail Partnership & Shelf Distribution in ${city}`
       : `Food & Beverage Product Distribution & Margin Expansion for ${companyName}`;
@@ -325,7 +374,9 @@ Legal Client Growth Practice`;
     generatedAt: new Date().toISOString(),
     whyContact: {
       summary: `${companyName} is an active ${industry} provider in ${city} exhibiting clear service enhancement opportunities.`,
-      industryFit: isSupermarketRetail
+      industryFit: isDtc
+        ? `Matches the high-growth Direct-to-Consumer (D2C) brand profile with active digital storefront and online consumer sales.`
+        : isSupermarketRetail
         ? `Matches the target ${industry} retail profile with high-volume customer footfall.`
         : isAutomotive
         ? `Matches the automotive dealership profile with high-ticket vehicle inventory.`
@@ -341,7 +392,9 @@ Legal Client Growth Practice`;
       supportingEvidence: (business.opportunity?.supportingEvidence && business.opportunity.supportingEvidence.length > 0)
         ? business.opportunity.supportingEvidence
         : (primaryEvidence.length > 0 ? primaryEvidence : ["Public domain presence and service listings"]),
-      commercialRationale: isSupermarketRetail
+      commercialRationale: isDtc
+        ? `Elevating digital flagship UX, sub-second speed (<0.8s LCP), and interactive 3D product visualizers directly lifts mobile checkout conversion rate and AOV while lowering customer acquisition cost in ${city}.`
+        : isSupermarketRetail
         ? `Securing prime retail endcap placement drives immediate wholesale distribution volume and expanded basket margin in ${city}.`
         : isAutomotive
         ? `Accelerating showroom response speed directly increases monthly unit turn and prevents vehicle shoppers from visiting competing dealers in ${city}.`

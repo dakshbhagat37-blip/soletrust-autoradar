@@ -227,6 +227,28 @@ const INDUSTRY_CLUSTERS: Record<string, { strongTerms: string[]; supportingTerms
     supportingTerms: ["tax", "audit", "financial", "advisory", "payroll", "compliance", "cpa", "accounts"],
     negativeTerms: ["hospital", "clinic", "restaurant", "automotive dealership"],
   },
+  dtc: {
+    strongTerms: [
+      "d2c",
+      "dtc",
+      "direct to consumer",
+      "ecommerce",
+      "e-commerce",
+      "online store",
+      "apparel",
+      "clothing brand",
+      "skincare brand",
+      "wellness brand",
+      "activewear",
+      "lifestyle brand",
+      "footwear",
+      "sustainable fashion",
+      "consumer brand",
+      "merchandise",
+    ],
+    supportingTerms: ["shop", "store", "brand", "collection", "products", "shipping", "cart", "checkout", "retail", "apparel", "accessories", "lifestyle"],
+    negativeTerms: ["hospital", "clinic", "law firm", "automotive dealership", "dental"],
+  },
 };
 
 function inferClusterKey(industryQuery: string): string | null {
@@ -245,6 +267,9 @@ function inferClusterKey(industryQuery: string): string | null {
   }
   if (lower.includes("account") || lower.includes("cpa") || lower.includes("tax") || lower.includes("audit") || lower.includes("bookkeep")) {
     return "accounting";
+  }
+  if (lower.includes("d2c") || lower.includes("dtc") || lower.includes("d to c") || lower.includes("ecommerce") || lower.includes("e-commerce") || lower.includes("direct to consumer") || lower.includes("apparel") || lower.includes("clothing brand") || lower.includes("lifestyle brand") || lower.includes("consumer brand")) {
+    return "dtc";
   }
   if (lower.includes("dermatol") || lower.includes("skin") || lower.includes("cosmetol")) {
     return "dermatology";

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { parseNaturalLanguagePrompt } from "../lib/discovery/prompt-parser.ts";
 
 export type SearchFormData = {
   industry: string;
@@ -31,13 +32,25 @@ const PRESETS = [
 
 export function SearchForm({ onSubmit, isLoading }: SearchFormProps) {
   const [formData, setFormData] = useState<SearchFormData>({
-    industry: "Dermatology clinics",
-    city: "New York",
-    country: "United States",
+    industry: "D2C Direct-to-Consumer brands",
+    city: "Sydney",
+    country: "Australia",
     limit: 10,
     serviceTrack: "creative+technical",
     provider: "waterfall",
   });
+  const [promptText, setPromptText] = useState("");
+  const [detectedSummary, setDetectedSummary] = useState<string | null>(null);
+
+  const handlePromptParseAndSubmit = (shouldSubmitImmediate: boolean = false) => {
+    if (!promptText.trim()) return;
+    const res = parseNaturalLanguagePrompt(promptText);
+    setFormData(res.data);
+    setDetectedSummary(res.summary);
+    if (shouldSubmitImmediate) {
+      onSubmit(res.data);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,8 +58,60 @@ export function SearchForm({ onSubmit, isLoading }: SearchFormProps) {
   };
 
   return (
-    <div className="rounded-2xl border border-gray-800 bg-gray-900/70 p-6 shadow-xl backdrop-blur-sm">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+    <div className="rounded-2xl border border-gray-800 bg-gray-900/70 p-6 shadow-xl backdrop-blur-sm space-y-6">
+      {/* Natural Language Prompt Search Bar */}
+      <div className="p-4 rounded-xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/40 via-purple-950/20 to-gray-950/50 shadow-inner">
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="flex items-center gap-2">
+            <span className="flex h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
+            <h3 className="text-xs font-semibold text-indigo-300 uppercase tracking-wider">
+              ✨ AI Natural Language Search (Prompt-to-Pipeline)
+            </h3>
+          </div>
+          <span className="text-[11px] text-gray-400">Type any prompt in plain English</span>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <input
+            type="text"
+            value={promptText}
+            onChange={(e) => setPromptText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handlePromptParseAndSubmit(true);
+              }
+            }}
+            placeholder="e.g. 'find leads for my creative and technical studio: d2c businesses in australia with decision makers'"
+            className="flex-1 rounded-xl border border-indigo-500/40 bg-gray-950/90 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-400 transition"
+          />
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => handlePromptParseAndSubmit(false)}
+              className="px-3.5 py-2.5 rounded-xl border border-indigo-500/40 bg-indigo-900/30 text-xs font-medium text-indigo-200 hover:bg-indigo-800/40 transition"
+            >
+              Parse Prompt
+            </button>
+            <button
+              type="button"
+              disabled={isLoading || !promptText.trim()}
+              onClick={() => handlePromptParseAndSubmit(true)}
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-xs font-semibold text-white shadow-lg hover:from-indigo-500 hover:to-purple-500 disabled:opacity-50 transition flex items-center gap-1.5"
+            >
+              <span>⚡ Find Leads Now</span>
+            </button>
+          </div>
+        </div>
+
+        {detectedSummary && (
+          <div className="mt-2.5 flex items-center gap-2 text-xs text-emerald-400 bg-emerald-950/40 border border-emerald-800/50 px-3 py-1.5 rounded-lg">
+            <span className="font-semibold text-emerald-300">✓ AI Detected Intent:</span>
+            <span>{detectedSummary}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-semibold text-white">Prospecting Search Parameters</h2>
           <p className="text-xs text-gray-400">Configure target industry, location, and intelligence filters.</p>

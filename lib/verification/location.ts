@@ -195,7 +195,8 @@ export function verifyLocation(
   const cityMatched = matchesCityDirectly || matchesSubArea;
 
   // 1. Conflicting City Check (apply primarily when within the same national region)
-  if (!cityMatched && normCandidateCountry === "india") {
+  const isIndia = normCandidateCountry === "india" || normRequestedCountry === "india" || address.includes("india");
+  if (!cityMatched && isIndia) {
     const conflictingCity = MAJOR_INDIAN_CITIES.find(
       (c) => c !== requestedCity && candidateText.includes(c),
     );
