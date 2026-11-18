@@ -42,7 +42,7 @@ export function calculateContactabilityScore(business: Business): {
   }
 
   // Email scoring
-  if (emails.some((e) => e.verificationStatus === "mx_valid" || (business.domain && e.value.includes(business.domain)))) {
+  if (emails.some((e) => e.verificationStatus === "mx_valid" || (business.domain && Boolean(e.value?.includes(business.domain))))) {
     score += 35;
     reasons.push("Domain-matched corporate email verified (+35).");
   } else if (emails.length > 0) {

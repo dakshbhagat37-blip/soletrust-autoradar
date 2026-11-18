@@ -166,12 +166,85 @@ const INDUSTRY_CLUSTERS: Record<string, { strongTerms: string[]; supportingTerms
     supportingTerms: ["supermarket", "grocery", "market", "food", "store", "retail", "mart", "provisions", "beverages", "fresh", "produce"],
     negativeTerms: ["hospital", "clinic", "law firm", "software", "automotive dealership"],
   },
+  hospitality: {
+    strongTerms: [
+      "restaurant",
+      "cafe",
+      "bistro",
+      "diner",
+      "bakery",
+      "pizzeria",
+      "bar & grill",
+      "pub",
+      "hotel",
+      "catering",
+      "culinary",
+      "food service",
+    ],
+    supportingTerms: ["dining", "food", "menu", "drinks", "chef", "table", "hospitality", "cuisine", "reservations", "seating"],
+    negativeTerms: ["hospital", "clinic", "law firm", "software", "automotive dealership"],
+  },
+  fitness: {
+    strongTerms: [
+      "gym",
+      "fitness center",
+      "health club",
+      "personal training",
+      "crossfit",
+      "yoga studio",
+      "pilates studio",
+      "athletic club",
+      "wellness center",
+    ],
+    supportingTerms: ["fitness", "workout", "training", "exercise", "strength", "coach", "wellness", "membership"],
+    negativeTerms: ["hospital", "clinic", "law firm", "automotive dealership", "restaurant"],
+  },
+  realestate: {
+    strongTerms: [
+      "real estate",
+      "realty",
+      "realtor",
+      "estate agent",
+      "property management",
+      "commercial leasing",
+      "real estate agency",
+      "property development",
+    ],
+    supportingTerms: ["property", "homes", "apartments", "leasing", "rentals", "residential", "commercial", "broker", "sales"],
+    negativeTerms: ["hospital", "clinic", "restaurant", "automotive dealership"],
+  },
+  accounting: {
+    strongTerms: [
+      "accounting",
+      "cpa",
+      "chartered accountant",
+      "accounting firm",
+      "tax consultant",
+      "bookkeeping",
+      "tax advisory",
+      "auditing",
+    ],
+    supportingTerms: ["tax", "audit", "financial", "advisory", "payroll", "compliance", "cpa", "accounts"],
+    negativeTerms: ["hospital", "clinic", "restaurant", "automotive dealership"],
+  },
 };
 
 function inferClusterKey(industryQuery: string): string | null {
   const lower = industryQuery.toLowerCase();
   if (lower.includes("supermarket") || lower.includes("grocery") || lower.includes("mart") || lower.includes("food store") || lower.includes("retail")) {
     return "supermarket";
+  }
+  if (lower.includes("restaurant") || lower.includes("cafe") || lower.includes("hotel") || lower.includes("bistro") || lower.includes("dining") || lower.includes("hospitality") || lower.includes("catering") || lower.includes("bakery")) {
+    return "hospitality";
+  }
+  if (lower.includes("gym") || lower.includes("fitness") || lower.includes("yoga") || lower.includes("pilates") || lower.includes("workout") || lower.includes("crossfit")) {
+    return "fitness";
+  }
+  if (lower.includes("real estate") || lower.includes("realty") || lower.includes("property") || lower.includes("estate agent") || lower.includes("realtor")) {
+    return "realestate";
+  }
+  if (lower.includes("account") || lower.includes("cpa") || lower.includes("tax") || lower.includes("audit") || lower.includes("bookkeep")) {
+    return "accounting";
   }
   if (lower.includes("dermatol") || lower.includes("skin") || lower.includes("cosmetol")) {
     return "dermatology";
@@ -191,7 +264,7 @@ function inferClusterKey(industryQuery: string): string | null {
   if (lower.includes("creative") || lower.includes("marketing") || lower.includes("design") || lower.includes("advertising")) {
     return "creative";
   }
-  if (lower.includes("tech") || lower.includes("software") || lower.includes("it")) {
+  if (lower.includes("tech") || lower.includes("software") || lower.includes("it") || lower.includes("saas") || lower.includes("cloud")) {
     return "technology";
   }
   return null;

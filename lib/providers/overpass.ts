@@ -72,11 +72,29 @@ export const KNOWN_CITY_COORDINATES: Record<string, { lat: number; lon: number }
   indore: { lat: 22.7196, lon: 75.8577 },
   bhopal: { lat: 23.2599, lon: 77.4126 },
   patna: { lat: 25.5941, lon: 85.1376 },
-  // Global Metropolises
+  // Global Metropolises & States
   "new york": { lat: 40.7128, lon: -74.0060 },
   nyc: { lat: 40.7128, lon: -74.0060 },
   manhattan: { lat: 40.7831, lon: -73.9712 },
+  brooklyn: { lat: 40.6782, lon: -73.9442 },
+  california: { lat: 34.0522, lon: -118.2437 },
+  texas: { lat: 29.7604, lon: -95.3698 },
+  florida: { lat: 25.7617, lon: -80.1918 },
+  washington: { lat: 47.6062, lon: -122.3321 },
+  illinois: { lat: 41.8781, lon: -87.6298 },
+  dallas: { lat: 32.7767, lon: -96.7970 },
+  houston: { lat: 29.7604, lon: -95.3698 },
+  austin: { lat: 30.2672, lon: -97.7431 },
+  seattle: { lat: 47.6062, lon: -122.3321 },
+  boston: { lat: 42.3601, lon: -71.0589 },
+  ontario: { lat: 43.6532, lon: -79.3832 },
+  quebec: { lat: 45.5017, lon: -73.5673 },
+  montreal: { lat: 45.5017, lon: -73.5673 },
+  "new south wales": { lat: -33.8688, lon: 151.2093 },
+  victoria: { lat: -37.8136, lon: 144.9631 },
   london: { lat: 51.5074, lon: -0.1278 },
+  manchester: { lat: 53.4808, lon: -2.2426 },
+  birmingham: { lat: 52.4862, lon: -1.8904 },
   dubai: { lat: 25.2048, lon: 55.2708 },
   sydney: { lat: -33.8688, lon: 151.2093 },
   melbourne: { lat: -37.8136, lon: 144.9631 },
@@ -85,7 +103,15 @@ export const KNOWN_CITY_COORDINATES: Record<string, { lat: number; lon: number }
   singapore: { lat: 1.3521, lon: 103.8198 },
   paris: { lat: 48.8566, lon: 2.3522 },
   berlin: { lat: 52.5200, lon: 13.4050 },
+  munich: { lat: 48.1351, lon: 11.5820 },
+  frankfurt: { lat: 50.1109, lon: 8.6821 },
+  bavaria: { lat: 48.1351, lon: 11.5820 },
+  rome: { lat: 41.9028, lon: 12.4964 },
+  milan: { lat: 45.4642, lon: 9.1900 },
+  madrid: { lat: 40.4168, lon: -3.7038 },
+  zurich: { lat: 47.3769, lon: 8.5417 },
   tokyo: { lat: 35.6762, lon: 139.6503 },
+  osaka: { lat: 34.6937, lon: 135.5023 },
   "los angeles": { lat: 34.0522, lon: -118.2437 },
   chicago: { lat: 41.8781, lon: -87.6298 },
   "san francisco": { lat: 37.7749, lon: -122.4194 },
@@ -196,10 +222,36 @@ export function getOsmTagFiltersForIndustry(industry: string): string[] {
       `node["office"="company"]`,
     ];
   }
-  if (lower.includes("tech") || lower.includes("software") || lower.includes("it") || lower.includes("agency")) {
+  if (lower.includes("tech") || lower.includes("software") || lower.includes("it") || lower.includes("saas") || lower.includes("agency")) {
     return [
       `node["office"~"it|company|software|telecommunication"]`,
       `way["office"~"it|company|software|telecommunication"]`,
+    ];
+  }
+  if (lower.includes("restaurant") || lower.includes("cafe") || lower.includes("hotel") || lower.includes("bistro") || lower.includes("dining") || lower.includes("hospitality")) {
+    return [
+      `node["amenity"~"restaurant|cafe|fast_food|bar|pub"]`,
+      `way["amenity"~"restaurant|cafe|fast_food|bar|pub"]`,
+      `node["tourism"~"hotel|guest_house"]`,
+    ];
+  }
+  if (lower.includes("gym") || lower.includes("fitness") || lower.includes("yoga") || lower.includes("pilates") || lower.includes("workout")) {
+    return [
+      `node["leisure"~"fitness_centre|sports_centre"]`,
+      `way["leisure"~"fitness_centre|sports_centre"]`,
+    ];
+  }
+  if (lower.includes("real estate") || lower.includes("realty") || lower.includes("property") || lower.includes("estate agent")) {
+    return [
+      `node["office"="estate_agent"]`,
+      `way["office"="estate_agent"]`,
+      `node["office"="company"]`,
+    ];
+  }
+  if (lower.includes("account") || lower.includes("cpa") || lower.includes("tax") || lower.includes("audit") || lower.includes("bookkeep")) {
+    return [
+      `node["office"~"accountant|tax_advisor|financial"]`,
+      `way["office"~"accountant|tax_advisor|financial"]`,
     ];
   }
   return [
