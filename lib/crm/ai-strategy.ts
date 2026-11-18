@@ -26,11 +26,17 @@ export function generateAiSalesStrategy(business: Business, lead?: CrmLead): AiS
   const primaryEvidence = business.sources?.map((s) => s.evidenceText || s.sourceUrl).filter(Boolean).slice(0, 3) || [];
 
   // Determine primary service offer
+  const isSupermarketRetail = /supermarket|grocery|retail|food|f&b|market|store/i.test(industry);
+
   let primaryService = business.opportunity?.recommendedServices?.[0] || "Digital Experience & Patient Acquisition Architecture";
   let valueProposition = "Modernize digital patient acquisition and streamline clinic appointment bookings";
   let openingAngle = `enhancing digital patient accessibility for ${companyName} in ${city}`;
 
-  if (serviceTrack.includes("creative") && !serviceTrack.includes("technical")) {
+  if (isSupermarketRetail) {
+    primaryService = "Premium F&B Retail Distribution & Shelf Placement";
+    valueProposition = "Introduce high-margin, fast-moving Food & Beverage SKUs that maximize grocery basket value and retail shelf revenue";
+    openingAngle = `securing high-margin retail shelf placement and direct store distribution with ${companyName} in ${city}`;
+  } else if (serviceTrack.includes("creative") && !serviceTrack.includes("technical")) {
     primaryService = "Clinic Brand Identity & Visual Positioning";
     valueProposition = "Establish high-trust visual consistency and patient-facing aesthetic brand presentation";
     openingAngle = `upgrading brand presence and patient-facing trust signals across ${companyName}'s digital touchpoints`;
@@ -66,12 +72,12 @@ export function generateAiSalesStrategy(business: Business, lead?: CrmLead): AiS
     : "phone";
 
   // Email draft
-  const salutation = dmName ? `Dear ${dmName},` : `Dear Team at ${companyName},`;
-  const subject = dmName
+  const salutation = dmName ? `Dear ${dmName},` : `Dear Store Owner / Category Manager at ${companyName},`;
+  let subject = dmName
     ? `${companyName} & Patient Inquiries in ${city}`
     : `Patient Inquiries & Digital Booking for ${companyName}`;
 
-  const emailBody = `${salutation}
+  let emailBody = `${salutation}
 
 I noticed ${companyName}'s clinical standing in ${city} and took a close look at your public web presence.
 
@@ -88,17 +94,15 @@ Would you be open to a brief 10-minute demonstration of how this would look for 
 Best regards,
 SoleTrust Client Partnerships`;
 
-  // LinkedIn message
-  const linkedinNote = dmName
+  let linkedinNote = dmName
     ? `Hi ${dmName.split(" ")[0]}, loved seeing your work at ${companyName}. Noticed an opportunity to optimize your patient booking flow in ${city}. Would welcome connecting!`
     : `Hello team at ${companyName}, connecting regarding digital patient acquisition and modern booking workflows in ${city}.`;
 
-  const linkedinFollowup = dmName
+  let linkedinFollowup = dmName
     ? `Thanks for connecting, ${dmName.split(" ")[0]}! We recently reviewed ${companyName}'s digital patient touchpoints and put together a few concrete recommendations to streamline mobile appointments. Happy to share a quick 2-page brief if helpful.`
     : `Thanks for connecting! We have prepared a tailored brief on patient booking optimization for ${companyName}. Would you like us to send it over?`;
 
-  // Phone script
-  const phoneScript = {
+  let phoneScript = {
     opener: dmName
       ? `Good day, may I speak with ${dmName}? My name is [Your Name] calling regarding digital patient inquiries for ${companyName}.`
       : `Good day, I'm calling for the clinic director or practice manager at ${companyName} regarding your patient inquiry workflow.`,
@@ -110,6 +114,49 @@ SoleTrust Client Partnerships`;
     ],
     callToAction: `I'd like to email a 2-minute video walkthrough comparing your current mobile patient flow with best-in-class clinics. What is the best direct email address for you?`,
   };
+
+  if (isSupermarketRetail) {
+    subject = dmName
+      ? `${companyName} — F&B Retail Partnership & Shelf Distribution in ${city}`
+      : `Food & Beverage Product Distribution & Margin Expansion for ${companyName}`;
+
+    emailBody = `${salutation}
+
+I noticed ${companyName}'s prominent grocery retail standing in ${city} and wanted to reach out regarding our Food & Beverage brand portfolio.
+
+We partner with independent supermarkets and regional grocers to supply fast-moving, high-margin consumer packaged goods (CPG/F&B) that drive repeat customer baskets.
+
+Specifically, we provide ${companyName}:
+• Guaranteed 30%+ gross retail margins with flexible wholesale payment terms
+• Reliable Direct-Store-Delivery (DSD) to prevent stockouts during peak shopping hours
+• Professional eye-catching endcap merchandising displays and promotional launch sampling
+
+Would you be open to reviewing our 1-page wholesale catalog and receiving a complimentary product tasting sample kit for ${companyName}?
+
+Best regards,
+Commercial Partnerships & Retail Sales`;
+
+    linkedinNote = dmName
+      ? `Hi ${dmName.split(" ")[0]}, following ${companyName}'s retail presence in ${city}. Reaching out regarding premium F&B shelf placement and wholesale margin opportunities for your store. Would welcome connecting!`
+      : `Hello team at ${companyName}, connecting regarding premium Food & Beverage shelf distribution and retail margin partnership in ${city}.`;
+
+    linkedinFollowup = dmName
+      ? `Thanks for connecting, ${dmName.split(" ")[0]}! We supply fast-moving beverage & food lines that deliver 30%+ margins for supermarkets in ${city}. Happy to share our 1-page catalog and drop off samples if helpful.`
+      : `Thanks for connecting! We have prepared our retail wholesale product catalog for ${companyName}. Would you like us to send it over?`;
+
+    phoneScript = {
+      opener: dmName
+        ? `Good day, may I speak with ${dmName}? My name is [Your Name] calling regarding retail product distribution for ${companyName}.`
+        : `Good day, I'm calling for the store owner or purchasing/category manager at ${companyName} regarding your beverage and packaged food aisles.`,
+      hook: `We supply high-velocity Food & Beverage products that deliver 30%+ gross margins for independent supermarkets in ${city}, with complete direct-store delivery and promotional launch support.`,
+      qualifyingQuestions: [
+        `Who manages your packaged goods and beverage category purchasing for ${companyName}?`,
+        `Are you currently looking to introduce new high-margin craft or functional beverage brands to your shelves this quarter?`,
+        `Do you prefer direct store delivery (DSD) or central warehouse distribution?`,
+      ],
+      callToAction: `I'd love to drop off a sample tasting kit and our 1-page wholesale rate card for your category buyer. What is the best direct email address or store address to send them to?`,
+    };
+  }
 
   return {
     leadId: lead?.id || business.id,

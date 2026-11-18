@@ -18,17 +18,17 @@ export function evaluateServiceFit(
 
   // 1. Technical Opportunity Signals
   if (serviceTrack.includes("technical") || serviceTrack.includes("both")) {
-    // Missing HTTPS
-    if (intelligence?.hasHttps === false || (business.website && !business.website.startsWith("https://"))) {
+    // Missing Website / Missing HTTPS
+    if (!business.website || intelligence?.hasHttps === false || (business.website && !business.website.startsWith("https://"))) {
       signals.push({
         id: "no_https",
-        label: "Lacks HTTPS Security",
+        label: !business.website ? "Lacks Official Website" : "Lacks HTTPS Security",
         points: 20,
         type: "opportunity",
-        evidenceText: "Official website is served over unencrypted HTTP.",
+        evidenceText: !business.website ? "No official website established for business." : "Official website is served over unencrypted HTTP.",
       });
       score += 20;
-      reasons.push("Technical Opportunity: Website lacks HTTPS encryption (+20).");
+      reasons.push(!business.website ? "Digital Opportunity: Business lacks official website (+20)." : "Technical Opportunity: Website lacks HTTPS encryption (+20).");
     }
 
     // Missing SEO Title or Description

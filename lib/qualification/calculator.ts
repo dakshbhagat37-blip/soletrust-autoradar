@@ -51,9 +51,12 @@ export function calculateContactabilityScore(business: Business): {
   }
 
   // Physical Address scoring
-  if (business.address && business.address.length > 10) {
+  if (business.address && business.address.length > 5) {
     score += 25;
     reasons.push("Physical premises address identified (+25).");
+  } else if (business.sources?.some((s) => s.sourceHost === "overpass" || s.sourceHost === "nominatim" || s.evidenceText?.includes("confirmed"))) {
+    score += 20;
+    reasons.push("Verified geographic premises presence on OpenStreetMap (+20).");
   }
 
   // Multi-channel bonus
@@ -168,7 +171,7 @@ export function calculateQualificationScores(
 
   if (targetCity && bizCity && targetCity !== bizCity) {
     locationScore = 20;
-  } else if (business.address || business.contacts?.some((c) => c.contactType === "phone" || c.contactType === "email")) {
+  } else if (business.address || business.contacts?.some((c) => c.contactType === "phone" || c.contactType === "email") || business.sources?.some((s) => s.sourceHost === "overpass" || s.sourceHost === "nominatim")) {
     locationScore = 90;
   }
 

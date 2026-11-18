@@ -17,12 +17,12 @@ type SearchFormProps = {
 };
 
 const PRESETS = [
+  { label: "New York (Supermarkets)", industry: "Supermarkets", city: "New York", country: "United States" },
+  { label: "London (Supermarkets)", industry: "Supermarkets", city: "London", country: "United Kingdom" },
   { label: "New York (Dermatology)", industry: "Dermatology clinics", city: "New York", country: "United States" },
   { label: "London (Dental)", industry: "Dental clinics", city: "London", country: "United Kingdom" },
   { label: "Dubai (Cosmetic)", industry: "Cosmetic clinics", city: "Dubai", country: "United Arab Emirates" },
   { label: "Sydney (Healthcare)", industry: "Medical clinics", city: "Sydney", country: "Australia" },
-  { label: "Toronto (Dermatology)", industry: "Dermatology clinics", city: "Toronto", country: "Canada" },
-  { label: "Singapore (Clinics)", industry: "Medical clinics", city: "Singapore", country: "Singapore" },
   { label: "Vadodara (Dermatology)", industry: "Dermatology clinics", city: "Vadodara", country: "India" },
 ];
 

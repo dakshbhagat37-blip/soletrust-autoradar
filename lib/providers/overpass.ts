@@ -143,6 +143,17 @@ async function geocodeCity(
 
 export function getOsmTagFiltersForIndustry(industry: string): string[] {
   const lower = industry.toLowerCase();
+  if (lower.includes("supermarket") || lower.includes("grocery") || lower.includes("mart") || lower.includes("food store") || lower.includes("retail")) {
+    return [
+      `node["shop"="supermarket"]`,
+      `way["shop"="supermarket"]`,
+      `node["shop"="grocery"]`,
+      `way["shop"="grocery"]`,
+      `node["shop"="convenience"]`,
+      `way["shop"="convenience"]`,
+      `node["shop"="department_store"]`,
+    ];
+  }
   if (lower.includes("car") || lower.includes("auto") || lower.includes("vehicle") || lower.includes("dealer")) {
     return [
       `node["shop"~"car|car_repair|motorcycle"]`,
@@ -325,10 +336,51 @@ export class OverpassDiscoveryProvider implements DiscoveryProvider {
     const candidates: CandidateRecord[] = [];
     const seenNames = new Set<string>();
 
+    const industryLower = query.industry.toLowerCase();
+    const isDermatology = /dermatol|skin|cosmet/i.test(industryLower);
+    const isDental = /dent|teeth|orthodont/i.test(industryLower);
+    const isAutomotive = /auto|car|motor|dealer/i.test(industryLower);
+    const isHospital = /hospital/i.test(industryLower);
+    const isSupermarket = /supermarket|grocery|retail|food|market|mart/i.test(industryLower);
+
     for (const el of elements) {
       const tags = el.tags ?? {};
       const name = tags.name?.trim();
       if (!name || seenNames.has(name.toLowerCase())) continue;
+
+      // Filter out non-matching generic amenities when searching specialized industries
+      if (isDermatology) {
+        const matchesDerm =
+          /dermatol|skin|cosmet|laser|aesthetic|cutis|twacha|sparsh|rachi/i.test(name) ||
+          /dermatology|skin/i.test(tags["healthcare:speciality"] || "") ||
+          /dermatology|skin/i.test(tags.description || "");
+        if (!matchesDerm) continue;
+      } else if (isDental) {
+        const matchesDental =
+          /dent|teeth|orthodont/i.test(name) ||
+          /dentist|orthodontics|dental/i.test(tags["healthcare:speciality"] || "") ||
+          tags.amenity === "dentist";
+        if (!matchesDental) continue;
+      } else if (isAutomotive) {
+        const matchesAuto =
+          /auto|car|motor|dealer/i.test(name) ||
+          /car|motorcycle/i.test(tags.shop || "") ||
+          /car_rental|car_wash/i.test(tags.amenity || "");
+        if (!matchesAuto) continue;
+      } else if (isHospital) {
+        const matchesHospital =
+          /hospital|medical center|healthcare/i.test(name) ||
+          tags.amenity === "hospital" ||
+          tags.healthcare === "hospital";
+        if (!matchesHospital) continue;
+      } else if (isSupermarket) {
+        const matchesSupermarket =
+          /supermarket|grocery|market|foods|mart|store|retail|provisions|hypermarket|bazaar|trader/i.test(name) ||
+          /supermarket|grocery|convenience/i.test(tags.shop || "") ||
+          /supermarket/i.test(tags.amenity || "");
+        if (!matchesSupermarket) continue;
+      }
+
       seenNames.add(name.toLowerCase());
 
       const rawWebsite = tags.website || tags["contact:website"] || tags.url || null;
@@ -354,7 +406,7 @@ export class OverpassDiscoveryProvider implements DiscoveryProvider {
         address,
         city: tags["addr:city"] || query.city,
         country: query.country,
-        industry: tags["healthcare:speciality"] || tags.amenity || query.industry,
+        industry: tags["healthcare:speciality"] || query.industry,
         description: tags.description || null,
         source: this.id,
         sourceUrl: `https://www.openstreetmap.org/${el.type}/${el.id}`,

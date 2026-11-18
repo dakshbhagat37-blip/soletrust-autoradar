@@ -157,6 +157,7 @@ export default function Home() {
           country: data.country,
           limit: data.limit,
           serviceTrack: data.serviceTrack,
+          provider: data.provider,
         }),
       });
 
@@ -547,6 +548,18 @@ export default function Home() {
                     </p>
                   </div>
                 )}
+              </div>
+            )}
+
+            {searchJob && searchJob.status === "completed" && businesses.length === 0 && (
+              <div className="p-8 text-center rounded-2xl border border-gray-800 bg-gray-900/40 space-y-2">
+                <div className="text-2xl">🔍</div>
+                <h3 className="text-sm font-semibold text-white">0 Businesses Qualified in this Search</h3>
+                <p className="text-xs text-gray-400 max-w-lg mx-auto">
+                  {searchJob.stageStats.candidatesFound === 0
+                    ? `No candidates were found in ${searchJob.query.city}, ${searchJob.query.country} for "${searchJob.query.industry}". Check network connectivity or try a broader search location.`
+                    : `Discovered ${searchJob.stageStats.candidatesFound} candidate(s), but strict verification gates (identity, sector relevance, location) filtered them out (UNKNOWN > WRONG principle).`}
+                </p>
               </div>
             )}
 

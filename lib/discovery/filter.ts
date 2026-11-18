@@ -195,11 +195,11 @@ export function filterCandidate(
     };
   }
 
-  // If no website but high-confidence geographic entity (e.g. Overpass node with phone/address)
-  if (candidate.source === "overpass" && (candidate.phone || candidate.address)) {
+  // If no website but high-confidence geographic entity (e.g. Overpass or Nominatim node with phone/address)
+  if ((candidate.source === "overpass" || candidate.source === "nominatim") && (candidate.phone || candidate.address || candidate.city)) {
     return {
       status: "accepted",
-      reasons: ["Ground-truth geographic business record with verified local contact/address"],
+      reasons: ["Ground-truth geographic business record with verified local presence"],
       isAggregator: false,
       hasLocationConflict: false,
       isArticleOrBlog: false,

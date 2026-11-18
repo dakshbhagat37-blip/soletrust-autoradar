@@ -148,10 +148,31 @@ const INDUSTRY_CLUSTERS: Record<string, { strongTerms: string[]; supportingTerms
     supportingTerms: ["legal", "law", "advocate", "counsel", "court", "litigation", "corporate law"],
     negativeTerms: ["hospital", "clinic", "automotive", "restaurant"],
   },
+  supermarket: {
+    strongTerms: [
+      "supermarket",
+      "grocery store",
+      "hypermarket",
+      "grocery",
+      "food market",
+      "food store",
+      "mart",
+      "retail store",
+      "provisions",
+      "fmcg",
+      "organic market",
+      "wholesale foods",
+    ],
+    supportingTerms: ["supermarket", "grocery", "market", "food", "store", "retail", "mart", "provisions", "beverages", "fresh", "produce"],
+    negativeTerms: ["hospital", "clinic", "law firm", "software", "automotive dealership"],
+  },
 };
 
 function inferClusterKey(industryQuery: string): string | null {
   const lower = industryQuery.toLowerCase();
+  if (lower.includes("supermarket") || lower.includes("grocery") || lower.includes("mart") || lower.includes("food store") || lower.includes("retail")) {
+    return "supermarket";
+  }
   if (lower.includes("dermatol") || lower.includes("skin") || lower.includes("cosmetol")) {
     return "dermatology";
   }

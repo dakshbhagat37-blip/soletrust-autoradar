@@ -215,6 +215,7 @@ export class WaterfallOrchestrator {
       }
     }
 
+    const finalCandidates = collectedCandidates.slice(0, targetLimit);
     const durationMs = Date.now() - startTime;
     return {
       query,
@@ -223,8 +224,8 @@ export class WaterfallOrchestrator {
       successfulProviders,
       failedProviders,
       providerRuns,
-      candidates: collectedCandidates,
-      totalCandidates: collectedCandidates.length,
+      candidates: finalCandidates,
+      totalCandidates: finalCandidates.length,
       primaryProvider: successfulProviders[0] ?? attemptedProviders[0] ?? "none",
       durationMs,
     };

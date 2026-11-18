@@ -49,7 +49,8 @@ export async function POST(_request: Request, { params }: RouteParams) {
     const discoveryRes = await executeBusinessDiscovery(job.query, {
       searchJobId: job.id,
     });
-    const candidates = discoveryRes.accepted;
+    // Include both accepted and review candidates so the verification gatekeeper can evaluate all potential candidates
+    const candidates = [...discoveryRes.accepted, ...discoveryRes.review];
 
     job.stageStats.candidatesFound = discoveryRes.stats.totalDiscovered;
     job.stageStats.uniqueBusinesses = discoveryRes.stats.afterDeduplication;
