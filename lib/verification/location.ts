@@ -64,10 +64,18 @@ const GLOBAL_AREA_CODES: Record<string, string[]> = {
   munich: ["089", "89", "4989"],
   tokyo: ["03", "3", "813"],
   dubai: ["04", "4", "9714"],
+  shanghai: ["021", "21", "8621"],
+  beijing: ["010", "10", "8610"],
+  shenzhen: ["0755", "755", "86755"],
+  guangzhou: ["020", "20", "8620"],
 };
 
 // State / Region to Metropolitan City & Sub-borough mappings
 const REGION_SUB_AREAS: Record<string, string[]> = {
+  // China
+  china: ["china", "shanghai", "beijing", "shenzhen", "guangzhou", "hangzhou", "chengdu", "wuhan", "hong kong", "pudong", "huangpu"],
+  shanghai: ["shanghai", "pudong", "huangpu", "jingan", "xuhui", "minhang", "yangpu", "hongqiao"],
+  beijing: ["beijing", "chaoyang", "haidian", "dongcheng", "xicheng"],
   // US States
   california: ["california", "los angeles", "san francisco", "san diego", "san jose", "sacramento", "oakland", "fresno", "long beach", "ca"],
   texas: ["texas", "houston", "dallas", "austin", "san antonio", "fort worth", "el paso", "arlington", "plano", "tx"],
@@ -128,6 +136,11 @@ const COUNTRY_ALIASES: Record<string, string> = {
   españa: "spain",
   nl: "netherlands",
   holland: "netherlands",
+  cn: "china",
+  prc: "china",
+  "people's republic of china": "china",
+  china: "china",
+  zhongguo: "china",
 };
 
 export function normalizeCountry(countryStr: string): string {

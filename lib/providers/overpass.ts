@@ -14,7 +14,7 @@ const OVERPASS_ENDPOINTS = [
 ];
 
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
-const REQUEST_TIMEOUT_MS = 45_000;
+const REQUEST_TIMEOUT_MS = 10_000;
 
 type NominatimResult = {
   lat?: string;
@@ -119,6 +119,14 @@ export const KNOWN_CITY_COORDINATES: Record<string, { lat: number; lon: number }
   amsterdam: { lat: 52.3676, lon: 4.9041 },
   dublin: { lat: 53.3498, lon: -6.2603 },
   "hong kong": { lat: 22.3193, lon: 114.1694 },
+  shanghai: { lat: 31.2304, lon: 121.4737 },
+  beijing: { lat: 39.9042, lon: 116.4074 },
+  shenzhen: { lat: 22.5431, lon: 114.0579 },
+  guangzhou: { lat: 23.1291, lon: 113.2644 },
+  hangzhou: { lat: 30.2741, lon: 120.1551 },
+  chengdu: { lat: 30.5728, lon: 104.0668 },
+  wuhan: { lat: 30.5928, lon: 114.3055 },
+  china: { lat: 31.2304, lon: 121.4737 },
 };
 
 async function geocodeCity(

@@ -325,4 +325,27 @@ test("Global Multi-Country, Multi-State & Multi-Industry Acceptance Suite", asyn
       );
     }
   });
+
+  await t.test("Verify AI Prompt Parser on China Supermarkets & Global Freeform Locations", async () => {
+    const { parseNaturalLanguagePrompt } = await import("../lib/discovery/prompt-parser.ts");
+
+    // 1. User's exact prompt from the query
+    const chinaPrompt = "find supermarket and grocery store owners in china for retail food distribution";
+    const chinaRes = parseNaturalLanguagePrompt(chinaPrompt);
+    assert.equal(chinaRes.data.industry, "Supermarkets", "Must detect Supermarkets industry");
+    assert.equal(chinaRes.data.country, "China", "Must detect China country, never default to USA");
+    assert.equal(chinaRes.data.city, "Shanghai", "Must default China to Shanghai commercial hub");
+    assert.match(chinaRes.detectedPersona || "", /Food & Beverage|Distribution/i, "Must detect F&B distribution persona");
+
+    // 2. Freeform unlisted country/city
+    const peruPrompt = "find coffee shops in Lima, Peru for brand identity";
+    const peruRes = parseNaturalLanguagePrompt(peruPrompt);
+    assert.equal(peruRes.data.country, "Peru", "Must dynamically extract Peru");
+    assert.equal(peruRes.data.city, "Lima", "Must dynamically extract Lima");
+
+    const polandPrompt = "find dental clinics in Warsaw Poland";
+    const polandRes = parseNaturalLanguagePrompt(polandPrompt);
+    assert.equal(polandRes.data.country, "Poland", "Must extract Poland");
+    assert.equal(polandRes.data.city, "Warsaw", "Must extract Warsaw");
+  });
 });

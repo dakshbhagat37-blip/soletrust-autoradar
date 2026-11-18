@@ -9,6 +9,7 @@ export type ParsedPromptResult = {
 
 // Known global country monikers
 const COUNTRY_MAP: { pattern: RegExp; country: string; defaultCity: string }[] = [
+  { pattern: /\b(china|prc|mainland china|zhongguo)\b/i, country: "China", defaultCity: "Shanghai" },
   { pattern: /\b(australia|aus|aussie|down under)\b/i, country: "Australia", defaultCity: "Sydney" },
   { pattern: /\b(united states|usa|us|u\.s\.|america)\b/i, country: "United States", defaultCity: "New York" },
   { pattern: /\b(united kingdom|uk|u\.k\.|britain|england|scotland)\b/i, country: "United Kingdom", defaultCity: "London" },
@@ -19,10 +20,35 @@ const COUNTRY_MAP: { pattern: RegExp; country: string; defaultCity: string }[] =
   { pattern: /\b(india|bharat)\b/i, country: "India", defaultCity: "Vadodara" },
   { pattern: /\b(france)\b/i, country: "France", defaultCity: "Paris" },
   { pattern: /\b(singapore)\b/i, country: "Singapore", defaultCity: "Singapore" },
+  { pattern: /\b(hong kong|hk)\b/i, country: "Hong Kong", defaultCity: "Hong Kong" },
+  { pattern: /\b(taiwan|taipei)\b/i, country: "Taiwan", defaultCity: "Taipei" },
+  { pattern: /\b(south korea|korea)\b/i, country: "South Korea", defaultCity: "Seoul" },
+  { pattern: /\b(italy|italia)\b/i, country: "Italy", defaultCity: "Milan" },
+  { pattern: /\b(spain|españa)\b/i, country: "Spain", defaultCity: "Madrid" },
+  { pattern: /\b(netherlands|holland)\b/i, country: "Netherlands", defaultCity: "Amsterdam" },
+  { pattern: /\b(switzerland|swiss)\b/i, country: "Switzerland", defaultCity: "Zurich" },
+  { pattern: /\b(brazil|brasil)\b/i, country: "Brazil", defaultCity: "Sao Paulo" },
+  { pattern: /\b(mexico)\b/i, country: "Mexico", defaultCity: "Mexico City" },
+  { pattern: /\b(south africa)\b/i, country: "South Africa", defaultCity: "Johannesburg" },
+  { pattern: /\b(new zealand|nz)\b/i, country: "New Zealand", defaultCity: "Auckland" },
+  { pattern: /\b(saudi arabia|saudi)\b/i, country: "Saudi Arabia", defaultCity: "Riyadh" },
+  { pattern: /\b(ireland)\b/i, country: "Ireland", defaultCity: "Dublin" },
+  { pattern: /\b(sweden)\b/i, country: "Sweden", defaultCity: "Stockholm" },
 ];
 
 // Known cities and states
 const CITY_MAP: { pattern: RegExp; city: string; country: string }[] = [
+  // China
+  { pattern: /\b(shanghai)\b/i, city: "Shanghai", country: "China" },
+  { pattern: /\b(beijing|peking)\b/i, city: "Beijing", country: "China" },
+  { pattern: /\b(shenzhen)\b/i, city: "Shenzhen", country: "China" },
+  { pattern: /\b(guangzhou|canton)\b/i, city: "Guangzhou", country: "China" },
+  { pattern: /\b(hangzhou)\b/i, city: "Hangzhou", country: "China" },
+  { pattern: /\b(chengdu)\b/i, city: "Chengdu", country: "China" },
+  { pattern: /\b(wuhan)\b/i, city: "Wuhan", country: "China" },
+  { pattern: /\b(hong kong)\b/i, city: "Hong Kong", country: "Hong Kong" },
+  { pattern: /\b(taipei)\b/i, city: "Taipei", country: "Taiwan" },
+  { pattern: /\b(seoul)\b/i, city: "Seoul", country: "South Korea" },
   // Australia
   { pattern: /\b(sydney)\b/i, city: "Sydney", country: "Australia" },
   { pattern: /\b(melbourne)\b/i, city: "Melbourne", country: "Australia" },
@@ -64,6 +90,15 @@ const CITY_MAP: { pattern: RegExp; city: string; country: string }[] = [
   { pattern: /\b(delhi|new delhi)\b/i, city: "Delhi", country: "India" },
   { pattern: /\b(mumbai|bombay)\b/i, city: "Mumbai", country: "India" },
   { pattern: /\b(bangalore|bengaluru)\b/i, city: "Bangalore", country: "India" },
+  // Europe
+  { pattern: /\b(paris)\b/i, city: "Paris", country: "France" },
+  { pattern: /\b(milan)\b/i, city: "Milan", country: "Italy" },
+  { pattern: /\b(rome)\b/i, city: "Rome", country: "Italy" },
+  { pattern: /\b(madrid)\b/i, city: "Madrid", country: "Spain" },
+  { pattern: /\b(barcelona)\b/i, city: "Barcelona", country: "Spain" },
+  { pattern: /\b(amsterdam)\b/i, city: "Amsterdam", country: "Netherlands" },
+  { pattern: /\b(zurich)\b/i, city: "Zurich", country: "Switzerland" },
+  { pattern: /\b(dublin)\b/i, city: "Dublin", country: "Ireland" },
 ];
 
 // Industry patterns
@@ -102,18 +137,42 @@ export function parseNaturalLanguagePrompt(prompt: string): ParsedPromptResult {
     }
   }
 
-  // 2. If no explicit city, check Country
+  // 2. If no explicit city, check Country Map
   if (!foundCity) {
     for (const item of COUNTRY_MAP) {
       if (item.pattern.test(p)) {
         country = item.country;
         city = item.defaultCity;
+        foundCity = true;
         break;
       }
     }
   }
 
-  // 3. Detect Industry
+  // 3. Dynamic Freeform Location Extractor (captures ANY city/country across the globe from "in <Location>")
+  if (!foundCity) {
+    const locMatch = p.match(/\b(?:in|across|at|around|near)\s+([a-zA-Z\s,]+?)(?:\s+(?:for|with|who|to|from|having|seeking)\b|$)/i);
+    if (locMatch && locMatch[1]) {
+      const rawLoc = locMatch[1].trim();
+      if (rawLoc.includes(",")) {
+        const parts = rawLoc.split(",").map((s) => s.trim());
+        city = parts[0] || "Metropolitan Area";
+        country = parts[1] || parts[0];
+      } else {
+        const words = rawLoc.split(/\s+/).filter(Boolean);
+        if (words.length >= 2) {
+          city = words.slice(0, -1).join(" ");
+          country = words[words.length - 1]!;
+        } else {
+          city = rawLoc;
+          country = rawLoc;
+        }
+      }
+      foundCity = true;
+    }
+  }
+
+  // 4. Detect Industry
   for (const item of INDUSTRY_RULES) {
     if (item.pattern.test(p)) {
       industry = item.industry;
@@ -121,8 +180,11 @@ export function parseNaturalLanguagePrompt(prompt: string): ParsedPromptResult {
     }
   }
 
-  // 4. Detect User Persona & Service Track
-  if (/creative\s*(and|&|\+)\s*technical/i.test(p) || /design\s*(and|&|\+)\s*(development|dev|code)/i.test(p)) {
+  // 5. Detect User Persona & Service Track
+  if (/f&b|food|beverage|grocery|supermarket|distribution|wholesale|shelf|retail food/i.test(p)) {
+    serviceTrack = "technical"; // maps to high-converting commercial/retail track
+    detectedPersona = "Food & Beverage Distribution & Wholesale Sales";
+  } else if (/creative\s*(and|&|\+)\s*technical/i.test(p) || /design\s*(and|&|\+)\s*(development|dev|code)/i.test(p)) {
     serviceTrack = "creative+technical";
     detectedPersona = "Creative + Technical Studio Owner";
   } else if (/creative|branding|graphic design|marketing agency/i.test(p)) {
