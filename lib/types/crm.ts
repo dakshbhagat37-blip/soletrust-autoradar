@@ -28,7 +28,9 @@ export type ActivityType =
   | "call_recorded"
   | "meeting_scheduled"
   | "meeting_completed"
+  | "pitch_sent"
   | "proposal_sent"
+  | "contract_sent"
   | "deal_created"
   | "deal_updated"
   | "follow_up_scheduled"
@@ -301,6 +303,7 @@ export interface AiSalesStrategy {
     whatsappDraft?: string;
     recommendedChannel: OutreachChannel;
   };
+  brainSuite?: import("../intelligence/outreach-brain.ts").MultichannelOutreachSuite;
 }
 
 // ============================================================

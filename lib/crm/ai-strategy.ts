@@ -1,6 +1,7 @@
 import type { Business } from "../types/business.ts";
 import type { CrmLead } from "../types/lead.ts";
 import type { AiSalesStrategy, OutreachChannel } from "../types/crm.ts";
+import { generateOutreachBrainSuite } from "../intelligence/outreach-brain.ts";
 
 /**
  * Generate an evidence-backed, transparent AI sales strategy for a lead.
@@ -502,5 +503,6 @@ Commercial Partnerships`;
       whatsappDraft,
       recommendedChannel,
     },
+    brainSuite: generateOutreachBrainSuite(business, lead),
   };
 }

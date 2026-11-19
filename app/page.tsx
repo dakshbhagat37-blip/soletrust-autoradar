@@ -8,6 +8,7 @@ import { StageTracker } from "../components/StageTracker.tsx";
 import { LeadCard } from "../components/LeadCard.tsx";
 import { LeadDossierModal } from "../components/LeadDossierModal.tsx";
 import { ExportModal } from "../components/ExportModal.tsx";
+import { StrategyArchitectModal } from "../components/StrategyArchitectModal.tsx";
 import { KanbanBoard } from "../components/KanbanBoard.tsx";
 import { CrmLeadsTable } from "../components/CrmLeadsTable.tsx";
 import { OutreachInboxView } from "../components/OutreachInboxView.tsx";
@@ -52,6 +53,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<FilterTab>("qualified");
   const [selectedLead, setSelectedLead] = useState<Business | null>(null);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isIcpModalOpen, setIsIcpModalOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // CRM State
@@ -402,6 +404,7 @@ export default function Home() {
         onTabChange={(tab) => setNavTab(tab)}
         onGlobalPromptSearch={handleGlobalPromptSearch}
         isSearching={isLoading}
+        onOpenIcpStudio={() => setIsIcpModalOpen(true)}
         leadCounts={{
           total: crmLeads.length,
           qualified: crmLeads.filter((l) => l.qualificationScore >= 60).length,
@@ -655,6 +658,21 @@ export default function Home() {
         onOpenOutreach={() => {
           setSelectedLead(null);
           setNavTab("outreach");
+        }}
+        onAdvanceStage={(newStage) => {
+          if (selectedLead) {
+            handleStageChange(selectedLead.id, newStage);
+          }
+        }}
+      />
+
+      {/* In-House Business & ICP Strategy Studio Modal */}
+      <StrategyArchitectModal
+        isOpen={isIcpModalOpen}
+        onClose={() => setIsIcpModalOpen(false)}
+        onLaunchSearchPrompt={(prompt) => {
+          setNavTab("find_leads");
+          handleGlobalPromptSearch(prompt);
         }}
       />
 

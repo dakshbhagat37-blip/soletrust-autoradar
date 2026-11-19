@@ -2,20 +2,25 @@
 
 import React, { useState } from "react";
 import type { Business } from "../lib/types/business.ts";
+import type { LeadStage } from "../lib/types/lead.ts";
 import { generateAiSalesStrategy } from "../lib/crm/ai-strategy.ts";
+import { generatePitchDeck } from "../lib/closing/pitch-deck-generator.ts";
+import { generateContractAgreement } from "../lib/closing/contract-generator.ts";
 
 type LeadDossierModalProps = {
   business: Business | null;
   onClose: () => void;
   onOpenOutreach?: (business: Business) => void;
+  onAdvanceStage?: (stage: LeadStage) => void;
 };
 
-type DossierTab = "breakdown" | "strategy" | "people" | "contacts" | "evidence";
+type DossierTab = "breakdown" | "strategy" | "pitch" | "contract" | "people" | "contacts" | "evidence";
 
-export function LeadDossierModal({ business, onClose }: LeadDossierModalProps) {
+export function LeadDossierModal({ business, onClose, onAdvanceStage }: LeadDossierModalProps) {
   const [activeTab, setActiveTab] = useState<DossierTab>("breakdown");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [selectedTouch, setSelectedTouch] = useState<number>(1);
+  const [activeSlideIndex, setActiveSlideIndex] = useState<number>(0);
 
   if (!business) return null;
 
@@ -23,6 +28,8 @@ export function LeadDossierModal({ business, onClose }: LeadDossierModalProps) {
   const overallScore = business.qualificationScore || qual?.overallScore || 0;
   const status = business.status || qual?.status || "discovered";
   const strategy = generateAiSalesStrategy(business);
+  const pitchDeck = generatePitchDeck(business);
+  const contract = generateContractAgreement(business);
 
   const handleCopy = (key: string, text: string) => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -103,6 +110,28 @@ export function LeadDossierModal({ business, onClose }: LeadDossierModalProps) {
             }`}
           >
             <span>🎯</span> AI Sales Strategy
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("pitch")}
+            className={`py-3 px-3 font-medium border-b-2 transition cursor-pointer flex items-center gap-1.5 ${
+              activeTab === "pitch"
+                ? "border-cyan-500 text-cyan-400 font-semibold"
+                : "border-transparent text-gray-400 hover:text-gray-200"
+            }`}
+          >
+            <span>📊</span> 8-Slide Pitch Deck
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("contract")}
+            className={`py-3 px-3 font-medium border-b-2 transition cursor-pointer flex items-center gap-1.5 ${
+              activeTab === "contract"
+                ? "border-emerald-500 text-emerald-400 font-semibold"
+                : "border-transparent text-gray-400 hover:text-gray-200"
+            }`}
+          >
+            <span>📝</span> Contract & SOW
           </button>
           <button
             type="button"
@@ -463,6 +492,320 @@ export function LeadDossierModal({ business, onClose }: LeadDossierModalProps) {
                       ))}
                     </div>
                   )}
+                </div>
+
+                {/* Behavioral Brain & Timing Windows */}
+                {strategy.brainSuite && (
+                  <div className="p-4 rounded-xl border border-cyan-500/30 bg-cyan-950/20 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase text-cyan-400 font-bold flex items-center gap-1.5">
+                        <span>⚡</span> In-House Outreach Brain: Timing & Channel Matrix
+                      </span>
+                      <span className="text-[10px] font-mono text-gray-400">
+                        Local Timezone: <strong className="text-white">{strategy.brainSuite.timing.timezone}</strong>
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                      <div className="bg-gray-950/80 p-3 rounded-xl border border-gray-800 space-y-1">
+                        <span className="text-[10px] uppercase font-mono text-cyan-400 block">Optimal Send Window</span>
+                        <div className="text-sm font-bold text-white">
+                          {strategy.brainSuite.timing.bestDays.join(", ")} • {strategy.brainSuite.timing.bestTimeLocal}
+                        </div>
+                        <p className="text-[11px] text-gray-400">{strategy.brainSuite.timing.industryRhythmExplanation}</p>
+                      </div>
+
+                      <div className="bg-gray-950/80 p-3 rounded-xl border border-gray-800 space-y-1">
+                        <span className="text-[10px] uppercase font-mono text-cyan-400 block">Highest-Reply Channel</span>
+                        <div className="text-sm font-bold text-emerald-400 capitalize">
+                          {strategy.brainSuite.primaryChannel} Direct ({strategy.brainSuite.rankedChannels[0]?.label || "Verified Email"})
+                        </div>
+                        <p className="text-[11px] text-gray-400">{strategy.brainSuite.rankedChannels[0]?.rationale || "Highest verified engagement probability"}</p>
+                      </div>
+                    </div>
+
+                    {/* WhatsApp Voice Note & Instagram DM Hooks */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-cyan-900/40 text-xs">
+                      <div className="bg-gray-950 p-2.5 rounded-lg border border-gray-800">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[10px] uppercase font-mono text-emerald-400 font-semibold">🎙️ WhatsApp Voice Note Script</span>
+                          <span className="text-[10px] text-gray-500">{strategy.brainSuite.whatsAppVoiceNote.durationEst}</span>
+                        </div>
+                        <p className="text-gray-300 italic text-[11px]">{strategy.brainSuite.whatsAppVoiceNote.script}</p>
+                      </div>
+
+                      <div className="bg-gray-950 p-2.5 rounded-lg border border-gray-800">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[10px] uppercase font-mono text-purple-400 font-semibold">📸 Instagram DM Opener</span>
+                          <span className="text-[10px] text-gray-500">Brand Direct</span>
+                        </div>
+                        <p className="text-gray-300 italic text-[11px]">{strategy.brainSuite.instagramDmScript.dmMessage}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 8-Slide Custom Pitch Deck Tab */}
+          {activeTab === "pitch" && (
+            <div className="space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl border border-cyan-500/30 bg-cyan-950/20">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono uppercase bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-md border border-cyan-500/30">
+                      In-House Pitch Engine v3.0
+                    </span>
+                    <h3 className="text-sm font-bold text-white">{pitchDeck.deckTitle}</h3>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Tailored presentation for {pitchDeck.decisionMaker} in {pitchDeck.city}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleCopy("pitch-md", pitchDeck.markdownExport)}
+                    className="px-3 py-1.5 rounded-xl border border-gray-700 bg-gray-800 hover:bg-gray-700 text-xs text-gray-200 transition cursor-pointer"
+                  >
+                    {copiedKey === "pitch-md" ? "✓ Copied Deck" : "📋 Copy Markdown"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const blob = new Blob([pitchDeck.htmlExport], { type: "text/html" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `${business.canonicalName.replace(/\s+/g, "_")}_Pitch_Deck.html`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold shadow-md shadow-cyan-500/20 transition cursor-pointer"
+                  >
+                    🌐 Export Presentation HTML
+                  </button>
+                  {onAdvanceStage && (
+                    <button
+                      type="button"
+                      onClick={() => onAdvanceStage("pitch_sent")}
+                      className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white text-xs font-semibold shadow-md shadow-cyan-500/20 transition cursor-pointer"
+                    >
+                      🚀 Mark Pitch Sent
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Slide Navigation Header */}
+              <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+                <div className="flex items-center gap-1.5 overflow-x-auto">
+                  {pitchDeck.slides.map((s, idx) => (
+                    <button
+                      key={s.slideNumber}
+                      type="button"
+                      onClick={() => setActiveSlideIndex(idx)}
+                      className={`px-3 py-1 rounded-xl text-xs font-mono font-semibold transition cursor-pointer ${
+                        activeSlideIndex === idx
+                          ? "bg-cyan-500 text-gray-950 shadow-md shadow-cyan-500/20"
+                          : "bg-gray-900 text-gray-400 hover:text-white border border-gray-800"
+                      }`}
+                    >
+                      Slide {s.slideNumber}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={activeSlideIndex === 0}
+                    onClick={() => setActiveSlideIndex((prev) => Math.max(0, prev - 1))}
+                    className="p-1.5 rounded-lg bg-gray-900 border border-gray-800 text-gray-300 hover:text-white disabled:opacity-30 cursor-pointer"
+                  >
+                    ◀
+                  </button>
+                  <span className="text-xs font-mono text-gray-400">
+                    {activeSlideIndex + 1} / {pitchDeck.slides.length}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={activeSlideIndex === pitchDeck.slides.length - 1}
+                    onClick={() => setActiveSlideIndex((prev) => Math.min(pitchDeck.slides.length - 1, prev + 1))}
+                    className="p-1.5 rounded-lg bg-gray-900 border border-gray-800 text-gray-300 hover:text-white disabled:opacity-30 cursor-pointer"
+                  >
+                    ▶
+                  </button>
+                </div>
+              </div>
+
+              {/* Active Slide Presentation Canvas */}
+              {(() => {
+                const slide = pitchDeck.slides[activeSlideIndex];
+                if (!slide) return null;
+                return (
+                  <div className="p-8 rounded-3xl border border-gray-800 bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900 shadow-2xl space-y-6">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <span className="text-[11px] font-mono uppercase tracking-widest text-cyan-400 font-bold block mb-1">
+                          Slide {slide.slideNumber} • {pitchDeck.companyName}
+                        </span>
+                        <h2 className="text-2xl font-black text-white tracking-tight">{slide.title}</h2>
+                        <p className="text-sm text-gray-300 mt-1">{slide.subtitle}</p>
+                      </div>
+
+                      {slide.calloutMetric && (
+                        <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-2xl p-4 text-right min-w-[140px]">
+                          <div className="text-2xl font-black text-cyan-400 font-mono">{slide.calloutMetric}</div>
+                          <div className="text-[10px] uppercase font-mono text-gray-400 mt-0.5">{slide.calloutLabel}</div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="pt-4 border-t border-gray-800/80">
+                      <ul className="space-y-3">
+                        {slide.bulletPoints.map((point, pIdx) => (
+                          <li key={pIdx} className="flex items-start gap-3 text-sm text-gray-200">
+                            <span className="w-2 h-2 rounded-full bg-cyan-400 mt-1.5 flex-shrink-0 shadow-sm shadow-cyan-400/80" />
+                            <span className="leading-relaxed">{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* Contract, SOW & Agreement Generator Tab */}
+          {activeTab === "contract" && (
+            <div className="space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl border border-emerald-500/30 bg-emerald-950/20">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono uppercase bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-md border border-emerald-500/30">
+                      Commercial SOW & Legal Suite
+                    </span>
+                    <h3 className="text-sm font-bold text-white">Agreement #{contract.agreementNumber}</h3>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Client: <strong className="text-white">{contract.clientLegalName}</strong> • Signer: <strong className="text-white">{contract.clientSignerName}</strong> ({contract.clientSignerRole})
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleCopy("contract-md", contract.markdownDocument)}
+                    className="px-3 py-1.5 rounded-xl border border-gray-700 bg-gray-800 hover:bg-gray-700 text-xs text-gray-200 transition cursor-pointer"
+                  >
+                    {copiedKey === "contract-md" ? "✓ Copied SOW" : "📋 Copy Markdown"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const blob = new Blob([contract.htmlDocument], { type: "text/html" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `SOW_${contract.agreementNumber}_${contract.clientLegalName.replace(/\s+/g, "_")}.html`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-500/20 transition cursor-pointer"
+                  >
+                    🖨️ Export Printable SOW
+                  </button>
+                  {onAdvanceStage && (
+                    <button
+                      type="button"
+                      onClick={() => onAdvanceStage("contract_sent")}
+                      className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-semibold shadow-md shadow-emerald-500/20 transition cursor-pointer"
+                    >
+                      📝 Mark Contract Sent
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* SOW Document Preview Canvas */}
+              <div className="p-6 rounded-2xl border border-gray-800 bg-gray-950 space-y-6 text-xs text-gray-300 max-h-[60vh] overflow-y-auto">
+                <div className="border-b border-gray-800 pb-4">
+                  <h2 className="text-lg font-bold text-white">STATEMENT OF WORK & SERVICE AGREEMENT</h2>
+                  <div className="text-[11px] text-gray-400 mt-1 font-mono">
+                    Agreement #{contract.agreementNumber} • Effective: {contract.effectiveDate} • Governing Law: {contract.governingLaw}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-900/60 p-4 rounded-xl border border-gray-800">
+                  <div>
+                    <span className="text-[10px] font-mono uppercase text-gray-500 block">Service Provider</span>
+                    <strong className="text-white text-sm block">{contract.providerName}</strong>
+                    <span className="text-gray-400">{contract.providerEmail}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-mono uppercase text-gray-500 block">Client Entity</span>
+                    <strong className="text-white text-sm block">{contract.clientLegalName}</strong>
+                    <span className="text-gray-400">{contract.clientAddress}</span>
+                    <div className="text-emerald-400 text-[11px] mt-0.5">Signer: {contract.clientSignerName} ({contract.clientSignerRole})</div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xs uppercase font-mono text-gray-400 mb-2">1. Scope of Deliverables</h4>
+                  <ul className="space-y-1.5">
+                    {contract.scopeOfWork.map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-2 bg-gray-900/40 p-2.5 rounded-lg border border-gray-800/80">
+                        <span className="text-emerald-400 font-bold">✓</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-xs uppercase font-mono text-gray-400">2. Milestones & Commercial Compensation</h4>
+                    <span className="text-xs font-mono font-bold text-emerald-400">Total: {contract.totalAgreementValue}</span>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs border border-gray-800 rounded-lg overflow-hidden">
+                      <thead className="bg-gray-900 text-gray-400 font-mono text-[10px] uppercase">
+                        <tr>
+                          <th className="p-2.5">Milestone</th>
+                          <th className="p-2.5">Deliverable</th>
+                          <th className="p-2.5">Timeline</th>
+                          <th className="p-2.5 text-right">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-800">
+                        {contract.milestones.map((m, idx) => (
+                          <tr key={idx} className="bg-gray-950/60 hover:bg-gray-900/40">
+                            <td className="p-2.5 font-semibold text-white">{m.phase}</td>
+                            <td className="p-2.5 text-gray-300">{m.deliverable}</td>
+                            <td className="p-2.5 text-gray-400 font-mono">{m.estimatedWeeks} Wks</td>
+                            <td className="p-2.5 text-right text-emerald-400 font-mono font-bold">{m.paymentAmount}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-gray-800 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-3 bg-gray-900/40 rounded-xl border border-gray-800">
+                    <span className="text-[10px] uppercase font-mono text-gray-400 block mb-1">Provider Execution</span>
+                    <div className="h-8 border-b border-gray-700 mb-1" />
+                    <span className="text-[11px] text-gray-300">Authorized Partner • {contract.effectiveDate}</span>
+                  </div>
+                  <div className="p-3 bg-gray-900/40 rounded-xl border border-gray-800">
+                    <span className="text-[10px] uppercase font-mono text-gray-400 block mb-1">Client Authorized Acceptance</span>
+                    <div className="h-8 border-b border-gray-700 mb-1" />
+                    <span className="text-[11px] text-emerald-400">{contract.clientSignerName} • {contract.clientSignerRole}</span>
+                  </div>
                 </div>
               </div>
             </div>

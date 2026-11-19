@@ -11,7 +11,9 @@ export type LeadStage =
   | "engaged"
   | "follow_up_required"
   | "meeting_scheduled"
+  | "pitch_sent"
   | "proposal_sent"
+  | "contract_sent"
   | "negotiation"
   | "won"
   | "lost"
@@ -75,7 +77,9 @@ export const LEAD_STAGE_ORDER: LeadStage[] = [
   "engaged",
   "follow_up_required",
   "meeting_scheduled",
+  "pitch_sent",
   "proposal_sent",
+  "contract_sent",
   "negotiation",
   "won",
   "lost",
@@ -90,8 +94,8 @@ export const PIPELINE_STAGES: LeadStage[] = [
   "contacted",
   "engaged",
   "meeting_scheduled",
-  "proposal_sent",
-  "negotiation",
+  "pitch_sent",
+  "contract_sent",
   "won",
   "lost",
 ];
@@ -105,7 +109,9 @@ export const LEAD_STAGE_LABELS: Record<LeadStage, string> = {
   engaged: "Engaged",
   follow_up_required: "Follow-up Required",
   meeting_scheduled: "Meeting Scheduled",
+  pitch_sent: "Pitch Sent",
   proposal_sent: "Proposal Sent",
+  contract_sent: "Contract Sent",
   negotiation: "Negotiation",
   won: "Won",
   lost: "Lost",
