@@ -38,6 +38,22 @@ export function Header({
   isSearching = false,
 }: HeaderProps) {
   const [promptText, setPromptText] = React.useState("");
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        (e.key === "/" || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k")) &&
+        document.activeElement?.tagName !== "INPUT" &&
+        document.activeElement?.tagName !== "TEXTAREA"
+      ) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const handlePromptSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,29 +97,35 @@ export function Header({
           <div className="relative flex items-center group">
             <span className="absolute left-3 text-indigo-400 text-sm pointer-events-none">✨</span>
             <input
+              ref={searchInputRef}
               type="text"
               value={promptText}
               onChange={(e) => setPromptText(e.target.value)}
               disabled={isSearching}
-              placeholder="Ask AutoRadar: 'Find D2C brands in Australia for my studio' or 'Supermarkets in NY'..."
-              className="w-full pl-9 pr-24 py-2 text-xs text-white bg-gray-900/90 border border-indigo-500/40 rounded-xl placeholder-gray-500 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 shadow-inner group-hover:border-indigo-500/60 transition"
+              placeholder="Ask AutoRadar: 'Find D2C brands in Australia' or 'Supermarkets in China' (Press /)..."
+              className="w-full pl-9 pr-32 py-2 text-xs text-white bg-gray-900/90 border border-indigo-500/40 rounded-xl placeholder-gray-500 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 shadow-inner group-hover:border-indigo-500/60 transition"
             />
-            <button
-              type="submit"
-              disabled={isSearching || !promptText.trim()}
-              className="absolute right-1.5 px-3 py-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-[11px] font-semibold rounded-lg shadow disabled:opacity-50 transition flex items-center gap-1 cursor-pointer"
-            >
-              {isSearching ? (
-                <>
-                  <span className="w-2.5 h-2.5 border border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Searching</span>
-                </>
-              ) : (
-                <>
-                  <span>⚡ Find Leads</span>
-                </>
-              )}
-            </button>
+            <div className="absolute right-1.5 flex items-center gap-1.5">
+              <span className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-gray-800 border border-gray-700/80 text-[10px] font-mono text-gray-400">
+                /
+              </span>
+              <button
+                type="submit"
+                disabled={isSearching || !promptText.trim()}
+                className="px-3 py-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-[11px] font-semibold rounded-lg shadow disabled:opacity-50 transition flex items-center gap-1 cursor-pointer"
+              >
+                {isSearching ? (
+                  <>
+                    <span className="w-2.5 h-2.5 border border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Searching</span>
+                  </>
+                ) : (
+                  <>
+                    <span>⚡ Find</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </form>
 

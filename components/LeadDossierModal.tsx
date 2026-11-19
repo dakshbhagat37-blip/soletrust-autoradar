@@ -15,6 +15,7 @@ type DossierTab = "breakdown" | "strategy" | "people" | "contacts" | "evidence";
 export function LeadDossierModal({ business, onClose }: LeadDossierModalProps) {
   const [activeTab, setActiveTab] = useState<DossierTab>("breakdown");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [selectedTouch, setSelectedTouch] = useState<number>(1);
 
   if (!business) return null;
 
@@ -334,28 +335,68 @@ export function LeadDossierModal({ business, onClose }: LeadDossierModalProps) {
                   </span>
                 </div>
 
-                {/* Email Draft */}
-                <div className="bg-gray-900 p-3.5 rounded-lg border border-gray-800 text-xs">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-mono uppercase text-indigo-400 font-bold">📧 Tailored Email Draft</span>
-                    <button
-                      type="button"
-                      onClick={() => handleCopy("email", `Subject: ${strategy.howApproach.emailDraft.subject}\n\n${strategy.howApproach.emailDraft.body}`)}
-                      className="text-[10px] font-mono px-2.5 py-1 rounded-md bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/40 transition flex items-center gap-1 cursor-pointer"
-                    >
-                      {copiedKey === "email" ? "✓ Copied Email" : "📋 Copy Email"}
-                    </button>
+                {/* Multi-Touch Cold Email Sequence (Touch 1, 2, 3) */}
+                <div className="bg-gray-900 p-4 rounded-xl border border-gray-800 text-xs space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800 pb-2.5">
+                    <span className="text-[11px] font-mono uppercase text-indigo-400 font-bold flex items-center gap-1.5">
+                      <span>📧</span> 3-Touch Multichannel Campaign Sequence
+                    </span>
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3].map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => setSelectedTouch(t)}
+                          className={`px-2.5 py-1 rounded-md text-[10px] font-semibold transition cursor-pointer ${
+                            selectedTouch === t
+                              ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/30"
+                              : "bg-gray-800 text-gray-400 hover:text-white"
+                          }`}
+                        >
+                          {t === 1 ? "Touch 1 (Day 1)" : t === 2 ? "Touch 2 (Day 4)" : "Touch 3 (Day 8)"}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <p className="font-semibold text-white mb-2">Subject: {strategy.howApproach.emailDraft.subject}</p>
-                  <pre className="text-gray-300 whitespace-pre-wrap font-sans text-xs bg-gray-950 p-3 rounded border border-gray-800/80 leading-relaxed">
-                    {strategy.howApproach.emailDraft.body}
-                  </pre>
+
+                  {(() => {
+                    const currentTouch = strategy.howApproach.sequence?.find((s) => s.touchNumber === selectedTouch) || {
+                      touchNumber: 1,
+                      dayOffset: 1,
+                      label: "Touch 1 • Value Teardown",
+                      subject: strategy.howApproach.emailDraft.subject,
+                      body: strategy.howApproach.emailDraft.body,
+                    };
+
+                    return (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-gray-400 font-medium">
+                            {currentTouch.label}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleCopy(`email-touch-${selectedTouch}`, `Subject: ${currentTouch.subject}\n\n${currentTouch.body}`)}
+                            className="text-[10px] font-mono px-2.5 py-1 rounded-md bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/40 transition flex items-center gap-1 cursor-pointer"
+                          >
+                            {copiedKey === `email-touch-${selectedTouch}` ? "✓ Copied Email" : "📋 Copy This Email"}
+                          </button>
+                        </div>
+                        <p className="font-semibold text-white">Subject: {currentTouch.subject}</p>
+                        <pre className="text-gray-300 whitespace-pre-wrap font-sans text-xs bg-gray-950 p-3.5 rounded-lg border border-gray-800/80 leading-relaxed max-h-56 overflow-y-auto">
+                          {currentTouch.body}
+                        </pre>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* LinkedIn Draft */}
-                <div className="bg-gray-900 p-3 rounded-lg border border-gray-800 text-xs">
+                <div className="bg-gray-900 p-3.5 rounded-xl border border-gray-800 text-xs">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[10px] font-mono uppercase text-cyan-400 font-bold block">💼 LinkedIn Connection Note</span>
+                    <span className="text-[10px] font-mono uppercase text-cyan-400 font-bold flex items-center gap-1">
+                      <span>💼</span> LinkedIn Connection Note
+                    </span>
                     <button
                       type="button"
                       onClick={() => handleCopy("linkedin", strategy.howApproach.linkedinDraft.connectionNote)}
@@ -364,31 +405,64 @@ export function LeadDossierModal({ business, onClose }: LeadDossierModalProps) {
                       {copiedKey === "linkedin" ? "✓ Copied Note" : "📋 Copy Note"}
                     </button>
                   </div>
-                  <p className="text-gray-300 italic">{strategy.howApproach.linkedinDraft.connectionNote}</p>
+                  <p className="text-gray-300 italic bg-gray-950 p-2.5 rounded-lg border border-gray-800/60">{strategy.howApproach.linkedinDraft.connectionNote}</p>
                 </div>
 
-                {/* Phone Call Script */}
-                <div className="bg-gray-900 p-3 rounded-lg border border-gray-800 text-xs space-y-1.5">
+                {/* WhatsApp / SMS Quick Touchpoint */}
+                {strategy.howApproach.whatsappDraft && (
+                  <div className="bg-gray-900 p-3.5 rounded-xl border border-gray-800 text-xs">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10px] font-mono uppercase text-emerald-400 font-bold flex items-center gap-1">
+                        <span>💬</span> WhatsApp / SMS Direct One-Liner
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy("whatsapp", strategy.howApproach.whatsappDraft!)}
+                        className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 transition flex items-center gap-1 cursor-pointer"
+                      >
+                        {copiedKey === "whatsapp" ? "✓ Copied SMS" : "📋 Copy Message"}
+                      </button>
+                    </div>
+                    <p className="text-gray-300 italic bg-gray-950 p-2.5 rounded-lg border border-gray-800/60">{strategy.howApproach.whatsappDraft}</p>
+                  </div>
+                )}
+
+                {/* Phone Call Script & Objection Handling Battlecard */}
+                <div className="bg-gray-900 p-4 rounded-xl border border-gray-800 text-xs space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono uppercase text-amber-400 font-bold block">📞 Phone Introduction Script</span>
+                    <span className="text-[10px] font-mono uppercase text-amber-400 font-bold flex items-center gap-1">
+                      <span>📞</span> Phone Calling Script & Objection Battlecard
+                    </span>
                     <button
                       type="button"
                       onClick={() => handleCopy("phone", `Opener: ${strategy.howApproach.phoneScript.opener}\nHook: ${strategy.howApproach.phoneScript.hook}\nQuestions:\n${strategy.howApproach.phoneScript.qualifyingQuestions.map((q) => "- " + q).join("\n")}\nCTA: ${strategy.howApproach.phoneScript.callToAction}`)}
                       className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-600/30 hover:bg-amber-600/50 text-amber-300 border border-amber-500/40 transition flex items-center gap-1 cursor-pointer"
                     >
-                      {copiedKey === "phone" ? "✓ Copied Script" : "📋 Copy Script"}
+                      {copiedKey === "phone" ? "✓ Copied Battlecard" : "📋 Copy Battlecard"}
                     </button>
                   </div>
                   <p className="text-gray-300"><strong className="text-gray-400">Opener:</strong> {strategy.howApproach.phoneScript.opener}</p>
                   <p className="text-gray-300"><strong className="text-gray-400">Hook:</strong> {strategy.howApproach.phoneScript.hook}</p>
                   <div className="pt-1">
-                    <strong className="text-gray-400 text-[11px] block">Qualifying Questions:</strong>
+                    <strong className="text-gray-400 text-[11px] block">Diagnostic Questions:</strong>
                     <ul className="list-disc list-inside text-gray-400 text-[11px] space-y-0.5 mt-0.5">
                       {strategy.howApproach.phoneScript.qualifyingQuestions.map((q, idx) => (
                         <li key={idx}>{q}</li>
                       ))}
                     </ul>
                   </div>
+
+                  {strategy.howApproach.phoneScript.objectionHandlers && (
+                    <div className="pt-2 border-t border-gray-800 space-y-1.5">
+                      <strong className="text-amber-300 text-[11px] block uppercase font-mono">Objection Responses:</strong>
+                      {Object.entries(strategy.howApproach.phoneScript.objectionHandlers).map(([objection, response]) => (
+                        <div key={objection} className="bg-gray-950 p-2.5 rounded-lg border border-gray-800 text-[11px]">
+                          <span className="text-amber-400 font-semibold block">&ldquo;{objection}&rdquo;</span>
+                          <span className="text-gray-300 mt-0.5 block">&rarr; {response}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

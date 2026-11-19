@@ -161,7 +161,13 @@ SoleTrust Client Partnerships`;
     ? `Thanks for connecting, ${dmName.split(" ")[0]}! We recently reviewed ${companyName}'s digital touchpoints and put together a few concrete recommendations to streamline mobile inquiries. Happy to share a quick 2-page brief if helpful.`
     : `Thanks for connecting! We have prepared a tailored brief on customer inquiry optimization for ${companyName}. Would you like us to send it over?`;
 
-  let phoneScript = {
+  let phoneScript: {
+    opener: string;
+    hook: string;
+    qualifyingQuestions: string[];
+    objectionHandlers?: Record<string, string>;
+    callToAction: string;
+  } = {
     opener: dmName
       ? `Good day, may I speak with ${dmName}? My name is [Your Name] calling regarding customer inquiry flow for ${companyName}.`
       : `Good day, I'm calling for the general manager or business owner at ${companyName} regarding your customer inquiry workflow.`,
@@ -369,6 +375,68 @@ Legal Client Growth Practice`;
     };
   }
 
+  const touch2Body = `${dmName ? `Hi ${dmName.split(" ")[0]},` : `Hello ${companyName} team,`}
+
+Following up on my note earlier this week regarding ${companyName}'s customer acquisition flow in ${city}.
+
+To give you quick context: when companies in your space implement ${primaryService.toLowerCase()}, they typically see a 25–40% reduction in inquiry drop-off without increasing ad spend.
+
+We prepared a 2-minute visual teardown comparing your current user journey with top performers in your market.
+
+Would you prefer I send the short video link over, or would a brief 10-minute walkthrough suit you better this week?
+
+Best regards,
+Commercial Partnerships`;
+
+  const touch3Body = `${dmName ? `Hi ${dmName.split(" ")[0]},` : `Hello ${companyName} team,`}
+
+I haven't heard back, so I assume optimizing customer conversion flow for ${companyName} isn't a priority right now—which is completely fine.
+
+I will close your file for now so I don't crowd your inbox.
+
+If you ever decide to revisit streamlining ${openingAngle}, feel free to reach back out anytime.
+
+Wishing ${companyName} continued growth!
+
+Best regards,
+Commercial Partnerships`;
+
+  const whatsappDraft = dmName
+    ? `Hi ${dmName.split(" ")[0]}, noticed ${companyName}'s strong standing in ${city}. Put together a quick 2-min teardown on optimizing your mobile conversion flow. Open to checking it out?`
+    : `Hello team at ${companyName}, put together a brief 2-min video on mobile inquiry optimization for ${city} businesses. Open to taking a quick look?`;
+
+  const objectionHandlers = {
+    "Already have a provider or agency": `Totally respect that—most established businesses do. We don't ask you to replace them; we specialize in deep technical conversion architecture and sub-second performance audits that work alongside your current team.`,
+    "No budget or not right now": `Completely understand. Timing is everything. We aren't asking for an engagement today—just sharing our 2-minute market teardown so your team has the data when planning upcoming quarters.`,
+    "Just send an email": `Will do right away. What is your direct email address so I ensure the 2-minute walkthrough reaches your personal inbox rather than a spam filter?`,
+  };
+
+  phoneScript.objectionHandlers = objectionHandlers;
+
+  const sequence = [
+    {
+      touchNumber: 1,
+      dayOffset: 1,
+      label: "Touch 1 • Value Teardown & Immediate Opportunity",
+      subject,
+      body: emailBody,
+    },
+    {
+      touchNumber: 2,
+      dayOffset: 4,
+      label: "Touch 2 • Proof & Industry Benchmark Follow-Up",
+      subject: `Re: ${subject}`,
+      body: touch2Body,
+    },
+    {
+      touchNumber: 3,
+      dayOffset: 8,
+      label: "Touch 3 • Polite Breakaway & File Closure",
+      subject: `Closing the loop on ${companyName}`,
+      body: touch3Body,
+    },
+  ];
+
   return {
     leadId: lead?.id || business.id,
     generatedAt: new Date().toISOString(),
@@ -425,11 +493,13 @@ Legal Client Growth Practice`;
         subject,
         body: emailBody,
       },
+      sequence,
       linkedinDraft: {
         connectionNote: linkedinNote,
         followupMessage: linkedinFollowup,
       },
       phoneScript,
+      whatsappDraft,
       recommendedChannel,
     },
   };

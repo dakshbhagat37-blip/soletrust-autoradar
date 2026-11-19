@@ -280,6 +280,13 @@ export interface AiSalesStrategy {
       subject: string;
       body: string;
     };
+    sequence?: {
+      touchNumber: number;
+      dayOffset: number;
+      label: string;
+      subject: string;
+      body: string;
+    }[];
     linkedinDraft: {
       connectionNote: string;
       followupMessage: string;
@@ -288,8 +295,10 @@ export interface AiSalesStrategy {
       opener: string;
       hook: string;
       qualifyingQuestions: string[];
+      objectionHandlers?: Record<string, string>;
       callToAction: string;
     };
+    whatsappDraft?: string;
     recommendedChannel: OutreachChannel;
   };
 }

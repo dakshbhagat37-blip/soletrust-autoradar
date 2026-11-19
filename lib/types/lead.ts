@@ -33,6 +33,8 @@ export interface CrmLead {
   country: string | null;
   primaryEmail?: string | null;
   primaryPhone?: string | null;
+  primaryDecisionMakerName?: string | null;
+  primaryDecisionMakerRole?: string | null;
   contacts?: import("./contact.ts").Contact[];
 
   // CRM fields
