@@ -561,6 +561,197 @@ export const DEFAULT_MOCK_FIXTURES: MockFixture[] = [
       linkedinUrl: "https://linkedin.com/in/lornajaneclarkson",
     },
   },
+  // US D2C Direct-to-Consumer Brands
+  {
+    name: "Warby Parker",
+    slug: "warby-parker",
+    employeeRange: "1000+",
+    websiteHost: "warbyparker.com",
+    phone: "+1 888 492 7297",
+    address: "233 Spring St, New York",
+    city: "New York",
+    country: "United States",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Neil Blumenthal",
+      role: "founder",
+      roleLabel: "Co-Founder & Co-CEO",
+      email: "neil@warbyparker.com",
+      phone: "+1 212 555 0101",
+      linkedinUrl: "https://linkedin.com/in/neilblumenthal",
+    },
+  },
+  {
+    name: "Allbirds",
+    slug: "allbirds",
+    employeeRange: "501-1000",
+    websiteHost: "allbirds.com",
+    phone: "+1 888 963 8944",
+    address: "SoHo, New York",
+    city: "New York",
+    country: "United States",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Tim Brown",
+      role: "founder",
+      roleLabel: "Co-Founder & Vice Chairman",
+      email: "tim@allbirds.com",
+      phone: "+1 212 555 0102",
+      linkedinUrl: "https://linkedin.com/in/timbrown-allbirds",
+    },
+  },
+  {
+    name: "Casper Sleep",
+    slug: "casper-sleep",
+    employeeRange: "501-1000",
+    websiteHost: "casper.com",
+    phone: "+1 888 498 0003",
+    address: "Three World Trade Center, New York",
+    city: "New York",
+    country: "United States",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Philip Krim",
+      role: "founder",
+      roleLabel: "Co-Founder & CEO",
+      email: "philip@casper.com",
+      phone: "+1 212 555 0103",
+      linkedinUrl: "https://linkedin.com/in/philipkrim",
+    },
+  },
+  {
+    name: "Glossier",
+    slug: "glossier",
+    employeeRange: "201-500",
+    websiteHost: "glossier.com",
+    phone: "+1 844 656 4677",
+    address: "123 Lafayette St, New York",
+    city: "New York",
+    country: "United States",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Emily Weiss",
+      role: "founder",
+      roleLabel: "Founder & Executive Chairwoman",
+      email: "emily@glossier.com",
+      phone: "+1 212 555 0104",
+      linkedinUrl: "https://linkedin.com/in/emily-weiss-glossier",
+    },
+  },
+  {
+    name: "Away Travel",
+    slug: "away-travel",
+    employeeRange: "201-500",
+    websiteHost: "awaytravel.com",
+    phone: "+1 888 428 9297",
+    address: "82 Mercer St, New York",
+    city: "New York",
+    country: "United States",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Steph Korey",
+      role: "founder",
+      roleLabel: "Co-Founder & Director",
+      email: "steph@awaytravel.com",
+      phone: "+1 212 555 0105",
+      linkedinUrl: "https://linkedin.com/in/stephkorey",
+    },
+  },
+  {
+    name: "Brooklinen",
+    slug: "brooklinen",
+    employeeRange: "51-200",
+    websiteHost: "brooklinen.com",
+    phone: "+1 888 886 1604",
+    address: "DUMBO, Brooklyn, New York",
+    city: "New York",
+    country: "United States",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Rich Fulop",
+      role: "founder",
+      roleLabel: "Co-Founder & CEO",
+      email: "rich@brooklinen.com",
+      phone: "+1 718 555 0106",
+      linkedinUrl: "https://linkedin.com/in/richfulop",
+    },
+  },
+  {
+    name: "Harry's Inc.",
+    slug: "harrys",
+    employeeRange: "501-1000",
+    websiteHost: "harrys.com",
+    phone: "+1 888 212 6855",
+    address: "75 Spring St, New York",
+    city: "New York",
+    country: "United States",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Andy Katz-Mayfield",
+      role: "founder",
+      roleLabel: "Co-Founder & Co-CEO",
+      email: "andy@harrys.com",
+      phone: "+1 212 555 0107",
+      linkedinUrl: "https://linkedin.com/in/andykatzmayfield",
+    },
+  },
+  {
+    name: "Bombas",
+    slug: "bombas",
+    employeeRange: "201-500",
+    websiteHost: "bombas.com",
+    phone: "+1 800 314 0980",
+    address: "Flatiron District, New York",
+    city: "New York",
+    country: "United States",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "David Heath",
+      role: "founder",
+      roleLabel: "Co-Founder & CEO",
+      email: "david@bombas.com",
+      phone: "+1 212 555 0108",
+      linkedinUrl: "https://linkedin.com/in/david-heath-bombas",
+    },
+  },
+  {
+    name: "Liquid Death",
+    slug: "liquid-death",
+    employeeRange: "51-200",
+    websiteHost: "liquiddeath.com",
+    phone: "+1 888 547 8433",
+    address: "Manhattan, New York",
+    city: "New York",
+    country: "United States",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Mike Cessario",
+      role: "founder",
+      roleLabel: "Founder & CEO",
+      email: "mike@liquiddeath.com",
+      phone: "+1 212 555 0109",
+      linkedinUrl: "https://linkedin.com/in/mikecessario",
+    },
+  },
+  {
+    name: "Everlane",
+    slug: "everlane",
+    employeeRange: "201-500",
+    websiteHost: "everlane.com",
+    phone: "+1 800 778 7879",
+    address: "Prince St, SoHo, New York",
+    city: "New York",
+    country: "United States",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Michael Preysman",
+      role: "founder",
+      roleLabel: "Founder & Executive Chairman",
+      email: "michael@everlane.com",
+      phone: "+1 212 555 0110",
+      linkedinUrl: "https://linkedin.com/in/michaelpreysman",
+    },
+  },
   // US Supermarkets & Retailers
   {
     name: "Rockland Kosher Supermarket",
@@ -1059,7 +1250,15 @@ export class MockDiscoveryProvider implements DiscoveryProvider {
       matching = [...cityMatches, ...otherCountryMatches];
     }
 
-    // 3. Fallback: match by country if specific industry was niche
+    // 3. Fallback: prioritize matching by industry first so industry gate passes
+    if (matching.length === 0 && qInd) {
+      matching = DEFAULT_MOCK_FIXTURES.filter((f) => {
+        const fInd = (f.industry || "").toLowerCase();
+        return fInd.includes(qInd) || qInd.includes(fInd) || (qInd.includes("d2c") && fInd.includes("d2c"));
+      });
+    }
+
+    // 4. Fallback: match by country if specific industry was not found
     if (matching.length === 0 && qCountry) {
       matching = DEFAULT_MOCK_FIXTURES.filter((f) => {
         const fCountry = (f.country || "India").toLowerCase();
@@ -1067,7 +1266,7 @@ export class MockDiscoveryProvider implements DiscoveryProvider {
       });
     }
 
-    // 4. If still no fixtures for this country, adapt available fixtures to the requested geography
+    // 5. If still no fixtures for this country, adapt available fixtures to the requested geography
     const isSyntheticAdaptationNeeded = matching.length === 0;
     if (isSyntheticAdaptationNeeded) {
       matching = DEFAULT_MOCK_FIXTURES;
@@ -1104,6 +1303,10 @@ export class MockDiscoveryProvider implements DiscoveryProvider {
         phone = `${prefix}${5000000 + idx * 1111}`;
       }
 
+      const assignedIndustry = (qInd && !f.industry?.toLowerCase().includes(qInd))
+        ? query.industry
+        : (f.industry ?? query.industry);
+
       return {
         companyName: f.name,
         website: `https://www.${host}`,
@@ -1112,7 +1315,7 @@ export class MockDiscoveryProvider implements DiscoveryProvider {
         address,
         city,
         country,
-        industry: f.industry ?? query.industry,
+        industry: assignedIndustry,
         employeeRange: f.employeeRange,
         source: this.id,
         sourceUrl: `https://mock.autoradar.internal/leads/${f.slug}`,
