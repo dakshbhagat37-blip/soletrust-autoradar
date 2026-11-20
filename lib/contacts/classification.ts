@@ -3,6 +3,7 @@ import type { Contact } from "../types/contact.ts";
 import type { SourceEvidence } from "../types/evidence.ts";
 import { verifyEmail, type VerifyEmailOptions } from "./email-verifier.ts";
 import { verifyPhone, type VerifyPhoneOptions } from "./phone-verifier.ts";
+import { isGenericEmail } from "../enrichment/crawler.ts";
 import type { ContactVerificationSummary } from "./types.ts";
 
 export type ContactClassificationOptions = {
@@ -136,11 +137,39 @@ export async function classifyAndVerifyBusinessContacts(
   }
 
   // Check Decision-Maker Contacts (Strictly Direct Contacts Only - Never assign reception lines without evidence)
+  let detectedFallbackEmail: string | null = business.fallbackCorporateEmail || null;
+
   const updatedDecisionMakers = (business.decisionMakers || []).map((dm) => {
     const dmContacts: Contact[] = [];
+    let dmEmail = dm.email || null;
+    if (dmEmail && isGenericEmail(dmEmail)) {
+      if (!detectedFallbackEmail) detectedFallbackEmail = dmEmail;
+      dmEmail = null; // Strictly ban generic emails from being the decision maker's email
+    }
+
     for (const dmC of dm.contacts || []) {
       if (dmC.contactType === "email") {
-        const key = `email:${dmC.value.toLowerCase().trim()}`;
+        const emailVal = dmC.value.toLowerCase().trim();
+        const key = `email:${emailVal}`;
+
+        if (isGenericEmail(emailVal)) {
+          // Demote generic inbox to corporate fallback
+          if (!detectedFallbackEmail) detectedFallbackEmail = emailVal;
+          if (!seenValues.has(key)) {
+            seenValues.add(key);
+            verifiedCount++;
+            verifiedBusinessEmails++;
+            verifiedContacts.push({
+              ...dmC,
+              value: emailVal,
+              ownershipType: "business_main",
+              verificationStatus: "syntax_valid",
+              verifiedAt: now,
+            });
+          }
+          continue;
+        }
+
         if (!seenValues.has(key)) {
           seenValues.add(key);
           hasDirectDecisionMakerContact = true;
@@ -172,6 +201,7 @@ export async function classifyAndVerifyBusinessContacts(
     }
     return {
       ...dm,
+      email: dmEmail,
       contacts: dmContacts,
     };
   });
@@ -197,6 +227,7 @@ export async function classifyAndVerifyBusinessContacts(
     ...business,
     contacts: verifiedContacts,
     decisionMakers: updatedDecisionMakers,
+    fallbackCorporateEmail: detectedFallbackEmail,
     updatedAt: now,
   };
 

@@ -17,6 +17,19 @@ function cleanTerm(value: string | undefined | null): string {
     .trim();
 }
 
+const COUNTRY_TLD_MAP: Record<string, string> = {
+  india: ".in",
+  australia: ".com.au",
+  "united kingdom": ".co.uk",
+  germany: ".de",
+  canada: ".ca",
+  netherlands: ".nl",
+  france: ".fr",
+  japan: ".jp",
+  singapore: ".sg",
+  "united arab emirates": ".ae",
+};
+
 export function generateDiscoveryQueries(query: SearchJobQuery): DiscoveryQueryVariants {
   const industry = cleanTerm(query.industry);
   const city = cleanTerm(query.city);
@@ -27,10 +40,18 @@ export function generateDiscoveryQueries(query: SearchJobQuery): DiscoveryQueryV
   const primary = `${industry} in ${city}, ${country}`;
   const officialSite = `${industry} ${city} official website`;
 
-  // Determine entity noun (e.g., clinic, hospital, studio, agency, company)
+  // Determine entity noun (e.g., clinic, hospital, studio, agency, company, firm)
   let entityNoun = "business";
   const lowerInd = industry.toLowerCase();
   if (
+    lowerInd.includes("tax") ||
+    lowerInd.includes("account") ||
+    lowerInd.includes("cpa") ||
+    lowerInd.includes("law") ||
+    lowerInd.includes("legal")
+  ) {
+    entityNoun = "firm";
+  } else if (
     lowerInd.includes("dermatol") ||
     lowerInd.includes("skin") ||
     lowerInd.includes("dental") ||
@@ -47,6 +68,19 @@ export function generateDiscoveryQueries(query: SearchJobQuery): DiscoveryQueryV
   ) {
     entityNoun = "studio agency";
   } else if (
+    lowerInd.includes("solar") ||
+    lowerInd.includes("epc") ||
+    lowerInd.includes("installer")
+  ) {
+    entityNoun = "installers contractors";
+  } else if (
+    lowerInd.includes("logistics") ||
+    lowerInd.includes("freight") ||
+    lowerInd.includes("shipping") ||
+    lowerInd.includes("warehouse")
+  ) {
+    entityNoun = "logistics company";
+  } else if (
     lowerInd.includes("tech") ||
     lowerInd.includes("software") ||
     lowerInd.includes("it")
@@ -57,6 +91,14 @@ export function generateDiscoveryQueries(query: SearchJobQuery): DiscoveryQueryV
   const entityType = `${industry} ${entityNoun} ${city}`;
 
   const allQueries: string[] = [primary, officialSite, entityType];
+
+  // Targeted live directory & local presence dorks
+  allQueries.push(`"${industry}" "${city}" ("about us" OR "our team" OR "contact")`);
+
+  const tld = COUNTRY_TLD_MAP[country.toLowerCase()];
+  if (tld) {
+    allQueries.push(`"${industry}" "${city}" site:*${tld}`);
+  }
 
   let serviceFocused: string | undefined;
   if (serviceTrack && serviceTrack !== "general") {
@@ -79,4 +121,3 @@ export function generateDiscoveryQueries(query: SearchJobQuery): DiscoveryQueryV
     allQueries: Array.from(new Set(allQueries)),
   };
 }
-

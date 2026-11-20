@@ -32,6 +32,7 @@ type HeaderProps = {
   isSearching?: boolean;
   onOpenIcpStudio?: () => void;
   onOpenSettings?: () => void;
+  onOpenCopilot?: () => void;
 };
 
 export function Header({
@@ -43,6 +44,7 @@ export function Header({
   isSearching = false,
   onOpenIcpStudio,
   onOpenSettings,
+  onOpenCopilot,
 }: HeaderProps) {
   const [promptText, setPromptText] = React.useState("");
   const searchInputRef = React.useRef<HTMLInputElement>(null);
@@ -92,7 +94,7 @@ export function Header({
               <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
                 SoleTrust Business OS
                 <span className="text-[11px] font-mono uppercase bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded-full">
-                  v5.0 Enterprise OS
+                  v6.0 Universal AI OS
                 </span>
               </h1>
               <p className="text-xs text-gray-400">
@@ -140,14 +142,28 @@ export function Header({
         </form>
 
         <div className="flex items-center gap-2">
+          {onOpenCopilot && (
+            <button
+              type="button"
+              onClick={onOpenCopilot}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-purple-500/40 bg-purple-950/40 hover:bg-purple-900/50 text-purple-300 text-xs font-semibold shadow-sm shadow-purple-500/20 transition cursor-pointer"
+            >
+              <span>⚡</span>
+              <span>AI Copilot</span>
+              <span className="hidden sm:inline-block px-1 py-0.2 rounded bg-purple-900/60 text-[9px] font-mono text-purple-200">
+                Ctrl+J
+              </span>
+            </button>
+          )}
+
           {onOpenIcpStudio && (
             <button
               type="button"
               onClick={onOpenIcpStudio}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-cyan-500/40 bg-cyan-950/40 hover:bg-cyan-900/50 text-cyan-300 text-xs font-semibold shadow-sm shadow-cyan-500/20 transition cursor-pointer"
             >
-              <span>⚡</span>
-              <span className="hidden sm:inline">ICP & Offer Studio</span>
+              <span>🎯</span>
+              <span className="hidden sm:inline">ICP Studio</span>
             </button>
           )}
 

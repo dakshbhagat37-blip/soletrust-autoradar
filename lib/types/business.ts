@@ -44,6 +44,7 @@ export type Business = {
   sources: SourceEvidence[];
   contacts: Contact[];
   decisionMakers: DecisionMaker[];
+  fallbackCorporateEmail?: string | null;
   qualification?: QualificationScores | null;
   opportunity?: OpportunityIntelligence | null;
   isBranch?: boolean;

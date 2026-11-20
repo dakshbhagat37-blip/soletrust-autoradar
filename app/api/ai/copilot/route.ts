@@ -3,6 +3,7 @@ import {
   queryExecutiveCopilot,
   checkAutonomousBusinessTriggers,
 } from "@/lib/ai/executive-copilot";
+import { queryCopilotBrain } from "@/lib/ai/copilot-brain";
 import { createSuccessResponse, createErrorResponse } from "@/lib/types/api";
 
 export async function GET() {
@@ -22,10 +23,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const brainResult = await queryCopilotBrain(query);
     const result = await queryExecutiveCopilot(query);
     const alerts = checkAutonomousBusinessTriggers();
 
-    return Response.json(createSuccessResponse({ result, alerts }), { status: 200 });
+    return Response.json(
+      createSuccessResponse({ brainResult, result, alerts }),
+      { status: 200 }
+    );
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Copilot query failed";
     return Response.json(createErrorResponse("COPILOT_FAILED", message), { status: 500 });

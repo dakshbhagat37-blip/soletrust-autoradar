@@ -177,7 +177,120 @@ async function geocodeCity(
 
 export function getOsmTagFiltersForIndustry(industry: string): string[] {
   const lower = industry.toLowerCase();
-  if (lower.includes("d2c") || lower.includes("direct to consumer") || lower.includes("ecommerce") || lower.includes("online brand") || lower.includes("apparel") || lower.includes("clothing") || lower.includes("fashion")) {
+
+  // 1. Taxation, Accounting & Financial Advisory
+  if (
+    lower.includes("tax") ||
+    lower.includes("account") ||
+    lower.includes("cpa") ||
+    lower.includes("audit") ||
+    lower.includes("chartered") ||
+    lower.includes("bookkeep")
+  ) {
+    return [
+      `node["office"~"accountant|tax_advisor|financial"]`,
+      `way["office"~"accountant|tax_advisor|financial"]`,
+      `node["office"="company"]["name"~"Tax|Account|CPA|Audit|Advisory|Consult",i]`,
+      `way["office"="company"]["name"~"Tax|Account|CPA|Audit|Advisory|Consult",i]`,
+    ];
+  }
+
+  // 2. Solar & Renewable Energy EPC
+  if (
+    lower.includes("solar") ||
+    lower.includes("photovoltaic") ||
+    lower.includes("renewable") ||
+    lower.includes("clean energy")
+  ) {
+    return [
+      `node["craft"~"photovoltaic|electrician"]`,
+      `way["craft"~"photovoltaic|electrician"]`,
+      `node["office"~"energy_supplier|company"]["name"~"Solar|Energy|Power|Renewable",i]`,
+      `way["office"~"energy_supplier|company"]["name"~"Solar|Energy|Power|Renewable",i]`,
+      `node["industrial"~"energy|solar"]`,
+      `way["industrial"~"energy|solar"]`,
+    ];
+  }
+
+  // 3. Logistics, Freight, Transport & Shipping
+  if (
+    lower.includes("logistics") ||
+    lower.includes("freight") ||
+    lower.includes("shipping") ||
+    lower.includes("cargo") ||
+    lower.includes("transport") ||
+    lower.includes("warehous")
+  ) {
+    return [
+      `node["office"~"logistics|transport|shipping"]`,
+      `way["office"~"logistics|transport|shipping"]`,
+      `node["industrial"~"warehouse|logistics"]`,
+      `way["industrial"~"warehouse|logistics"]`,
+      `node["amenity"~"freight_terminal"]`,
+      `way["amenity"~"freight_terminal"]`,
+    ];
+  }
+
+  // 4. Manufacturing & Industrial
+  if (
+    lower.includes("manufactur") ||
+    lower.includes("industrial") ||
+    lower.includes("factory") ||
+    lower.includes("fabrication") ||
+    lower.includes("machin")
+  ) {
+    return [
+      `node["industrial"~"factory|manufacturing|warehouse|production"]`,
+      `way["industrial"~"factory|manufacturing|warehouse|production"]`,
+      `node["craft"]`,
+      `way["craft"]`,
+      `node["office"="company"]`,
+      `way["office"="company"]`,
+    ];
+  }
+
+  // 5. EdTech & Education
+  if (
+    lower.includes("edtech") ||
+    lower.includes("education") ||
+    lower.includes("tutor") ||
+    lower.includes("academy") ||
+    lower.includes("training")
+  ) {
+    return [
+      `node["amenity"~"college|university|school|language_school"]`,
+      `way["amenity"~"college|university|school|language_school"]`,
+      `node["office"~"educational_institution|company"]`,
+      `way["office"~"educational_institution|company"]`,
+    ];
+  }
+
+  // 6. Export / Import & International Trade
+  if (
+    lower.includes("export") ||
+    lower.includes("import") ||
+    lower.includes("trade") ||
+    lower.includes("trading")
+  ) {
+    return [
+      `node["office"~"company|logistics|trading"]`,
+      `way["office"~"company|logistics|trading"]`,
+      `node["commercial"~"wholesale"]`,
+      `way["commercial"~"wholesale"]`,
+    ];
+  }
+
+  // 7. D2C, Retail, E-Commerce & Fashion
+  if (
+    lower.includes("d2c") ||
+    lower.includes("direct to consumer") ||
+    lower.includes("ecommerce") ||
+    lower.includes("online brand") ||
+    lower.includes("apparel") ||
+    lower.includes("clothing") ||
+    lower.includes("fashion") ||
+    lower.includes("lifestyle")
+  ) {
     return [
       `node["shop"~"clothes|fashion|boutique|department_store|shoes|cosmetics|beauty"]`,
       `way["shop"~"clothes|fashion|boutique|department_store|shoes|cosmetics|beauty"]`,
@@ -185,7 +298,15 @@ export function getOsmTagFiltersForIndustry(industry: string): string[] {
       `way["office"~"company|fashion|it"]`,
     ];
   }
-  if (lower.includes("supermarket") || lower.includes("grocery") || lower.includes("mart") || lower.includes("food store") || lower.includes("retail")) {
+
+  // 8. Supermarkets & Grocery
+  if (
+    lower.includes("supermarket") ||
+    lower.includes("grocery") ||
+    lower.includes("mart") ||
+    lower.includes("food store") ||
+    lower.includes("retail")
+  ) {
     return [
       `node["shop"="supermarket"]`,
       `way["shop"="supermarket"]`,
@@ -196,14 +317,28 @@ export function getOsmTagFiltersForIndustry(industry: string): string[] {
       `node["shop"="department_store"]`,
     ];
   }
-  if (lower.includes("car") || lower.includes("auto") || lower.includes("vehicle") || lower.includes("dealer")) {
+
+  // 9. Automotive & Dealerships
+  if (
+    lower.includes("car") ||
+    lower.includes("auto") ||
+    lower.includes("vehicle") ||
+    lower.includes("dealer")
+  ) {
     return [
       `node["shop"~"car|car_repair|motorcycle"]`,
       `way["shop"~"car|car_repair|motorcycle"]`,
       `node["amenity"~"car_rental|car_wash"]`,
     ];
   }
-  if (lower.includes("dental") || lower.includes("dentist") || lower.includes("teeth")) {
+
+  // 10. Dental Practices
+  if (
+    lower.includes("dental") ||
+    lower.includes("dentist") ||
+    lower.includes("teeth") ||
+    lower.includes("orthodont")
+  ) {
     return [
       `node["amenity"="dentist"]`,
       `way["amenity"="dentist"]`,
@@ -213,6 +348,8 @@ export function getOsmTagFiltersForIndustry(industry: string): string[] {
       `way["amenity"~"clinic|doctors"]`,
     ];
   }
+
+  // 11. Hospitals
   if (lower.includes("hospital")) {
     return [
       `node["amenity"="hospital"]`,
@@ -221,7 +358,13 @@ export function getOsmTagFiltersForIndustry(industry: string): string[] {
       `way["healthcare"="hospital"]`,
     ];
   }
-  if (lower.includes("dermatol") || lower.includes("skin") || lower.includes("cosmet")) {
+
+  // 12. Dermatology & Aesthetic Clinics
+  if (
+    lower.includes("dermatol") ||
+    lower.includes("skin") ||
+    lower.includes("cosmet")
+  ) {
     return [
       `node["healthcare:speciality"~"dermatology|skin"]`,
       `way["healthcare:speciality"~"dermatology|skin"]`,
@@ -231,52 +374,109 @@ export function getOsmTagFiltersForIndustry(industry: string): string[] {
       `way["healthcare"="clinic"]`,
     ];
   }
-  if (lower.includes("law") || lower.includes("legal") || lower.includes("advocate")) {
+
+  // 13. General Clinics & Healthcare
+  if (
+    lower.includes("clinic") ||
+    lower.includes("health") ||
+    lower.includes("doctor") ||
+    lower.includes("medical")
+  ) {
+    return [
+      `node["amenity"~"clinic|doctors|hospital|pharmacy"]`,
+      `way["amenity"~"clinic|doctors|hospital|pharmacy"]`,
+      `node["healthcare"~"clinic|doctor|centre"]`,
+      `way["healthcare"~"clinic|doctor|centre"]`,
+    ];
+  }
+
+  // 14. Law Firms & Legal
+  if (
+    lower.includes("law") ||
+    lower.includes("legal") ||
+    lower.includes("advocate") ||
+    lower.includes("attorney") ||
+    lower.includes("solicitor")
+  ) {
     return [
       `node["office"~"lawyer|legal|notary"]`,
       `way["office"~"lawyer|legal|notary"]`,
       `node["office"="company"]`,
     ];
   }
-  if (lower.includes("tech") || lower.includes("software") || lower.includes("it") || lower.includes("saas") || lower.includes("agency")) {
+
+  // 15. Software, SaaS & Tech
+  if (
+    lower.includes("tech") ||
+    lower.includes("software") ||
+    lower.includes("it") ||
+    lower.includes("saas") ||
+    lower.includes("cloud")
+  ) {
     return [
       `node["office"~"it|company|software|telecommunication"]`,
       `way["office"~"it|company|software|telecommunication"]`,
     ];
   }
-  if (lower.includes("restaurant") || lower.includes("cafe") || lower.includes("hotel") || lower.includes("bistro") || lower.includes("dining") || lower.includes("hospitality")) {
+
+  // 16. Restaurants & Hospitality
+  if (
+    lower.includes("restaurant") ||
+    lower.includes("cafe") ||
+    lower.includes("hotel") ||
+    lower.includes("bistro") ||
+    lower.includes("dining") ||
+    lower.includes("hospitality")
+  ) {
     return [
       `node["amenity"~"restaurant|cafe|fast_food|bar|pub"]`,
       `way["amenity"~"restaurant|cafe|fast_food|bar|pub"]`,
       `node["tourism"~"hotel|guest_house"]`,
     ];
   }
-  if (lower.includes("gym") || lower.includes("fitness") || lower.includes("yoga") || lower.includes("pilates") || lower.includes("workout")) {
+
+  // 17. Gyms & Fitness
+  if (
+    lower.includes("gym") ||
+    lower.includes("fitness") ||
+    lower.includes("yoga") ||
+    lower.includes("pilates") ||
+    lower.includes("workout")
+  ) {
     return [
       `node["leisure"~"fitness_centre|sports_centre"]`,
       `way["leisure"~"fitness_centre|sports_centre"]`,
     ];
   }
-  if (lower.includes("real estate") || lower.includes("realty") || lower.includes("property") || lower.includes("estate agent")) {
+
+  // 18. Real Estate & Property
+  if (
+    lower.includes("real estate") ||
+    lower.includes("realty") ||
+    lower.includes("property") ||
+    lower.includes("estate agent")
+  ) {
     return [
       `node["office"="estate_agent"]`,
       `way["office"="estate_agent"]`,
       `node["office"="company"]`,
     ];
   }
-  if (lower.includes("account") || lower.includes("cpa") || lower.includes("tax") || lower.includes("audit") || lower.includes("bookkeep")) {
-    return [
-      `node["office"~"accountant|tax_advisor|financial"]`,
-      `way["office"~"accountant|tax_advisor|financial"]`,
-    ];
-  }
+
+  // 19. Universal Semantic Fallback for ANY Global Industry
   return [
-    `node["amenity"~"clinic|hospital|doctors|dentist|bank|restaurant"]`,
-    `way["amenity"~"clinic|hospital|doctors|dentist|bank|restaurant"]`,
-    `node["shop"]`,
-    `way["shop"]`,
+    `node["office"="company"]`,
+    `way["office"="company"]`,
     `node["office"]`,
     `way["office"]`,
+    `node["craft"]`,
+    `way["craft"]`,
+    `node["industrial"]`,
+    `way["industrial"]`,
+    `node["shop"]`,
+    `way["shop"]`,
+    `node["amenity"]`,
+    `way["amenity"]`,
   ];
 }
 

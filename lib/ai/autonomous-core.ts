@@ -2,6 +2,7 @@ import { logger } from "../logging/logger.ts";
 import { getStudioSettings } from "../dispatch/settings-store.ts";
 import { analyzeBusinessAndGenerateIcps, type BusinessStrategyAnalysis, type IdealCustomerProfile } from "../intelligence/icp-architect.ts";
 import { detectOffWebsiteOwner, type OffWebsiteOwnerIntel } from "../enrichment/owner-detective.ts";
+import { isGenericEmail } from "../enrichment/crawler.ts";
 import { harvestOwnerViewsAndMindset, type OwnerPsychographicProfile } from "../intelligence/owner-psychographics.ts";
 import { generateOutreachBrainSuite, type MultichannelOutreachSuite } from "../intelligence/outreach-brain.ts";
 import { generatePitchDeck, type GeneratedPitchDeck } from "../closing/pitch-deck-generator.ts";
@@ -209,6 +210,7 @@ export async function runAutonomousGoalPipeline(
       });
 
       const existingPhone = biz.contacts?.find((c) => c.contactType === "phone")?.value;
+      const existingEmail = biz.contacts?.find((c) => c.contactType === "email")?.value;
 
       const ownerIntel = await detectOffWebsiteOwner({
         companyName: biz.canonicalName,
@@ -216,18 +218,25 @@ export async function runAutonomousGoalPipeline(
         city: biz.city,
         country: biz.country,
         existingPhones: existingPhone ? [existingPhone] : [],
+        existingEmails: existingEmail ? [existingEmail] : [],
       });
 
-      // Update business entity with verified owner
+      // Update business entity with verified owner & fallback corporate email
       const effectiveOwnerName = ownerIntel.fullName || "Managing Principal";
       const effectiveRole = ownerIntel.role || "Founder & CEO";
+
+      // Enforce UNKNOWN > WRONG and ban generic inboxes as decision-maker email
+      const verifiedDirectEmail = ownerIntel.email && !isGenericEmail(ownerIntel.email) ? ownerIntel.email : null;
+      if (ownerIntel.fallbackCorporateEmail || (existingEmail && isGenericEmail(existingEmail))) {
+        biz.fallbackCorporateEmail = ownerIntel.fallbackCorporateEmail || existingEmail || null;
+      }
 
       biz.decisionMakers = [
         {
           fullName: effectiveOwnerName,
           role: "founder",
           roleLabel: effectiveRole,
-          email: ownerIntel.email || null,
+          email: verifiedDirectEmail,
           phone: ownerIntel.directPhone || existingPhone || null,
           linkedinUrl: ownerIntel.linkedinUrl || null,
           discoveryStatus: "discovered",

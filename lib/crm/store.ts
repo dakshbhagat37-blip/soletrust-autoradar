@@ -21,6 +21,7 @@ import type { Business } from "../types/business.ts";
 import { isSupabaseServerConfigured, createSupabaseServerClient } from "../supabase/server.ts";
 import { logger } from "../logging/logger.ts";
 import { loadJsonFromFile, saveJsonToFile } from "../persistence/file-store.ts";
+import { isGenericEmail } from "../enrichment/crawler.ts";
 
 type PersistedCrmData = {
   crmLeads: Record<string, CrmLead>;
@@ -183,8 +184,13 @@ export function createOrUpdateLeadFromBusiness(business: Business): CrmLead {
       website: business.website,
       city: business.city,
       country: business.country,
-      primaryEmail: business.contacts?.find((c) => c.contactType === "email")?.value || null,
-      primaryPhone: business.contacts?.find((c) => c.contactType === "phone")?.value || null,
+      primaryDecisionMakerName: business.decisionMakers?.[0]?.fullName || null,
+      primaryDecisionMakerRole: business.decisionMakers?.[0]?.roleLabel || null,
+      primaryEmail: business.decisionMakers?.[0]?.email && !isGenericEmail(business.decisionMakers?.[0]?.email)
+        ? business.decisionMakers?.[0]?.email
+        : business.contacts?.find((c) => c.contactType === "email" && !isGenericEmail(c.value))?.value || null,
+      fallbackCorporateEmail: business.fallbackCorporateEmail || business.contacts?.find((c) => c.contactType === "email" && isGenericEmail(c.value))?.value || null,
+      primaryPhone: business.decisionMakers?.[0]?.phone || business.contacts?.find((c) => c.contactType === "phone")?.value || null,
       contacts: business.contacts || [],
       stage: initialStage,
       priority: business.qualificationScore >= 80 ? "high" : "medium",

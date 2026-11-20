@@ -34,6 +34,7 @@ export interface CrmLead {
   city: string | null;
   country: string | null;
   primaryEmail?: string | null;
+  fallbackCorporateEmail?: string | null;
   primaryPhone?: string | null;
   primaryDecisionMakerName?: string | null;
   primaryDecisionMakerRole?: string | null;

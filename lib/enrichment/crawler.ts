@@ -2,6 +2,38 @@ import * as cheerio from "cheerio";
 import { isPrivateIp } from "../intelligence/crawler.ts";
 import { logger } from "../logging/logger.ts";
 
+export const GENERIC_EMAIL_PREFIXES = new Set([
+  "info",
+  "contact",
+  "support",
+  "sales",
+  "admin",
+  "office",
+  "hello",
+  "help",
+  "enquiry",
+  "enquiries",
+  "billing",
+  "team",
+  "careers",
+  "jobs",
+  "general",
+  "mail",
+  "inbox",
+  "customercare",
+  "service",
+  "reception",
+  "frontdesk",
+  "press",
+  "media",
+]);
+
+export function isGenericEmail(email: string | null | undefined): boolean {
+  if (!email || !email.includes("@")) return false;
+  const localPart = email.split("@")[0].toLowerCase().trim();
+  return GENERIC_EMAIL_PREFIXES.has(localPart);
+}
+
 export interface CrawledPageIntel {
   url: string;
   statusCode: number;
@@ -12,6 +44,8 @@ export interface CrawledPageIntel {
     confidence: number;
   }>;
   emailsFound: string[];
+  fallbackCorporateEmails: string[];
+  directPersonalEmails: string[];
   phonesFound: string[];
   whatsAppLinks: string[];
   socialProfiles: {
@@ -34,7 +68,7 @@ export interface CrawledPageIntel {
 }
 
 const EXECUTIVE_TITLE_REGEX =
-  /\b(?:founder|co-founder|chief executive officer|ceo|owner|co-owner|managing director|managing partner|store director|purchasing manager|head of ecommerce|director of marketing|clinic director|lead dentist|practice head|principal)\b/i;
+  /\b(?:founder|co-founder|chief executive officer|ceo|owner|co-owner|proprietor|managing partner|managing director|store director|purchasing manager|head of ecommerce|director of marketing|clinic director|lead dentist|practice head|principal|director|partner)\b/i;
 
 const COMMON_PAGE_PATHS = [
   "",
@@ -43,9 +77,12 @@ const COMMON_PAGE_PATHS = [
   "/team",
   "/our-team",
   "/leadership",
+  "/partners",
+  "/founder",
   "/contact",
   "/contact-us",
   "/privacy-policy",
+  "/terms",
   "/imprint",
 ];
 
@@ -90,6 +127,8 @@ export async function crawlDomainIntelligence(
     statusCode: 200,
     executiveCandidates: [],
     emailsFound: [],
+    fallbackCorporateEmails: [],
+    directPersonalEmails: [],
     phonesFound: [],
     whatsAppLinks: [],
     socialProfiles: {},
@@ -223,6 +262,15 @@ export async function crawlDomainIntelligence(
           const cleanMail = href.replace("mailto:", "").split("?")[0].trim().toLowerCase();
           if (cleanMail.includes("@") && !result.emailsFound.includes(cleanMail)) {
             result.emailsFound.push(cleanMail);
+            if (isGenericEmail(cleanMail)) {
+              if (!result.fallbackCorporateEmails.includes(cleanMail)) {
+                result.fallbackCorporateEmails.push(cleanMail);
+              }
+            } else {
+              if (!result.directPersonalEmails.includes(cleanMail)) {
+                result.directPersonalEmails.push(cleanMail);
+              }
+            }
           }
         } else if (href.includes("linkedin.com/in/") || href.includes("linkedin.com/company/")) {
           if (!result.socialProfiles.linkedin) result.socialProfiles.linkedin = href;
@@ -247,6 +295,15 @@ export async function crawlDomainIntelligence(
           !result.emailsFound.includes(lower)
         ) {
           result.emailsFound.push(lower);
+          if (isGenericEmail(lower)) {
+            if (!result.fallbackCorporateEmails.includes(lower)) {
+              result.fallbackCorporateEmails.push(lower);
+            }
+          } else {
+            if (!result.directPersonalEmails.includes(lower)) {
+              result.directPersonalEmails.push(lower);
+            }
+          }
         }
       }
 
@@ -325,6 +382,8 @@ function createEmptyIntel(rawUrl: string): CrawledPageIntel {
     statusCode: 0,
     executiveCandidates: [],
     emailsFound: [],
+    fallbackCorporateEmails: [],
+    directPersonalEmails: [],
     phonesFound: [],
     whatsAppLinks: [],
     socialProfiles: {},

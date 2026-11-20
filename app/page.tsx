@@ -19,6 +19,7 @@ import { AnalyticsDashboard } from "../components/AnalyticsDashboard.tsx";
 import { OperationsBoard } from "../features/operations/OperationsBoard.tsx";
 import { FinanceDashboard } from "../features/finance/FinanceDashboard.tsx";
 import { ExecutiveCopilotView } from "../components/ExecutiveCopilotView.tsx";
+import { GlobalAICopilot } from "../components/GlobalAICopilot.tsx";
 
 import type { Business } from "../lib/types/business.ts";
 import type { SearchJob, SearchStageStats } from "../lib/types/search-job.ts";
@@ -61,6 +62,7 @@ export default function Home() {
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isIcpModalOpen, setIsIcpModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Business OS Operations & Finance State
@@ -224,6 +226,18 @@ export default function Home() {
       ignore = true;
     };
   }, [loadBusinessOsData]);
+
+  // Global Ctrl+J / Cmd+J keyboard listener for Sovereign AI Copilot
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "j") {
+        e.preventDefault();
+        setIsCopilotOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const handleSearchSubmit = async (data: SearchFormData) => {
     setIsLoading(true);
@@ -489,6 +503,7 @@ export default function Home() {
         isSearching={isLoading}
         onOpenIcpStudio={() => setIsIcpModalOpen(true)}
         onOpenSettings={() => setIsSettingsModalOpen(true)}
+        onOpenCopilot={() => setIsCopilotOpen(true)}
         leadCounts={{
           total: crmLeads.length,
           qualified: crmLeads.filter((l) => l.qualificationScore >= 60).length,
@@ -805,6 +820,26 @@ export default function Home() {
         isOpen={isExportOpen}
         onClose={() => setIsExportOpen(false)}
       />
+
+      {/* Global Embedded Conversational AI Copilot (Drawer + Persistent Brain) */}
+      <GlobalAICopilot
+        isOpen={isCopilotOpen}
+        onClose={() => setIsCopilotOpen(false)}
+        onNavigateTab={(tab) => setNavTab(tab as NavTab)}
+      />
+
+      {/* Floating Copilot Shortcut Trigger */}
+      <button
+        type="button"
+        onClick={() => setIsCopilotOpen(true)}
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-full shadow-xl shadow-indigo-500/30 font-semibold text-xs transition transform hover:scale-105 cursor-pointer border border-white/20"
+      >
+        <span className="text-base">⚡</span>
+        <span>AI Copilot</span>
+        <span className="px-1.5 py-0.5 rounded bg-black/30 text-[10px] font-mono text-purple-200">
+          Ctrl+J
+        </span>
+      </button>
     </div>
   );
 }

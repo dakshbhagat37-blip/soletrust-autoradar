@@ -8,6 +8,7 @@ import type { SearchJobQuery } from "../types/search-job.ts";
 import { overpassProvider } from "./overpass.ts";
 import { nominatimProvider } from "./nominatim.ts";
 import { searxngProvider } from "./searxng.ts";
+import { corporateRegistryProvider } from "./corporate-registry.ts";
 import { mockProvider } from "./mock.ts";
 import { logger } from "../logging/logger.ts";
 import { isSupabaseServerConfigured, createSupabaseServerClient } from "../supabase/server.ts";
@@ -18,6 +19,7 @@ export class WaterfallOrchestrator {
       overpassProvider,
       nominatimProvider,
       searxngProvider,
+      corporateRegistryProvider,
     ];
     // In production, mock provider is strictly and unconditionally excluded,
     // even if ENABLE_MOCK_PROVIDER is set to true.

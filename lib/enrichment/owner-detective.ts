@@ -1,5 +1,6 @@
 import { logger } from "../logging/logger.ts";
 import { resolveDecisionMakerEmail } from "./smtp-verifier.ts";
+import { isGenericEmail } from "./crawler.ts";
 
 export interface OffWebsiteOwnerIntel {
   ownerFound: boolean;
@@ -9,7 +10,8 @@ export interface OffWebsiteOwnerIntel {
   directPhone: string | null;
   phoneLabel: "DIRECT_MOBILE" | "WHATSAPP_VERIFIED" | "CORPORATE_SWITCHBOARD" | "UNKNOWN";
   email: string | null;
-  emailStatus: "VERIFIED_SMTP" | "VERIFIED_TENANT" | "UNKNOWN";
+  fallbackCorporateEmail: string | null;
+  emailStatus: "VERIFIED_SMTP" | "VERIFIED_TENANT" | "PUBLIC_EXTRACTED" | "UNKNOWN";
   rdapRegistrantOrg: string | null;
   rdapContactName: string | null;
   corporateRegistryRecord: {
@@ -33,6 +35,7 @@ export interface OwnerDetectiveQuery {
   city?: string | null;
   country?: string | null;
   existingPhones?: string[];
+  existingEmails?: string[];
   searxngUrl?: string;
   timeoutMs?: number;
 }
@@ -185,6 +188,8 @@ export async function detectOffWebsiteOwner(query: OwnerDetectiveQuery): Promise
   const domain = query.domain.replace(/^https?:\/\//i, "").replace(/\/.*$/, "").trim().toLowerCase();
   const city = query.city?.trim() || "";
 
+  const existingGeneric = query.existingEmails?.find((e) => isGenericEmail(e)) || null;
+
   const result: OffWebsiteOwnerIntel = {
     ownerFound: false,
     fullName: null,
@@ -193,6 +198,7 @@ export async function detectOffWebsiteOwner(query: OwnerDetectiveQuery): Promise
     directPhone: query.existingPhones?.[0] || null,
     phoneLabel: query.existingPhones?.[0] ? "CORPORATE_SWITCHBOARD" : "UNKNOWN",
     email: null,
+    fallbackCorporateEmail: existingGeneric,
     emailStatus: "UNKNOWN",
     rdapRegistrantOrg: null,
     rdapContactName: null,
@@ -326,14 +332,19 @@ export async function detectOffWebsiteOwner(query: OwnerDetectiveQuery): Promise
     try {
       const emailRes = await resolveDecisionMakerEmail(result.fullName, domain);
       if (emailRes && emailRes.email && (emailRes.status === "VERIFIED_SMTP" || emailRes.status === "VERIFIED_TENANT")) {
-        result.email = emailRes.email;
-        result.emailStatus = emailRes.status;
-        result.corroboratingSignals.push(`Direct Mailbox Verified: ${emailRes.email} (${emailRes.status})`);
-        result.provenance.push({
-          source: "SMTP_VERIFIER",
-          detail: `Cryptographically/Protocol-Verified Mailbox: ${emailRes.email} via ${emailRes.details || "Direct Protocol Handshake"}`,
-          timestamp: new Date().toISOString(),
-        });
+        if (isGenericEmail(emailRes.email)) {
+          // Strictly ban generic emails from being assigned as primary decision maker
+          result.fallbackCorporateEmail = emailRes.email;
+        } else {
+          result.email = emailRes.email;
+          result.emailStatus = emailRes.status;
+          result.corroboratingSignals.push(`Direct Mailbox Verified: ${emailRes.email} (${emailRes.status})`);
+          result.provenance.push({
+            source: "SMTP_VERIFIER",
+            detail: `Cryptographically/Protocol-Verified Mailbox: ${emailRes.email} via ${emailRes.details || "Direct Protocol Handshake"}`,
+            timestamp: new Date().toISOString(),
+          });
+        }
       }
     } catch {
       // Email resolution error
