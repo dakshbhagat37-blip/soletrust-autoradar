@@ -1,6 +1,6 @@
 import type { Business } from "../types/business.ts";
 import type { CrmLead } from "../types/lead.ts";
-import { getStudioSettings } from "../dispatch/settings-store.ts";
+import { DEFAULT_STUDIO_SETTINGS } from "../dispatch/types.ts";
 
 export interface ContractDetails {
   agreementNumber: string;
@@ -37,6 +37,8 @@ export function generateContractAgreement(
     providerName?: string;
     providerEmail?: string;
     customTotalValue?: string;
+    governingLaw?: string;
+    paymentTerms?: string;
   } = {}
 ): ContractDetails {
   const companyName = business.canonicalName || "Client Entity";
@@ -55,9 +57,8 @@ export function generateContractAgreement(
   const signerName = primaryDm?.fullName || (primaryDm as unknown as { name?: string })?.name || lead?.primaryDecisionMakerName || "Authorized Representative";
   const signerRole = primaryDm?.roleLabel || (primaryDm as unknown as { role?: string })?.role || lead?.primaryDecisionMakerRole || "Managing Director / Officer";
 
-  const settings = getStudioSettings();
-  const providerName = options.providerName || settings.studioName || "SoleTrust Commercial Technologies & Partners";
-  const providerEmail = options.providerEmail || settings.contactEmail || "partnerships@soletrust.local";
+  const providerName = options.providerName || DEFAULT_STUDIO_SETTINGS.studioName;
+  const providerEmail = options.providerEmail || DEFAULT_STUDIO_SETTINGS.contactEmail;
 
   const industry = (business.industry || "").toLowerCase();
   const isDtc = /d2c|dtc|d to c|ecommerce|e-commerce|consumer brand/i.test(industry);
@@ -162,8 +163,8 @@ export function generateContractAgreement(
     ];
   }
 
-  const governingLaw = settings.governingJurisdiction || business.country || "United States";
-  const paymentTerms = settings.paymentTerms || "50% upfront upon agreement execution, 50% upon final deliverable completion";
+  const governingLaw = options.governingLaw || business.country || DEFAULT_STUDIO_SETTINGS.governingJurisdiction;
+  const paymentTerms = options.paymentTerms || DEFAULT_STUDIO_SETTINGS.paymentTerms;
 
   // Markdown Document
   const markdownDocument = `# STATEMENT OF WORK & COMMERCIAL SERVICE AGREEMENT
