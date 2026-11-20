@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server";
-import { getStudioSettings, updateStudioSettings } from "@/lib/dispatch/settings-store";
-import { testWebhookEndpoint } from "@/lib/dispatch/webhook-dispatcher";
-import { checkOutboundPort25Reachability } from "@/lib/enrichment/smtp-verifier";
-import { createSuccessResponse, createErrorResponse } from "@/lib/types/api";
+import { getStudioSettings, updateStudioSettings } from "../../../../lib/dispatch/settings-store.ts";
+import { testWebhookEndpoint } from "../../../../lib/dispatch/webhook-dispatcher.ts";
+import { checkOutboundPort25Reachability } from "../../../../lib/enrichment/smtp-verifier.ts";
+import { createSuccessResponse, createErrorResponse } from "../../../../lib/types/api.ts";
 
 export async function GET() {
   const settings = getStudioSettings();

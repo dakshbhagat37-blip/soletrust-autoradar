@@ -168,7 +168,26 @@ export async function saveSearchJob(job: SearchJob): Promise<SearchJob> {
 }
 
 export async function getSearchJob(id: string): Promise<SearchJob | null> {
-  const cached = inMemoryJobs.get(id);
+  let cached = inMemoryJobs.get(id);
+  if (!cached) {
+    // Re-hydrate from disk store in case another worker/compilation instance wrote it
+    const fresh = loadJsonFromFile<PersistedJobsData>("jobs-store.json", INITIAL_DATA);
+    if (fresh.jobs && fresh.jobs[id]) {
+      cached = fresh.jobs[id];
+      inMemoryJobs.set(id, cached);
+      if (fresh.businesses) {
+        for (const [bId, b] of Object.entries(fresh.businesses)) {
+          if (!inMemoryBusinesses.has(bId)) inMemoryBusinesses.set(bId, b);
+        }
+      }
+      if (fresh.jobBusinesses) {
+        for (const [jId, bIds] of Object.entries(fresh.jobBusinesses)) {
+          if (!inMemoryJobBusinesses.has(jId)) inMemoryJobBusinesses.set(jId, bIds);
+        }
+      }
+    }
+  }
+
   if (cached) {
     return cached;
   }
