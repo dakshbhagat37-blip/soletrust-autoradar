@@ -1,5 +1,6 @@
 import type { Business } from "../types/business.ts";
 import type { CrmLead } from "../types/lead.ts";
+import { getStudioSettings } from "../dispatch/settings-store.ts";
 
 export interface ContractDetails {
   agreementNumber: string;
@@ -54,8 +55,9 @@ export function generateContractAgreement(
   const signerName = primaryDm?.fullName || (primaryDm as unknown as { name?: string })?.name || lead?.primaryDecisionMakerName || "Authorized Representative";
   const signerRole = primaryDm?.roleLabel || (primaryDm as unknown as { role?: string })?.role || lead?.primaryDecisionMakerRole || "Managing Director / Officer";
 
-  const providerName = options.providerName || "SoleTrust Commercial Technologies & Partners";
-  const providerEmail = options.providerEmail || "partnerships@soletrust.local";
+  const settings = getStudioSettings();
+  const providerName = options.providerName || settings.studioName || "SoleTrust Commercial Technologies & Partners";
+  const providerEmail = options.providerEmail || settings.contactEmail || "partnerships@soletrust.local";
 
   const industry = (business.industry || "").toLowerCase();
   const isDtc = /d2c|dtc|d to c|ecommerce|e-commerce|consumer brand/i.test(industry);
@@ -160,8 +162,8 @@ export function generateContractAgreement(
     ];
   }
 
-  const governingLaw = business.country || "United States";
-  const paymentTerms = "50% upfront upon agreement execution, 50% upon final deliverable completion";
+  const governingLaw = settings.governingJurisdiction || business.country || "United States";
+  const paymentTerms = settings.paymentTerms || "50% upfront upon agreement execution, 50% upon final deliverable completion";
 
   // Markdown Document
   const markdownDocument = `# STATEMENT OF WORK & COMMERCIAL SERVICE AGREEMENT

@@ -191,3 +191,18 @@ test("Phase 13.7 — Full Lifecycle Pipeline Stages in Kanban", () => {
   assert.equal(LEAD_STAGE_LABELS["pitch_sent"], "Pitch Sent");
   assert.equal(LEAD_STAGE_LABELS["contract_sent"], "Contract Sent");
 });
+
+test("Phase 13.8 — Webhook Dispatch & Studio Settings Persistence", async () => {
+  const { getStudioSettings, updateStudioSettings } = await import("../lib/dispatch/settings-store.ts");
+  const { testWebhookEndpoint } = await import("../lib/dispatch/webhook-dispatcher.ts");
+
+  const settings = getStudioSettings();
+  assert.ok(settings.studioName.length > 0);
+
+  const updated = updateStudioSettings({ defaultCurrency: "AUD" });
+  assert.equal(updated.defaultCurrency, "AUD");
+
+  // Invalid protocol test
+  const invalidRes = await testWebhookEndpoint("not-a-valid-url");
+  assert.equal(invalidRes.success, false);
+});

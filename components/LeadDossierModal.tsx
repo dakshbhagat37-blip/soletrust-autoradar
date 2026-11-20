@@ -21,6 +21,8 @@ export function LeadDossierModal({ business, onClose, onAdvanceStage }: LeadDoss
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [selectedTouch, setSelectedTouch] = useState<number>(1);
   const [activeSlideIndex, setActiveSlideIndex] = useState<number>(0);
+  const [isDispatching, setIsDispatching] = useState(false);
+  const [dispatchMsg, setDispatchMsg] = useState<string | null>(null);
 
   if (!business) return null;
 
@@ -30,6 +32,29 @@ export function LeadDossierModal({ business, onClose, onAdvanceStage }: LeadDoss
   const strategy = generateAiSalesStrategy(business);
   const pitchDeck = generatePitchDeck(business);
   const contract = generateContractAgreement(business);
+
+  const handleDispatchWebhook = async () => {
+    setIsDispatching(true);
+    setDispatchMsg(null);
+    try {
+      const res = await fetch(`/api/crm/leads/${business.id}/dispatch`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ event: "manual.dispatch" }),
+      });
+      const json = await res.json();
+      if (json.success && json.data?.success) {
+        setDispatchMsg("✓ Dispatched to Sequencer Webhook!");
+      } else {
+        setDispatchMsg(json.data?.message || json.error?.message || "Webhook dispatch failed");
+      }
+    } catch (err) {
+      setDispatchMsg((err as Error).message);
+    } finally {
+      setIsDispatching(false);
+      setTimeout(() => setDispatchMsg(null), 3500);
+    }
+  };
 
   const handleCopy = (key: string, text: string) => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -370,21 +395,31 @@ export function LeadDossierModal({ business, onClose, onAdvanceStage }: LeadDoss
                     <span className="text-[11px] font-mono uppercase text-indigo-400 font-bold flex items-center gap-1.5">
                       <span>📧</span> 3-Touch Multichannel Campaign Sequence
                     </span>
-                    <div className="flex items-center gap-1">
-                      {[1, 2, 3].map((t) => (
-                        <button
-                          key={t}
-                          type="button"
-                          onClick={() => setSelectedTouch(t)}
-                          className={`px-2.5 py-1 rounded-md text-[10px] font-semibold transition cursor-pointer ${
-                            selectedTouch === t
-                              ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/30"
-                              : "bg-gray-800 text-gray-400 hover:text-white"
-                          }`}
-                        >
-                          {t === 1 ? "Touch 1 (Day 1)" : t === 2 ? "Touch 2 (Day 4)" : "Touch 3 (Day 8)"}
-                        </button>
-                      ))}
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={isDispatching}
+                        onClick={handleDispatchWebhook}
+                        className="text-[10px] font-mono px-2.5 py-1 rounded-md bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 transition flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                      >
+                        {isDispatching ? "📡 Dispatching..." : "📡 Dispatch to Webhook / Sequencer"}
+                      </button>
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3].map((t) => (
+                          <button
+                            key={t}
+                            type="button"
+                            onClick={() => setSelectedTouch(t)}
+                            className={`px-2.5 py-1 rounded-md text-[10px] font-semibold transition cursor-pointer ${
+                              selectedTouch === t
+                                ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/30"
+                                : "bg-gray-800 text-gray-400 hover:text-white"
+                            }`}
+                          >
+                            {t === 1 ? "Touch 1 (Day 1)" : t === 2 ? "Touch 2 (Day 4)" : "Touch 3 (Day 8)"}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
@@ -399,6 +434,12 @@ export function LeadDossierModal({ business, onClose, onAdvanceStage }: LeadDoss
 
                     return (
                       <div className="space-y-2">
+                        {dispatchMsg && (
+                          <div className="p-2 rounded-lg bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-[11px] font-mono flex items-center gap-1.5">
+                            <span>📡</span>
+                            <span>{dispatchMsg}</span>
+                          </div>
+                        )}
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] text-gray-400 font-medium">
                             {currentTouch.label}

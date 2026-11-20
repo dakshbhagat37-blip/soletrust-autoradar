@@ -28,6 +28,7 @@ type HeaderProps = {
   onGlobalPromptSearch?: (prompt: string) => void;
   isSearching?: boolean;
   onOpenIcpStudio?: () => void;
+  onOpenSettings?: () => void;
 };
 
 export function Header({
@@ -38,6 +39,7 @@ export function Header({
   onGlobalPromptSearch,
   isSearching = false,
   onOpenIcpStudio,
+  onOpenSettings,
 }: HeaderProps) {
   const [promptText, setPromptText] = React.useState("");
   const searchInputRef = React.useRef<HTMLInputElement>(null);
@@ -139,6 +141,17 @@ export function Header({
           >
             <span>⚡</span>
             <span>ICP & Offer Studio</span>
+          </button>
+        )}
+
+        {onOpenSettings && (
+          <button
+            type="button"
+            onClick={onOpenSettings}
+            className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-gray-700 bg-gray-900/80 hover:bg-gray-800 text-gray-300 hover:text-white text-xs font-medium transition cursor-pointer"
+          >
+            <span>⚙️</span>
+            <span>Settings</span>
           </button>
         )}
 

@@ -9,6 +9,7 @@ import { LeadCard } from "../components/LeadCard.tsx";
 import { LeadDossierModal } from "../components/LeadDossierModal.tsx";
 import { ExportModal } from "../components/ExportModal.tsx";
 import { StrategyArchitectModal } from "../components/StrategyArchitectModal.tsx";
+import { StudioSettingsModal } from "../components/StudioSettingsModal.tsx";
 import { KanbanBoard } from "../components/KanbanBoard.tsx";
 import { CrmLeadsTable } from "../components/CrmLeadsTable.tsx";
 import { OutreachInboxView } from "../components/OutreachInboxView.tsx";
@@ -54,6 +55,7 @@ export default function Home() {
   const [selectedLead, setSelectedLead] = useState<Business | null>(null);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isIcpModalOpen, setIsIcpModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // CRM State
@@ -405,6 +407,7 @@ export default function Home() {
         onGlobalPromptSearch={handleGlobalPromptSearch}
         isSearching={isLoading}
         onOpenIcpStudio={() => setIsIcpModalOpen(true)}
+        onOpenSettings={() => setIsSettingsModalOpen(true)}
         leadCounts={{
           total: crmLeads.length,
           qualified: crmLeads.filter((l) => l.qualificationScore >= 60).length,
@@ -674,6 +677,12 @@ export default function Home() {
           setNavTab("find_leads");
           handleGlobalPromptSearch(prompt);
         }}
+      />
+
+      {/* Studio Settings & Webhook Dispatch Modal */}
+      <StudioSettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
       />
 
       {/* Export Modal */}
