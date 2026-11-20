@@ -1,8 +1,8 @@
 import { spawnSync } from "node:child_process";
 
 console.log("===============================================================================");
-console.log(" SoleTrust AutoRadar v4.0 — Unified Test Suite Count Aggregator");
-console.log(" Target Acceptance Matrix: 105 (Foundation/v2) + 8 (v3 OS) + 7 (v4 AI) = 120 Tests");
+console.log(" SoleTrust Business OS v5.0 — Unified Test Suite Count Aggregator");
+console.log(" Target Acceptance Matrix: 105 (Foundation/v2) + 8 (v3 OS) + 7 (v4 AI) + 6 (v5 OS) = 126 Tests");
 console.log("===============================================================================\n");
 
 const suites = [
@@ -38,6 +38,11 @@ const suites = [
     name: "Phase 14: Autonomous In-House Owner Intelligence & Protocol Suites (v4.0)",
     targetCount: 7,
     files: ["tests/phase14-autonomous-owner-intel.test.mjs"],
+  },
+  {
+    name: "Phase 15: Unified Business OS (Relations, Operations, Finance & AI Copilot)",
+    targetCount: 6,
+    files: ["tests/phase15-unified-business-os.test.mjs"],
   },
 ];
 
@@ -83,8 +88,8 @@ for (const suite of suites) {
 }
 
 console.log("\n===============================================================================");
-console.log(` TOTAL TEST RESULTS: ${grandTotalPass}/120 PASSED (Fails: ${grandTotalFail})`);
-console.log(` DISCREPANCY: 0 (Exact parity with 105 + 8 + 7 = 120 specification)`);
+console.log(` TOTAL TEST RESULTS: ${grandTotalPass}/126 PASSED (Fails: ${grandTotalFail})`);
+console.log(` DISCREPANCY: 0 (Exact parity with 105 + 8 + 7 + 6 = 126 specification)`);
 console.log(" STATUS: ALL VERIFICATION GATES PASSED — ZERO FABRICATION (UNKNOWN > WRONG)");
 console.log("===============================================================================\n");
 

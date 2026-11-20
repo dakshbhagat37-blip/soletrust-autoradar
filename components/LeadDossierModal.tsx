@@ -929,6 +929,31 @@ export function LeadDossierModal({ business, onClose, onAdvanceStage }: LeadDoss
                       📝 Mark Contract Sent
                     </button>
                   )}
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        const res = await fetch("/api/operations/projects", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            dealId: `deal-${business.id}`,
+                            contract,
+                          }),
+                        });
+                        const json = await res.json();
+                        if (json.success) {
+                          alert(`✓ Active Client Project spawned! Milestone deliverables wired to Operations & Invoicing.`);
+                          onAdvanceStage?.("won");
+                        }
+                      } catch (err) {
+                        alert("Project creation failed: " + (err as Error).message);
+                      }
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-md shadow-purple-500/20 transition cursor-pointer"
+                  >
+                    🚀 Convert to Active Project
+                  </button>
                 </div>
               </div>
 

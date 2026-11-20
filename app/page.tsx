@@ -16,10 +16,15 @@ import { OutreachInboxView } from "../components/OutreachInboxView.tsx";
 import { TasksFollowUpsView } from "../components/TasksFollowUpsView.tsx";
 import { DealsCustomersView } from "../components/DealsCustomersView.tsx";
 import { AnalyticsDashboard } from "../components/AnalyticsDashboard.tsx";
+import { OperationsBoard } from "../features/operations/OperationsBoard.tsx";
+import { FinanceDashboard } from "../features/finance/FinanceDashboard.tsx";
+import { ExecutiveCopilotView } from "../components/ExecutiveCopilotView.tsx";
 
 import type { Business } from "../lib/types/business.ts";
 import type { SearchJob, SearchStageStats } from "../lib/types/search-job.ts";
 import type { CrmLead, LeadStage } from "../lib/types/lead.ts";
+import type { ClientProject, InvoiceRecord, ExpenseRecord, DeliverableStatus } from "../server/db/schema.ts";
+import type { FinancialHealthMetrics } from "../features/finance/ledger-engine.ts";
 import type {
   FollowUp,
   Task,
@@ -58,6 +63,12 @@ export default function Home() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // Business OS Operations & Finance State
+  const [projects, setProjects] = useState<ClientProject[]>([]);
+  const [invoices, setInvoices] = useState<InvoiceRecord[]>([]);
+  const [expenses, setExpenses] = useState<ExpenseRecord[]>([]);
+  const [finMetrics, setFinMetrics] = useState<FinancialHealthMetrics | undefined>(undefined);
+
   // CRM State
   const [crmLeads, setCrmLeads] = useState<CrmLead[]>([]);
   const [followUps] = useState<FollowUp[]>([]);
@@ -68,6 +79,72 @@ export default function Home() {
   const [isCrmLoading, setIsCrmLoading] = useState(false);
 
   // Fetch all CRM state
+  const loadBusinessOsData = useCallback(async () => {
+    try {
+      const [projRes, finRes] = await Promise.all([
+        fetch("/api/operations/projects"),
+        fetch("/api/finance/metrics"),
+      ]);
+      if (projRes.ok) {
+        const json = await projRes.json();
+        if (json.success) setProjects(json.data);
+      }
+      if (finRes.ok) {
+        const json = await finRes.json();
+        if (json.success) {
+          setInvoices(json.data.invoices || []);
+          setExpenses(json.data.expenses || []);
+          setFinMetrics(json.data.metrics);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load Business OS data:", err);
+    }
+  }, []);
+
+  const handleUpdateDeliverableStatus = async (
+    projectId: string,
+    deliverableId: string,
+    status: DeliverableStatus
+  ) => {
+    try {
+      await fetch("/api/operations/deliverables", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projectId, deliverableId, status }),
+      });
+      await loadBusinessOsData();
+    } catch (err) {
+      console.error("Failed to update deliverable status:", err);
+    }
+  };
+
+  const handleRecordPayment = async (invoiceId: string, amountCents: number) => {
+    try {
+      await fetch("/api/finance/payments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ invoiceId, amountCents }),
+      });
+      await loadBusinessOsData();
+    } catch (err) {
+      console.error("Failed to record payment:", err);
+    }
+  };
+
+  const handleSendInvoiceReminder = async (invoiceId: string) => {
+    try {
+      await fetch("/api/finance/invoices", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "send_reminder", invoiceId }),
+      });
+      await loadBusinessOsData();
+    } catch (err) {
+      console.error("Failed to send invoice reminder:", err);
+    }
+  };
+
   const loadCrmData = useCallback(async () => {
     try {
       const [leadsRes, dealsRes, tasksRes, customersRes, metricsRes] = await Promise.all([
@@ -137,6 +214,7 @@ export default function Home() {
           const json = await metricsRes.json();
           if (json.success && !ignore) setMetrics(json.data);
         }
+        await loadBusinessOsData();
       } catch (err) {
         console.error("Initial load error", err);
       }
@@ -145,7 +223,7 @@ export default function Home() {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [loadBusinessOsData]);
 
   const handleSearchSubmit = async (data: SearchFormData) => {
     setIsLoading(true);
@@ -240,6 +318,7 @@ export default function Home() {
       });
       if (res.ok) {
         await loadCrmData();
+        await loadBusinessOsData();
       }
     } catch (err) {
       console.error("Failed to update stage:", err);
@@ -258,6 +337,7 @@ export default function Home() {
       });
       if (res.ok) {
         await loadCrmData();
+        await loadBusinessOsData();
       }
     } catch (err) {
       console.error("Outreach dispatch failed:", err);
@@ -276,6 +356,7 @@ export default function Home() {
       });
       if (res.ok) {
         await loadCrmData();
+        await loadBusinessOsData();
       }
     } catch (err) {
       console.error("Reply record failed:", err);
@@ -655,6 +736,35 @@ export default function Home() {
         {/* 7. ANALYTICS DASHBOARD VIEW */}
         {navTab === "analytics" && (
           <AnalyticsDashboard metrics={metrics} isLoading={isCrmLoading} />
+        )}
+
+        {/* 8. BUSINESS OS: DELIVERY & OPERATIONS BOARD */}
+        {navTab === "delivery" && (
+          <OperationsBoard
+            projects={projects}
+            onUpdateDeliverableStatus={handleUpdateDeliverableStatus}
+            onRefresh={loadBusinessOsData}
+          />
+        )}
+
+        {/* 9. BUSINESS OS: FINANCE, INVOICING & LEDGER DASHBOARD */}
+        {navTab === "finance" && (
+          <FinanceDashboard
+            invoices={invoices}
+            expenses={expenses}
+            metrics={finMetrics}
+            onRecordPayment={handleRecordPayment}
+            onSendReminder={handleSendInvoiceReminder}
+            onRefresh={loadBusinessOsData}
+          />
+        )}
+
+        {/* 10. BUSINESS OS: EXECUTIVE AI COO & CFO COPILOT */}
+        {navTab === "executive" && (
+          <ExecutiveCopilotView
+            onOpenIcpStudio={() => setIsIcpModalOpen(true)}
+            onRefresh={loadBusinessOsData}
+          />
         )}
       </main>
 

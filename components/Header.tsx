@@ -5,6 +5,9 @@ import React from "react";
 export type NavTab =
   | "find_leads"
   | "pipeline"
+  | "delivery"
+  | "finance"
+  | "executive"
   | "leads_table"
   | "outreach"
   | "tasks"
@@ -64,13 +67,16 @@ export function Header({
     if (!promptText.trim() || isSearching) return;
     onGlobalPromptSearch?.(promptText);
   };
-  const tabs: { id: NavTab; label: string; icon: string; count?: number }[] = [
-    { id: "find_leads", label: "Find Leads", icon: "🔍" },
-    { id: "pipeline", label: "Sales Pipeline", icon: "📊", count: leadCounts?.total },
-    { id: "leads_table", label: "All Leads", icon: "📋", count: leadCounts?.qualified },
-    { id: "outreach", label: "Outreach & Inbox", icon: "💬" },
-    { id: "tasks", label: "Follow-ups & Tasks", icon: "⏱️" },
-    { id: "deals", label: "Deals & Customers", icon: "💼", count: leadCounts?.dealsWon },
+  const tabs: { id: NavTab; label: string; icon: string; count?: number; primary?: boolean }[] = [
+    { id: "find_leads", label: "1. Radar (AI Leads)", icon: "🔍", primary: true },
+    { id: "pipeline", label: "2. Pipeline & Relations", icon: "🤝", count: leadCounts?.total, primary: true },
+    { id: "delivery", label: "3. Delivery (Ops)", icon: "🚀", primary: true },
+    { id: "finance", label: "4. Finance & Ledger", icon: "💳", primary: true },
+    { id: "executive", label: "5. AI Executive", icon: "🤖", primary: true },
+    { id: "leads_table", label: "Table", icon: "📋", count: leadCounts?.qualified },
+    { id: "outreach", label: "Inbox", icon: "💬" },
+    { id: "tasks", label: "Tasks", icon: "⏱️" },
+    { id: "deals", label: "Deals", icon: "💼", count: leadCounts?.dealsWon },
     { id: "analytics", label: "Analytics", icon: "📈" },
   ];
 
@@ -84,13 +90,13 @@ export function Header({
             </div>
             <div>
               <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                SoleTrust AutoRadar
+                SoleTrust Business OS
                 <span className="text-[11px] font-mono uppercase bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded-full">
-                  v2.0 Full Platform
+                  v5.0 Enterprise OS
                 </span>
               </h1>
               <p className="text-xs text-gray-400">
-                B2B Intelligence, Decision-Maker Enrichment, CRM Pipeline & Sales Engagement
+                Sovereign All-in-One Engine: Lead Discovery, CRM Relations, Delivery Operations &amp; Ledger Finance
               </p>
             </div>
           </div>
