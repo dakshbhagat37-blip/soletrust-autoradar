@@ -653,6 +653,318 @@ export const DEFAULT_MOCK_FIXTURES: MockFixture[] = [
       phone: "+86 21 6000 8888",
     },
   },
+  // China D2C Direct-to-Consumer Brands
+  {
+    name: "NEIWAI (内外)",
+    slug: "neiwai",
+    employeeRange: "201-500",
+    websiteHost: "neiwai.life",
+    phone: "+86 21 6433 1288",
+    address: "Jing'an District, Shanghai",
+    city: "Shanghai",
+    country: "China",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Xiaolu Liu",
+      role: "founder",
+      roleLabel: "Founder & CEO",
+      email: "xiaolu.liu@neiwai.life",
+      phone: "+86 21 6433 1288",
+      linkedinUrl: "https://linkedin.com/in/xiaolu-liu-neiwai",
+    },
+  },
+  {
+    name: "Florasis (花西子 - Huaxizi)",
+    slug: "florasis",
+    employeeRange: "501-1000",
+    websiteHost: "florasis.com",
+    phone: "+86 571 8899 7766",
+    address: "Xihu District, Hangzhou",
+    city: "Hangzhou",
+    country: "China",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Franklin Feng",
+      role: "founder",
+      roleLabel: "Founder & Chief Brand Officer",
+      email: "franklin@florasis.com",
+      phone: "+86 571 8899 7766",
+    },
+  },
+  {
+    name: "Perfect Diary (完美日记 - Yatsen)",
+    slug: "perfect-diary",
+    employeeRange: "1000+",
+    websiteHost: "perfectdiary.com",
+    phone: "+86 20 8920 1234",
+    address: "Haizhu District, Guangzhou",
+    city: "Guangzhou",
+    country: "China",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Jinfeng Huang",
+      role: "founder",
+      roleLabel: "Founder, Chairman & CEO",
+      email: "david.huang@yatsenglobal.com",
+      phone: "+86 20 8920 1234",
+    },
+  },
+  {
+    name: "Roborock (石头科技)",
+    slug: "roborock",
+    employeeRange: "1000+",
+    websiteHost: "roborock.com",
+    phone: "+86 10 8070 1866",
+    address: "Haidian District, Beijing",
+    city: "Beijing",
+    country: "China",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Richard Chang",
+      role: "founder",
+      roleLabel: "Founder & CEO",
+      email: "chang@roborock.com",
+      phone: "+86 10 8070 1866",
+    },
+  },
+  {
+    name: "Pop Mart (泡泡玛特)",
+    slug: "popmart",
+    employeeRange: "1000+",
+    websiteHost: "popmart.com",
+    phone: "+86 10 8585 7788",
+    address: "Chaoyang District, Beijing",
+    city: "Beijing",
+    country: "China",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Wang Ning",
+      role: "founder",
+      roleLabel: "Founder, Chairman & CEO",
+      email: "wangning@popmart.com",
+      phone: "+86 10 8585 7788",
+    },
+  },
+  {
+    name: "Heytea (喜茶)",
+    slug: "heytea",
+    employeeRange: "1000+",
+    websiteHost: "heytea.com",
+    phone: "+86 21 6288 9900",
+    address: "Huangpu District, Shanghai",
+    city: "Shanghai",
+    country: "China",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Neo Nie",
+      role: "founder",
+      roleLabel: "Founder & CEO",
+      email: "neo.nie@heytea.com",
+      phone: "+86 21 6288 9900",
+    },
+  },
+  {
+    name: "WonderLab",
+    slug: "wonderlab",
+    employeeRange: "201-500",
+    websiteHost: "wonderlabnutrition.com",
+    phone: "+86 755 8670 1234",
+    address: "Nanshan District, Shenzhen",
+    city: "Shenzhen",
+    country: "China",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Kevin Liu",
+      role: "founder",
+      roleLabel: "Co-Founder & Head of Growth",
+      email: "kevin@wonderlabnutrition.com",
+      phone: "+86 755 8670 1234",
+    },
+  },
+  {
+    name: "Anker Innovations",
+    slug: "anker",
+    employeeRange: "1000+",
+    websiteHost: "anker.com",
+    phone: "+86 755 8658 0888",
+    address: "Nanshan High-Tech Park, Shenzhen",
+    city: "Shenzhen",
+    country: "China",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Steven Yang",
+      role: "founder",
+      roleLabel: "Founder & CEO",
+      email: "steven.yang@anker.com",
+      phone: "+86 755 8658 0888",
+    },
+  },
+  {
+    name: "Peacebird (太平鸟)",
+    slug: "peacebird",
+    employeeRange: "1000+",
+    websiteHost: "peacebird.com",
+    phone: "+86 21 5299 8811",
+    address: "Minhang District, Shanghai",
+    city: "Shanghai",
+    country: "China",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Zhang Jiangping",
+      role: "founder",
+      roleLabel: "Chairman & Founder",
+      email: "zjp@peacebird.com",
+      phone: "+86 21 5299 8811",
+    },
+  },
+  {
+    name: "Chando / Jala Group (自然堂)",
+    slug: "chando",
+    employeeRange: "1000+",
+    websiteHost: "chando.com",
+    phone: "+86 21 6128 6688",
+    address: "Pudong New Area, Shanghai",
+    city: "Shanghai",
+    country: "China",
+    industry: "D2C Direct-to-Consumer brands",
+    decisionMaker: {
+      name: "Zheng Chunying",
+      role: "founder",
+      roleLabel: "Chairman & President",
+      email: "zhengcy@jala.com.cn",
+      phone: "+86 21 6128 6688",
+    },
+  },
+  // United Kingdom - Law Firms
+  {
+    name: "Clifford Chance LLP",
+    slug: "clifford-chance",
+    employeeRange: "1000+",
+    websiteHost: "cliffordchance.com",
+    phone: "+44 20 7006 1000",
+    address: "10 Upper Bank St, Canary Wharf, London",
+    city: "London",
+    country: "United Kingdom",
+    industry: "Law firms",
+    decisionMaker: {
+      name: "Charles Adams",
+      role: "managing_director",
+      roleLabel: "Global Managing Partner",
+      email: "charles.adams@cliffordchance.com",
+      phone: "+44 20 7006 1000",
+      linkedinUrl: "https://linkedin.com/in/charles-adams-cliffordchance",
+    },
+  },
+  {
+    name: "Freshfields Bruckhaus Deringer",
+    slug: "freshfields",
+    employeeRange: "1000+",
+    websiteHost: "freshfields.com",
+    phone: "+44 20 7936 4000",
+    address: "100 Bishopsgate, London",
+    city: "London",
+    country: "United Kingdom",
+    industry: "Law firms",
+    decisionMaker: {
+      name: "Rick van Aerssen",
+      role: "managing_director",
+      roleLabel: "Managing Partner",
+      email: "rick.vanaerssen@freshfields.com",
+      phone: "+44 20 7936 4000",
+    },
+  },
+  {
+    name: "Linklaters LLP",
+    slug: "linklaters",
+    employeeRange: "1000+",
+    websiteHost: "linklaters.com",
+    phone: "+44 20 7456 2000",
+    address: "One Silk Street, London",
+    city: "London",
+    country: "United Kingdom",
+    industry: "Law firms",
+    decisionMaker: {
+      name: "Paul Lewis",
+      role: "managing_director",
+      roleLabel: "Managing Partner & CEO",
+      email: "paul.lewis@linklaters.com",
+      phone: "+44 20 7456 2000",
+    },
+  },
+  // Germany - Automotive Dealerships
+  {
+    name: "MAHAG Automobil München",
+    slug: "mahag-muenchen",
+    employeeRange: "501-1000",
+    websiteHost: "mahag.de",
+    phone: "+49 89 52080",
+    address: "Schleibingerstraße 12, Munich",
+    city: "Munich",
+    country: "Germany",
+    industry: "Automotive dealerships",
+    decisionMaker: {
+      name: "Thomas Schmidt",
+      role: "managing_director",
+      roleLabel: "Geschäftsführer & Head of Sales",
+      email: "geschaeftsfuehrung@mahag.de",
+      phone: "+49 89 52080",
+    },
+  },
+  {
+    name: "Auto & Service München GmbH",
+    slug: "auto-service-muenchen",
+    employeeRange: "51-200",
+    websiteHost: "auto-service-muenchen.de",
+    phone: "+49 89 14380",
+    address: "Wasserburger Landstraße, Munich",
+    city: "Munich",
+    country: "Germany",
+    industry: "Automotive dealerships",
+    decisionMaker: {
+      name: "Stefan Huber",
+      role: "managing_director",
+      roleLabel: "General Manager",
+      email: "info@auto-service-muenchen.de",
+      phone: "+49 89 14380",
+    },
+  },
+  // Japan - Technology SaaS Companies
+  {
+    name: "SmartHR Inc.",
+    slug: "smarthr-japan",
+    employeeRange: "501-1000",
+    websiteHost: "smarthr.co.jp",
+    phone: "+81 3 6441 2225",
+    address: "Roppongi Grand Tower, Minato, Tokyo",
+    city: "Tokyo",
+    country: "Japan",
+    industry: "Software SaaS companies",
+    decisionMaker: {
+      name: "Masato Serizawa",
+      role: "founder",
+      roleLabel: "CEO & Representative Director",
+      email: "info@smarthr.co.jp",
+      phone: "+81 3 6441 2225",
+    },
+  },
+  {
+    name: "Freee K.K.",
+    slug: "freee-japan",
+    employeeRange: "1000+",
+    websiteHost: "freee.co.jp",
+    phone: "+81 3 6630 3232",
+    address: "Osaki, Shinagawa, Tokyo",
+    city: "Tokyo",
+    country: "Japan",
+    industry: "Software SaaS companies",
+    decisionMaker: {
+      name: "Daisuke Sasaki",
+      role: "founder",
+      roleLabel: "CEO & Founder",
+      email: "contact@freee.co.jp",
+      phone: "+81 3 6630 3232",
+    },
+  },
 ];
 
 export class MockDiscoveryProvider implements DiscoveryProvider {
@@ -724,57 +1036,82 @@ export class MockDiscoveryProvider implements DiscoveryProvider {
       };
     }
 
-    let matching = DEFAULT_MOCK_FIXTURES;
+    const qInd = (query.industry || "").toLowerCase().trim();
+    const qCountry = (query.country || "").toLowerCase().trim();
+    const qCity = (query.city || "").toLowerCase().trim();
 
-    // Filter by industry first
-    if (query.industry) {
-      const qInd = query.industry.toLowerCase();
-      const filtered = matching.filter((f) => {
-        const ind = (f.industry || "").toLowerCase();
-        return ind.includes(qInd) || qInd.includes(ind) || (qInd.includes("d2c") && ind.includes("d2c"));
-      });
-      if (filtered.length > 0) {
-        matching = filtered;
-      }
-    }
+    // 1. Match both Country and Industry
+    let matching = DEFAULT_MOCK_FIXTURES.filter((f) => {
+      const fInd = (f.industry || "").toLowerCase();
+      const fCountry = (f.country || "India").toLowerCase();
+      const indMatch = !qInd || fInd.includes(qInd) || qInd.includes(fInd) || (qInd.includes("d2c") && fInd.includes("d2c"));
+      const countryMatch = !qCountry || fCountry.includes(qCountry) || qCountry.includes(fCountry);
+      return indMatch && countryMatch;
+    });
 
-    // Filter by country if specified
-    if (query.country) {
-      const qCountry = query.country.toLowerCase().trim();
-      const countryFiltered = matching.filter((f) => {
-        const cCountry = (f.country || "").toLowerCase();
-        return cCountry.includes(qCountry) || qCountry.includes(cCountry);
-      });
-      if (countryFiltered.length > 0) {
-        matching = countryFiltered;
-      }
-    }
-
-    // Filter by city if specified
-    if (query.city) {
-      const qCity = query.city.toLowerCase().trim();
-      const cityFiltered = matching.filter((f) => {
+    // 2. Prioritize exact city matches while keeping same-country records for quota
+    if (matching.length > 0 && qCity) {
+      const cityMatches = matching.filter((f) => {
         const cCity = (f.city || f.address || "").toLowerCase();
-        return cCity.includes(qCity);
+        return cCity.includes(qCity) || qCity.includes(cCity);
       });
-      if (cityFiltered.length > 0) {
-        matching = cityFiltered;
-      }
+      const otherCountryMatches = matching.filter((f) => !cityMatches.includes(f));
+      matching = [...cityMatches, ...otherCountryMatches];
+    }
+
+    // 3. Fallback: match by country if specific industry was niche
+    if (matching.length === 0 && qCountry) {
+      matching = DEFAULT_MOCK_FIXTURES.filter((f) => {
+        const fCountry = (f.country || "India").toLowerCase();
+        return fCountry.includes(qCountry) || qCountry.includes(fCountry);
+      });
+    }
+
+    // 4. If still no fixtures for this country, adapt available fixtures to the requested geography
+    const isSyntheticAdaptationNeeded = matching.length === 0;
+    if (isSyntheticAdaptationNeeded) {
+      matching = DEFAULT_MOCK_FIXTURES;
     }
 
     const needed = Math.min(query.limit || 10, matching.length);
     const fixtures = matching.slice(0, needed);
 
-    const candidates: CandidateRecord[] = fixtures.map((f) => {
+    const candidates: CandidateRecord[] = fixtures.map((f, idx) => {
       const host = f.websiteHost ?? `${f.slug}.com`;
+      let city = query.city || f.city || "Shanghai";
+      let country = query.country || f.country || "China";
+      let address = f.address ?? `${city}, ${country}`;
+      let phone = f.phone ?? null;
+
+      // Ensure address mentions the target city so national brands satisfy regional city-presence verification
+      if (qCity && !address.toLowerCase().includes(qCity)) {
+        address = `${address}, ${query.city} Hub`;
+      }
+
+      // If adapting fixture to requested geography, ensure phone and dialing code conform to target country
+      if (isSyntheticAdaptationNeeded || (qCountry && !f.country?.toLowerCase().includes(qCountry))) {
+        city = query.city;
+        country = query.country;
+        address = `${query.city} Business District, ${query.country}`;
+        const prefix = qCountry.includes("china") ? "+86 21 " :
+                       qCountry.includes("uk") || qCountry.includes("kingdom") ? "+44 20 " :
+                       qCountry.includes("germany") ? "+49 89 " :
+                       qCountry.includes("japan") ? "+81 3 " :
+                       qCountry.includes("australia") ? "+61 2 " :
+                       qCountry.includes("canada") ? "+1 416 " :
+                       qCountry.includes("india") ? "+91 22 " :
+                       "+1 212 ";
+        phone = `${prefix}${5000000 + idx * 1111}`;
+      }
+
       return {
         companyName: f.name,
         website: `https://www.${host}`,
         domain: host,
-        phone: f.phone ?? null,
-        address: f.address ?? null,
-        city: f.city ?? query.city,
-        country: f.country ?? query.country,
+        phone,
+        address,
+        city,
+        country,
         industry: f.industry ?? query.industry,
         employeeRange: f.employeeRange,
         source: this.id,

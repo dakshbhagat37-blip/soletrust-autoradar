@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { parseNaturalLanguagePrompt } from "../lib/discovery/prompt-parser.ts";
 
 export type SearchFormData = {
@@ -42,19 +42,52 @@ export function SearchForm({ onSubmit, isLoading }: SearchFormProps) {
   const [promptText, setPromptText] = useState("");
   const [detectedSummary, setDetectedSummary] = useState<string | null>(null);
 
+  // Live real-time intent parsing with debounce
+  useEffect(() => {
+    if (!promptText.trim()) {
+      setDetectedSummary(null);
+      return;
+    }
+    const timer = setTimeout(() => {
+      const res = parseNaturalLanguagePrompt(promptText);
+      setFormData((prev) => ({
+        ...res.data,
+        provider: prev.provider,
+        limit: prev.limit,
+      }));
+      setDetectedSummary(res.summary);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [promptText]);
+
   const handlePromptParseAndSubmit = (shouldSubmitImmediate: boolean = false) => {
     if (!promptText.trim()) return;
     const res = parseNaturalLanguagePrompt(promptText);
-    setFormData(res.data);
+    const updated = {
+      ...res.data,
+      provider: formData.provider,
+    };
+    setFormData(updated);
     setDetectedSummary(res.summary);
     if (shouldSubmitImmediate) {
-      onSubmit(res.data);
+      onSubmit(updated);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    if (promptText.trim()) {
+      const res = parseNaturalLanguagePrompt(promptText);
+      const updated = {
+        ...res.data,
+        provider: formData.provider,
+      };
+      setFormData(updated);
+      setDetectedSummary(res.summary);
+      onSubmit(updated);
+    } else {
+      onSubmit(formData);
+    }
   };
 
   return (

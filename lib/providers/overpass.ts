@@ -8,13 +8,13 @@ import type { SearchJobQuery } from "../types/search-job.ts";
 import { logger } from "../logging/logger.ts";
 
 const OVERPASS_ENDPOINTS = [
+  "https://overpass.private.coffee/api/interpreter",
   "https://overpass-api.de/api/interpreter",
   "https://overpass.kumi.systems/api/interpreter",
-  "https://overpass.private.coffee/api/interpreter",
 ];
 
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
-const REQUEST_TIMEOUT_MS = 10_000;
+const REQUEST_TIMEOUT_MS = 15_000;
 
 type NominatimResult = {
   lat?: string;
@@ -177,6 +177,14 @@ async function geocodeCity(
 
 export function getOsmTagFiltersForIndustry(industry: string): string[] {
   const lower = industry.toLowerCase();
+  if (lower.includes("d2c") || lower.includes("direct to consumer") || lower.includes("ecommerce") || lower.includes("online brand") || lower.includes("apparel") || lower.includes("clothing") || lower.includes("fashion")) {
+    return [
+      `node["shop"~"clothes|fashion|boutique|department_store|shoes|cosmetics|beauty"]`,
+      `way["shop"~"clothes|fashion|boutique|department_store|shoes|cosmetics|beauty"]`,
+      `node["office"~"company|fashion|it"]`,
+      `way["office"~"company|fashion|it"]`,
+    ];
+  }
   if (lower.includes("supermarket") || lower.includes("grocery") || lower.includes("mart") || lower.includes("food store") || lower.includes("retail")) {
     return [
       `node["shop"="supermarket"]`,
@@ -285,11 +293,11 @@ function buildOverpassQuery(lat: number, lon: number, industry: string, radiusDe
   const queries = filters.map((f) => `    ${f}(${bbox});`).join("\n");
 
   return `
-    [out:json][timeout:35];
+    [out:json][timeout:25];
     (
 ${queries}
     );
-    out center tags;
+    out center tags 30;
   `;
 }
 
@@ -373,7 +381,7 @@ export class OverpassDiscoveryProvider implements DiscoveryProvider {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-            "User-Agent": "SoleTrust-AutoRadar/1.0",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 SoleTrustAutoRadar/3.0",
           },
           body: `data=${encodeURIComponent(ql)}`,
           signal: controller.signal,
