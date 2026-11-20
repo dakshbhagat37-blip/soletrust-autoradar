@@ -133,27 +133,29 @@ export function Header({
           </div>
         </form>
 
-        {onOpenIcpStudio && (
-          <button
-            type="button"
-            onClick={onOpenIcpStudio}
-            className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-cyan-500/40 bg-cyan-950/30 hover:bg-cyan-900/40 text-cyan-300 text-xs font-semibold shadow-sm shadow-cyan-500/20 transition cursor-pointer"
-          >
-            <span>⚡</span>
-            <span>ICP & Offer Studio</span>
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {onOpenIcpStudio && (
+            <button
+              type="button"
+              onClick={onOpenIcpStudio}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-cyan-500/40 bg-cyan-950/40 hover:bg-cyan-900/50 text-cyan-300 text-xs font-semibold shadow-sm shadow-cyan-500/20 transition cursor-pointer"
+            >
+              <span>⚡</span>
+              <span className="hidden sm:inline">ICP & Offer Studio</span>
+            </button>
+          )}
 
-        {onOpenSettings && (
-          <button
-            type="button"
-            onClick={onOpenSettings}
-            className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-gray-700 bg-gray-900/80 hover:bg-gray-800 text-gray-300 hover:text-white text-xs font-medium transition cursor-pointer"
-          >
-            <span>⚙️</span>
-            <span>Settings</span>
-          </button>
-        )}
+          {onOpenSettings && (
+            <button
+              type="button"
+              onClick={onOpenSettings}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-gray-700 bg-gray-900/80 hover:bg-gray-800 text-gray-300 hover:text-white text-xs font-medium transition cursor-pointer"
+            >
+              <span>⚙️</span>
+              <span className="hidden sm:inline">Settings</span>
+            </button>
+          )}
+        </div>
 
         {/* Right side: Principle & Provider status pills */}
         <div className="flex items-center gap-3 text-xs">

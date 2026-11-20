@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { parseNaturalLanguagePrompt } from "../lib/discovery/prompt-parser.ts";
 
 export type SearchFormData = {
@@ -15,6 +15,7 @@ export type SearchFormData = {
 type SearchFormProps = {
   onSubmit: (data: SearchFormData) => void;
   isLoading: boolean;
+  onOpenIcpStudio?: () => void;
 };
 
 const PRESETS = [
@@ -30,7 +31,7 @@ const PRESETS = [
   { label: "Vadodara (Dermatology)", industry: "Dermatology clinics", city: "Vadodara", country: "India" },
 ];
 
-export function SearchForm({ onSubmit, isLoading }: SearchFormProps) {
+export function SearchForm({ onSubmit, isLoading, onOpenIcpStudio }: SearchFormProps) {
   const [formData, setFormData] = useState<SearchFormData>({
     industry: "D2C Direct-to-Consumer brands",
     city: "Sydney",
@@ -41,24 +42,6 @@ export function SearchForm({ onSubmit, isLoading }: SearchFormProps) {
   });
   const [promptText, setPromptText] = useState("");
   const [detectedSummary, setDetectedSummary] = useState<string | null>(null);
-
-  // Live real-time intent parsing with debounce
-  useEffect(() => {
-    if (!promptText.trim()) {
-      setDetectedSummary(null);
-      return;
-    }
-    const timer = setTimeout(() => {
-      const res = parseNaturalLanguagePrompt(promptText);
-      setFormData((prev) => ({
-        ...res.data,
-        provider: prev.provider,
-        limit: prev.limit,
-      }));
-      setDetectedSummary(res.summary);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [promptText]);
 
   const handlePromptParseAndSubmit = (shouldSubmitImmediate: boolean = false) => {
     if (!promptText.trim()) return;
@@ -94,20 +77,46 @@ export function SearchForm({ onSubmit, isLoading }: SearchFormProps) {
     <div className="rounded-2xl border border-gray-800 bg-gray-900/70 p-6 shadow-xl backdrop-blur-sm space-y-6">
       {/* Natural Language Prompt Search Bar */}
       <div className="p-4 rounded-xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/40 via-purple-950/20 to-gray-950/50 shadow-inner">
-        <div className="flex items-center justify-between gap-2 mb-2">
+        <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
             <h3 className="text-xs font-semibold text-indigo-300 uppercase tracking-wider">
               ✨ AI Natural Language Search (Prompt-to-Pipeline)
             </h3>
           </div>
-          <span className="text-[11px] text-gray-400">Type any prompt in plain English</span>
+          <div className="flex items-center gap-3">
+            {onOpenIcpStudio && (
+              <button
+                type="button"
+                onClick={onOpenIcpStudio}
+                className="px-2.5 py-1 rounded-lg border border-cyan-500/40 bg-cyan-950/50 hover:bg-cyan-900/60 text-cyan-300 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-sm shadow-cyan-500/20"
+              >
+                <span>⚡</span>
+                <span>Open ICP & Strategy Studio</span>
+              </button>
+            )}
+            <span className="text-[11px] text-gray-400 hidden md:inline">Type any prompt in plain English</span>
+          </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
           <input
             type="text"
             value={promptText}
-            onChange={(e) => setPromptText(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setPromptText(val);
+              if (val.trim()) {
+                const res = parseNaturalLanguagePrompt(val);
+                setFormData((prev) => ({
+                  ...res.data,
+                  provider: prev.provider,
+                  limit: prev.limit,
+                }));
+                setDetectedSummary(res.summary);
+              } else {
+                setDetectedSummary(null);
+              }
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();

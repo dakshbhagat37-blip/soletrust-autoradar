@@ -434,7 +434,11 @@ export default function Home() {
         {/* 1. FIND LEADS VIEW */}
         {navTab === "find_leads" && (
           <div className="space-y-8">
-            <SearchForm onSubmit={handleSearchSubmit} isLoading={isLoading} />
+            <SearchForm
+              onSubmit={handleSearchSubmit}
+              isLoading={isLoading}
+              onOpenIcpStudio={() => setIsIcpModalOpen(true)}
+            />
 
             {(searchJob || isLoading) && (
               <StageTracker
