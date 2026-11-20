@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server";
-import { getLeadById } from "../../../../../lib/crm/store.ts";
-import { getBusinessById } from "../../../../../lib/jobs/store.ts";
-import { dispatchLeadWebhook } from "../../../../../lib/dispatch/webhook-dispatcher.ts";
-import { createSuccessResponse, createErrorResponse } from "../../../../../lib/types/api.ts";
+import { getLeadById } from "@/lib/crm/store";
+import { getBusinessById } from "@/lib/jobs/store";
+import { dispatchLeadWebhook } from "@/lib/dispatch/webhook-dispatcher";
+import { createSuccessResponse, createErrorResponse } from "@/lib/types/api";
 
 type RouteParams = {
   params: Promise<{ id: string }>;
