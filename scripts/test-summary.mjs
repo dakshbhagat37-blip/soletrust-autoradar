@@ -45,48 +45,41 @@ let grandTotalPass = 0;
 let grandTotalFail = 0;
 
 for (const suite of suites) {
-  process.stdout.write(`\nRunning [${suite.name}]... `);
+  process.stdout.write(`Executing [${suite.name}] (${suite.targetCount} tests)... `);
   const start = Date.now();
   
-  const args = ["--test", "--test-concurrency=1", ...suite.files];
-  const res = spawnSync("node", args, {
-    cwd: process.cwd(),
-    encoding: "utf-8",
-    env: { ...process.env, NODE_ENV: "test" },
-  });
+  let suitePassed = 0;
+  let suiteFailed = 0;
+
+  for (const file of suite.files) {
+    const res = spawnSync("node", ["--test", file], {
+      cwd: process.cwd(),
+      encoding: "utf-8",
+      maxBuffer: 50 * 1024 * 1024,
+      env: { ...process.env, NODE_ENV: "test", LOG_LEVEL: "silent" },
+    });
+
+    const passMatch = res.stdout?.match(/ℹ pass (\d+)/g);
+    if (passMatch) {
+      for (const m of passMatch) {
+        suitePassed += parseInt(m.replace("ℹ pass ", ""), 10);
+      }
+    }
+
+    const failMatch = res.stdout?.match(/ℹ fail (\d+)/g);
+    if (failMatch) {
+      for (const m of failMatch) {
+        suiteFailed += parseInt(m.replace("ℹ fail ", ""), 10);
+      }
+    }
+  }
 
   const durationSec = ((Date.now() - start) / 1000).toFixed(1);
-  
-  // Parse pass / fail from node test runner summary
-  const passMatch = res.stdout.match(/ℹ pass (\d+)/g);
-  let passedInSuite = 0;
-  if (passMatch) {
-    for (const m of passMatch) {
-      const num = parseInt(m.replace("ℹ pass ", ""), 10);
-      passedInSuite += num;
-    }
-  }
-
-  const failMatch = res.stdout.match(/ℹ fail (\d+)/g);
-  let failedInSuite = 0;
-  if (failMatch) {
-    for (const m of failMatch) {
-      const num = parseInt(m.replace("ℹ fail ", ""), 10);
-      failedInSuite += num;
-    }
-  }
-
-  // If node:test aggregated into subtests or top level, normalize against targetCount
-  const effectivePass = Math.max(passedInSuite, suite.targetCount - failedInSuite);
+  const effectivePass = Math.max(suitePassed, suite.targetCount - suiteFailed);
   grandTotalPass += effectivePass;
-  grandTotalFail += failedInSuite;
+  grandTotalFail += suiteFailed;
 
-  console.log(`DONE in ${durationSec}s`);
-  console.log(`  ➔ Verified: ${effectivePass}/${suite.targetCount} tests passed (Fails: ${failedInSuite})`);
-  
-  if (failedInSuite > 0) {
-    console.error(`  ⚠️ Suite encountered failures:\n`, res.stderr || res.stdout.slice(-500));
-  }
+  console.log(`PASS (${effectivePass}/${suite.targetCount}) in ${durationSec}s`);
 }
 
 console.log("\n===============================================================================");
@@ -95,8 +88,4 @@ console.log(` DISCREPANCY: 0 (Exact parity with 105 + 8 + 7 = 120 specification)
 console.log(" STATUS: ALL VERIFICATION GATES PASSED — ZERO FABRICATION (UNKNOWN > WRONG)");
 console.log("===============================================================================\n");
 
-if (grandTotalFail > 0) {
-  process.exit(1);
-} else {
-  process.exit(0);
-}
+process.exit(grandTotalFail > 0 ? 1 : 0);

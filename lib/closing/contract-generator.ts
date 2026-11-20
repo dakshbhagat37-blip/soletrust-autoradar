@@ -1,7 +1,6 @@
 import type { Business } from "../types/business.ts";
 import type { CrmLead } from "../types/lead.ts";
 import { DEFAULT_STUDIO_SETTINGS } from "../dispatch/types.ts";
-import { getStudioSettings } from "../dispatch/settings-store.ts";
 
 export interface ContractDetails {
   agreementNumber: string;
@@ -63,13 +62,12 @@ export function generateContractAgreement(
   const signerName = primaryDm?.fullName || (primaryDm as unknown as { name?: string })?.name || lead?.primaryDecisionMakerName || "Authorized Representative";
   const signerRole = primaryDm?.roleLabel || (primaryDm as unknown as { role?: string })?.role || lead?.primaryDecisionMakerRole || "Managing Director / Officer";
 
-  const studioSettings = getStudioSettings();
-  const providerName = options.providerName || studioSettings.studioName || DEFAULT_STUDIO_SETTINGS.studioName;
-  const providerEmail = options.providerEmail || studioSettings.contactEmail || DEFAULT_STUDIO_SETTINGS.contactEmail;
-  const taxId = options.taxId || studioSettings.taxId || DEFAULT_STUDIO_SETTINGS.taxId || "N/A (Sole Proprietorship / Corporate)";
-  const authorizedSignatory = options.authorizedSignatory || studioSettings.authorizedSignatory || DEFAULT_STUDIO_SETTINGS.authorizedSignatory || "Authorized Partner";
-  const governingLaw = options.governingLawJurisdiction || options.governingLaw || studioSettings.governingLawJurisdiction || studioSettings.governingJurisdiction || business.country || DEFAULT_STUDIO_SETTINGS.governingJurisdiction;
-  const paymentTerms = options.paymentTerms || studioSettings.paymentTerms || DEFAULT_STUDIO_SETTINGS.paymentTerms;
+  const providerName = options.providerName || DEFAULT_STUDIO_SETTINGS.studioName;
+  const providerEmail = options.providerEmail || DEFAULT_STUDIO_SETTINGS.contactEmail;
+  const taxId = options.taxId || DEFAULT_STUDIO_SETTINGS.taxId || "N/A (Sole Proprietorship / Corporate)";
+  const authorizedSignatory = options.authorizedSignatory || DEFAULT_STUDIO_SETTINGS.authorizedSignatory || "Authorized Partner";
+  const governingLaw = options.governingLawJurisdiction || options.governingLaw || DEFAULT_STUDIO_SETTINGS.governingLawJurisdiction || DEFAULT_STUDIO_SETTINGS.governingJurisdiction || business.country || DEFAULT_STUDIO_SETTINGS.governingJurisdiction;
+  const paymentTerms = options.paymentTerms || DEFAULT_STUDIO_SETTINGS.paymentTerms;
 
   const industry = (business.industry || "").toLowerCase();
   const isDtc = /d2c|dtc|d to c|ecommerce|e-commerce|consumer brand/i.test(industry);
