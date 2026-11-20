@@ -1,12 +1,15 @@
 import type { Business } from "../types/business.ts";
 import type { CrmLead } from "../types/lead.ts";
 import { DEFAULT_STUDIO_SETTINGS } from "../dispatch/types.ts";
+import { getStudioSettings } from "../dispatch/settings-store.ts";
 
 export interface ContractDetails {
   agreementNumber: string;
   effectiveDate: string;
   providerName: string;
   providerEmail: string;
+  taxId?: string;
+  authorizedSignatory?: string;
   clientLegalName: string;
   clientAddress: string;
   clientSignerName: string;
@@ -39,6 +42,9 @@ export function generateContractAgreement(
     customTotalValue?: string;
     governingLaw?: string;
     paymentTerms?: string;
+    taxId?: string;
+    governingLawJurisdiction?: string;
+    authorizedSignatory?: string;
   } = {}
 ): ContractDetails {
   const companyName = business.canonicalName || "Client Entity";
@@ -57,8 +63,13 @@ export function generateContractAgreement(
   const signerName = primaryDm?.fullName || (primaryDm as unknown as { name?: string })?.name || lead?.primaryDecisionMakerName || "Authorized Representative";
   const signerRole = primaryDm?.roleLabel || (primaryDm as unknown as { role?: string })?.role || lead?.primaryDecisionMakerRole || "Managing Director / Officer";
 
-  const providerName = options.providerName || DEFAULT_STUDIO_SETTINGS.studioName;
-  const providerEmail = options.providerEmail || DEFAULT_STUDIO_SETTINGS.contactEmail;
+  const studioSettings = getStudioSettings();
+  const providerName = options.providerName || studioSettings.studioName || DEFAULT_STUDIO_SETTINGS.studioName;
+  const providerEmail = options.providerEmail || studioSettings.contactEmail || DEFAULT_STUDIO_SETTINGS.contactEmail;
+  const taxId = options.taxId || studioSettings.taxId || DEFAULT_STUDIO_SETTINGS.taxId || "N/A (Sole Proprietorship / Corporate)";
+  const authorizedSignatory = options.authorizedSignatory || studioSettings.authorizedSignatory || DEFAULT_STUDIO_SETTINGS.authorizedSignatory || "Authorized Partner";
+  const governingLaw = options.governingLawJurisdiction || options.governingLaw || studioSettings.governingLawJurisdiction || studioSettings.governingJurisdiction || business.country || DEFAULT_STUDIO_SETTINGS.governingJurisdiction;
+  const paymentTerms = options.paymentTerms || studioSettings.paymentTerms || DEFAULT_STUDIO_SETTINGS.paymentTerms;
 
   const industry = (business.industry || "").toLowerCase();
   const isDtc = /d2c|dtc|d to c|ecommerce|e-commerce|consumer brand/i.test(industry);
@@ -163,9 +174,6 @@ export function generateContractAgreement(
     ];
   }
 
-  const governingLaw = options.governingLaw || business.country || DEFAULT_STUDIO_SETTINGS.governingJurisdiction;
-  const paymentTerms = options.paymentTerms || DEFAULT_STUDIO_SETTINGS.paymentTerms;
-
   // Markdown Document
   const markdownDocument = `# STATEMENT OF WORK & COMMERCIAL SERVICE AGREEMENT
 **Agreement Number:** ${agreementNumber}  
@@ -175,7 +183,10 @@ export function generateContractAgreement(
 ---
 
 ### PARTIES
-1. **Service Provider:** ${providerName} (Contact: ${providerEmail})
+1. **Service Provider:** ${providerName}
+   - **Contact Email:** ${providerEmail}
+   - **Tax ID / Business Registration:** ${taxId}
+   - **Authorized Signatory:** ${authorizedSignatory}
 2. **Client:** ${companyName}
    - **Registered Address:** ${address}
    - **Authorized Signer:** ${signerName}, ${signerRole}
@@ -213,7 +224,8 @@ Either party may terminate this Agreement with fourteen (14) days written notice
 
 **For Service Provider:**  
 Signature: _______________________  
-Name: Authorized Partner  
+Name: ${authorizedSignatory}  
+Title: Authorized Partner / Signatory  
 Date: ${effectiveDate}  
 
 **For Client (${companyName}):**  
@@ -252,6 +264,8 @@ Date: _______________________
 
   <h2>1. Parties</h2>
   <p><strong>Provider:</strong> ${providerName} (${providerEmail})<br>
+  <strong>Tax ID / Registration:</strong> ${taxId}<br>
+  <strong>Authorized Signatory:</strong> ${authorizedSignatory}<br>
   <strong>Client:</strong> ${companyName}, ${address} (Signer: ${signerName}, ${signerRole})</p>
 
   <h2>2. Scope of Services</h2>
@@ -278,8 +292,8 @@ Date: _______________________
   <div class="signatures">
     <div class="sig-block">
       <div class="sig-line"></div>
-      <strong>Provider Authorized Representative</strong><br>
-      ${providerName}<br>
+      <strong>${authorizedSignatory}</strong><br>
+      Authorized Signatory, ${providerName}<br>
       Date: ${effectiveDate}
     </div>
     <div class="sig-block">
@@ -297,6 +311,8 @@ Date: _______________________
     effectiveDate,
     providerName,
     providerEmail,
+    taxId,
+    authorizedSignatory,
     clientLegalName: companyName,
     clientAddress: address,
     clientSignerName: signerName,

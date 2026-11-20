@@ -127,19 +127,65 @@ export async function crawlDomainIntelligence(
       const html = await resp.text();
       const $ = cheerio.load(html);
 
-      // 1. Audit Signals Detection
+      // 1. Audit Signals Detection (DOM tags, hydrated scripts, Next.js __NEXT_DATA__, and Shopify analytics)
       const htmlText = html.toLowerCase();
-      if (htmlText.includes("fbq('init'") || htmlText.includes("connect.facebook.net")) {
+      
+      const scriptContents: string[] = [];
+      $("script").each((_, el) => {
+        const text = $(el).html() || $(el).text() || "";
+        if (text.length > 0) {
+          scriptContents.push(text.toLowerCase());
+        }
+      });
+      const combinedScripts = scriptContents.join("\n");
+      const fullContext = `${htmlText}\n${combinedScripts}`;
+
+      // Meta Pixel & CAPI Detection (DOM + hydrated JSON/Shopify/Next.js)
+      if (
+        fullContext.includes("fbq('init'") ||
+        fullContext.includes("connect.facebook.net") ||
+        fullContext.includes("fbevents.js") ||
+        fullContext.includes("facebook-jssdk") ||
+        fullContext.includes("meta-pixel") ||
+        fullContext.includes("fb_pixel_id") ||
+        fullContext.includes("window.fbq") ||
+        fullContext.includes('"facebook"')
+      ) {
         result.auditSignals.hasMetaPixel = true;
       }
-      if (htmlText.includes("googletagmanager.com") || htmlText.includes("gtag('config'")) {
+
+      // Google Tag & Analytics Detection (gtag, GTM, Shopify trekkie, ga)
+      if (
+        fullContext.includes("googletagmanager.com") ||
+        fullContext.includes("gtag('config'") ||
+        fullContext.includes("google-analytics.com") ||
+        fullContext.includes("analytics.js") ||
+        fullContext.includes("gtm.js") ||
+        fullContext.includes("window.datalayer") ||
+        fullContext.includes("trekkie") ||
+        fullContext.includes("shopifyanalytics")
+      ) {
         result.auditSignals.hasGoogleTag = true;
       }
+
+      // Modern Booking & Scheduling Engine Detection (Fresha, Calendly, Cal, Acuity, etc.)
       if (
-        htmlText.includes("calendly.com") ||
-        htmlText.includes("cal.com") ||
-        htmlText.includes("acuityscheduling.com") ||
-        htmlText.includes("booking")
+        fullContext.includes("calendly.com") ||
+        fullContext.includes("cal.com") ||
+        fullContext.includes("acuityscheduling.com") ||
+        fullContext.includes("fresha.com") ||
+        fullContext.includes("mindbodyonline.com") ||
+        fullContext.includes("vagaro.com") ||
+        fullContext.includes("setmore.com") ||
+        fullContext.includes("jane.app") ||
+        fullContext.includes("hotdoc.com.au") ||
+        fullContext.includes("healthengine.com.au") ||
+        fullContext.includes("squareup.com/appointments") ||
+        fullContext.includes("zocdoc.com") ||
+        fullContext.includes("booker.com") ||
+        fullContext.includes("tidycal.com") ||
+        fullContext.includes("appointment") ||
+        fullContext.includes("booking")
       ) {
         result.auditSignals.hasBookingEngine = true;
       }

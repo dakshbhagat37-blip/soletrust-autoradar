@@ -7,7 +7,9 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test --test-concurrency=1 tests/**/*.test.mjs"
+    "test": "node --test --test-concurrency=1 tests/**/*.test.mjs",
+    "test:summary": "node scripts/test-summary.mjs",
+    "test:all": "node scripts/test-summary.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",

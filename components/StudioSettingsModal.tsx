@@ -15,6 +15,7 @@ export function StudioSettingsModal({ isOpen, onClose, onSaved }: StudioSettings
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
+  const [isCheckingPort25, setIsCheckingPort25] = useState(false);
   const [webhookTestStatus, setWebhookTestStatus] = useState<{ success: boolean; message: string } | null>(null);
   const [saveSuccessMsg, setSaveSuccessMsg] = useState(false);
 
@@ -39,6 +40,25 @@ export function StudioSettingsModal({ isOpen, onClose, onSaved }: StudioSettings
   }, [isOpen]);
 
   if (!isOpen) return null;
+
+  const handleCheckPort25 = async () => {
+    setIsCheckingPort25(true);
+    try {
+      const res = await fetch("/api/crm/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "check_port25" }),
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        setSettings((prev) => ({ ...prev, port25Diagnostic: data.data }));
+      }
+    } catch {
+      // Diagnostic check error
+    } finally {
+      setIsCheckingPort25(false);
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -159,6 +179,30 @@ export function StudioSettingsModal({ isOpen, onClose, onSaved }: StudioSettings
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">Tax ID / Business Registration (ABN, GST, EIN)</label>
+                    <input
+                      type="text"
+                      value={settings.taxId || ""}
+                      onChange={(e) => setSettings({ ...settings, taxId: e.target.value })}
+                      placeholder="e.g. ABN 82 123 456 789 or GSTIN 24AAAAA0000A1Z5"
+                      className="w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">Authorized Signatory Name</label>
+                    <input
+                      type="text"
+                      value={settings.authorizedSignatory || ""}
+                      onChange={(e) => setSettings({ ...settings, authorizedSignatory: e.target.value })}
+                      placeholder="e.g. Alex Morgan, Managing Partner"
+                      className="w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-xs font-medium text-gray-300 mb-1">Default Currency</label>
@@ -180,7 +224,13 @@ export function StudioSettingsModal({ isOpen, onClose, onSaved }: StudioSettings
                     <input
                       type="text"
                       value={settings.governingJurisdiction}
-                      onChange={(e) => setSettings({ ...settings, governingJurisdiction: e.target.value })}
+                      onChange={(e) => {
+                        setSettings({
+                          ...settings,
+                          governingJurisdiction: e.target.value,
+                          governingLawJurisdiction: e.target.value,
+                        });
+                      }}
                       placeholder="e.g. State of Victoria, Australia or State of Delaware, USA"
                       className="w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none"
                     />
@@ -197,6 +247,48 @@ export function StudioSettingsModal({ isOpen, onClose, onSaved }: StudioSettings
                     className="w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none"
                   />
                   <p className="text-[11px] text-gray-500 mt-1">Pre-filled automatically into every generated SOW & service contract.</p>
+                </div>
+
+                {/* Port 25 & In-House Protocol Verification Diagnostic */}
+                <div className="p-3.5 rounded-2xl border border-gray-800 bg-gray-900/60 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">🛡️</span>
+                      <span className="text-xs font-bold text-white">Outbound SMTP Port 25 Protocol Gate</span>
+                    </div>
+                    <button
+                      type="button"
+                      disabled={isCheckingPort25}
+                      onClick={handleCheckPort25}
+                      className="px-2.5 py-1 text-[11px] rounded-lg border border-gray-700 bg-gray-850 hover:bg-gray-800 text-gray-300 font-medium transition cursor-pointer"
+                    >
+                      {isCheckingPort25 ? "Testing..." : "Test Port 25"}
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${settings.port25Diagnostic?.reachable ? "bg-emerald-400" : "bg-amber-400"}`} />
+                    <span className="text-xs font-medium text-gray-300">
+                      {settings.port25Diagnostic?.reachable
+                        ? "Port 25 Reachable — Direct raw SMTP handshake socket active."
+                        : "Port 25 Restricted by Host/ISP — Enterprise HTTPS Mailbox Fallback active (Google Workspace & M365)."}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-gray-500">
+                    Host status: {settings.port25Diagnostic?.details || "HTTPS Enterprise fallback ready for M365 GetCredentialType & Google tenant auth."}
+                  </p>
+                </div>
+
+                {/* Local & Sovereign AI Endpoint */}
+                <div className="pt-2">
+                  <label className="block text-xs font-medium text-gray-300 mb-1">Sovereign / Local AI Endpoint (Ollama / vLLM / OpenAI-compatible)</label>
+                  <input
+                    type="text"
+                    value={settings.localAiEndpoint || ""}
+                    onChange={(e) => setSettings({ ...settings, localAiEndpoint: e.target.value })}
+                    placeholder="http://localhost:11434/v1 (or leave blank for sovereign heuristic inference)"
+                    className="w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none"
+                  />
+                  <p className="text-[11px] text-gray-500 mt-1">Autonomous reasoning router uses this local LLM first before sovereign heuristics.</p>
                 </div>
               </div>
 

@@ -5,9 +5,19 @@ export interface StudioSettings {
   defaultCurrency: "USD" | "AUD" | "EUR" | "GBP" | "INR";
   paymentTerms: string;
   governingJurisdiction: string;
+  governingLawJurisdiction: string;
+  taxId: string;
+  authorizedSignatory: string;
+  localAiEndpoint?: string;
   webhookUrl?: string;
   webhookEnabled: boolean;
   webhookAuthHeader?: string;
+  port25Diagnostic?: {
+    reachable: boolean;
+    latencyMs: number;
+    details: string;
+    checkedAt: string;
+  };
   smtpConfig?: {
     host: string;
     port: number;
@@ -52,6 +62,10 @@ export const DEFAULT_STUDIO_SETTINGS: StudioSettings = {
   defaultCurrency: "USD",
   paymentTerms: "50% upfront deposit upon signing, 50% upon milestone completion",
   governingJurisdiction: "Australia",
+  governingLawJurisdiction: "State of New South Wales, Australia",
+  taxId: "ABN 84 123 456 789 / EIN 12-3456789",
+  authorizedSignatory: "Managing Partner, SoleTrust Studio",
+  localAiEndpoint: "http://localhost:11434/v1",
   webhookUrl: "",
   webhookEnabled: false,
   webhookAuthHeader: "",
