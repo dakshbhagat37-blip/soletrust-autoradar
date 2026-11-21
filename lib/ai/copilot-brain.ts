@@ -13,6 +13,15 @@ import { generatePitchDeck } from "../closing/pitch-deck-generator.ts";
 import { generateContractAgreement } from "../closing/contract-generator.ts";
 import { getFinancialHealthMetrics } from "../../features/finance/ledger-engine.ts";
 import { SAC_CODES } from "../../features/finance/invoice-engine.ts";
+import {
+  resolveUniversalKnowledge,
+  SALES_OBJECTION_BATTLECARDS,
+  SYSTEM_DIAGNOSTICS_KNOWLEDGE,
+  type SalesBattlecard,
+  type SystemDiagnosticGuide,
+  type TaxGuidance,
+  type IndustryTaxonomy,
+} from "./universal-knowledge-base.ts";
 
 export interface CopilotTaxCalculation {
   subtotalCents: number;
@@ -40,9 +49,20 @@ export interface CopilotTaxCalculation {
 
 export interface CopilotBrainResult {
   query: string;
-  intent: "tax_calculation" | "lead_generation" | "contract_pitch" | "finance_health" | "general_qa";
+  intent:
+  | "tax_calculation"
+  | "lead_generation"
+  | "contract_pitch"
+  | "finance_health"
+  | "sales_strategy"
+  | "system_diagnostics"
+  | "general_qa";
   reply: string;
   taxBreakdown?: CopilotTaxCalculation;
+  taxGuidance?: TaxGuidance;
+  battlecardData?: SalesBattlecard;
+  diagnosticData?: SystemDiagnosticGuide;
+  matchedIndustry?: IndustryTaxonomy;
   leadsData?: {
     prompt: string;
     industry: string;
@@ -221,16 +241,27 @@ export async function queryCopilotBrain(query: string): Promise<CopilotBrainResu
   // INTENT 1: LIVE LEAD GENERATION DIRECT PIPELINE TRIGGER
   // e.g. "Find 15 taxation & CA firm owners in Mumbai, find their LinkedIn and numbers, and draft a cold outreach angle"
   // ============================================================
+  const isExcludedFromLead =
+    lower.includes("objection") ||
+    lower.includes("how did you get") ||
+    lower.includes("where did you find") ||
+    lower.includes("give me a cold outreach angle") ||
+    lower.includes("outreach angle for") ||
+    lower.includes("script") ||
+    lower.includes("battlecard");
+
   const isLeadQuery =
-    lower.startsWith("find") ||
-    lower.startsWith("search") ||
-    lower.startsWith("discover") ||
-    lower.startsWith("locate") ||
-    lower.includes("owners in") ||
-    lower.includes("leads in") ||
-    lower.includes("prospects in") ||
-    lower.includes("find ") ||
-    lower.includes("get leads");
+    !isExcludedFromLead &&
+    (lower.startsWith("find ") ||
+      lower.startsWith("search ") ||
+      lower.startsWith("discover ") ||
+      lower.startsWith("locate ") ||
+      lower.includes("owners in") ||
+      lower.includes("leads in") ||
+      lower.includes("prospects in") ||
+      lower.includes("companies in") ||
+      lower.includes("firms in") ||
+      lower.includes("get leads"));
 
   if (isLeadQuery) {
     const parsed = parseNaturalLanguagePrompt(q);
@@ -462,8 +493,147 @@ export async function queryCopilotBrain(query: string): Promise<CopilotBrainResu
   }
 
   // ============================================================
-  // INTENT 4: TAX & COMPLIANCE CALCULATIONS
+  // INTENT 4: SYSTEM DIAGNOSTICS & SOVEREIGN TROUBLESHOOTING
+  // e.g. "Why is SMTP Port 25 failing?", "Ollama connection refused", "SearXNG rate limit"
+  // ============================================================
+  const isDiagnosticQuery =
+    lower.includes("port 25") ||
+    lower.includes("smtp") ||
+    lower.includes("ollama") ||
+    lower.includes("vllm") ||
+    lower.includes("searxng") ||
+    lower.includes("waterfall blocked") ||
+    lower.includes("double-entry") ||
+    lower.includes("ledger balance") ||
+    lower.includes("magic-link") ||
+    lower.includes("magic link") ||
+    lower.includes("portal expired");
+
+  if (isDiagnosticQuery) {
+    const knowledge = resolveUniversalKnowledge(q);
+    const diag = knowledge.matchedDiagnostic || SYSTEM_DIAGNOSTICS_KNOWLEDGE.smtp_port_25;
+
+    const reply = `### Sovereign Engine Diagnostics: ${diag.issueTitle}\n\n` +
+      `**1. Observed Symptoms:**\n` +
+      diag.symptoms.map((s) => `- ${s}`).join("\n") +
+      `\n\n**2. Root Cause:**\n${diag.rootCause}\n\n` +
+      `**3. Diagnostic Verification Command:**\n\`\`\`bash\n${diag.diagnosticCommand}\n\`\`\`\n\n` +
+      `**4. Sovereign Resolution Runbook:**\n` +
+      diag.resolutionSteps.join("\n") +
+      `\n\n*All diagnostics adhere to self-sovereign in-house resilience standards.*`;
+
+    return {
+      query: q,
+      intent: "system_diagnostics",
+      reply,
+      diagnosticData: diag,
+      actionItems: [
+        `Execute diagnostic: ${diag.diagnosticCommand}`,
+        "Verify Studio Settings network configuration",
+      ],
+      suggestedPills: [
+        "Check Port 25 outbound reachability",
+        "Test local Ollama 127.0.0.1:11434 status",
+        "Show my overdue invoices",
+      ],
+      inferenceProvider: "self_sovereign_rules",
+    };
+  }
+
+  // ============================================================
+  // INTENT 5: SALES OBJECTION BATTLECARDS & COLD OUTREACH STRATEGY
+  // e.g. "How do I handle: we already have an in-house team?", "Prospect says price too high"
+  // ============================================================
+  const isSalesStrategyQuery =
+    lower.includes("objection") ||
+    lower.includes("already have a team") ||
+    lower.includes("already have an agency") ||
+    lower.includes("in-house team") ||
+    lower.includes("price is too high") ||
+    lower.includes("too expensive") ||
+    lower.includes("no budget") ||
+    lower.includes("burned before") ||
+    lower.includes("bad agency experience") ||
+    lower.includes("send me an email") ||
+    lower.includes("not looking") ||
+    lower.includes("happy with current") ||
+    lower.includes("how did you get my number") ||
+    lower.includes("where did you find my email") ||
+    lower.includes("next quarter") ||
+    lower.includes("call back later") ||
+    lower.includes("word of mouth") ||
+    lower.includes("referral based") ||
+    lower.includes("is this ai") ||
+    lower.includes("is this spam") ||
+    lower.includes("battlecard") ||
+    lower.includes("cold outreach script") ||
+    lower.includes("cold email script") ||
+    lower.includes("whatsapp script") ||
+    lower.includes("outreach angle for");
+
+  if (isSalesStrategyQuery) {
+    const knowledge = resolveUniversalKnowledge(q);
+
+    if (knowledge.matchedIndustry && (lower.includes("outreach angle") || lower.includes("decision maker") || lower.includes("retainer"))) {
+      const ind = knowledge.matchedIndustry;
+      const reply = `### Strategic Outreach & Intelligence Matrix: ${ind.name}\n\n` +
+        `**1. Target Decision Makers:**\n` +
+        ind.keyDecisionMakerTitles.map((t) => `- ${t}`).join("\n") +
+        `\n\n**2. Typical Retainer Benchmarks:**\n- Domestic: ${ind.typicalRetainerINR}\n- International: ${ind.typicalRetainerUSD}\n\n` +
+        `**3. Core Pain Points:**\n` +
+        ind.primaryPainPoints.map((p) => `- ${p}`).join("\n") +
+        `\n\n**4. High-Converting Cold Outreach Angle:**\n> "${ind.outreachAngle}"\n\n` +
+        `*Adheres to verified executive positioning.*`;
+
+      return {
+        query: q,
+        intent: "sales_strategy",
+        reply,
+        matchedIndustry: ind,
+        actionItems: [
+          `Target ${ind.keyDecisionMakerTitles[0]} roles in pipeline`,
+          "Generate personalized 3-touch sequence",
+        ],
+        suggestedPills: [
+          `Find 10 ${ind.name} leads`,
+          "Calculate GST for monthly retainer",
+          "Show my overdue invoices",
+        ],
+        inferenceProvider: "self_sovereign_rules",
+      };
+    }
+
+    const card = knowledge.matchedBattlecard || SALES_OBJECTION_BATTLECARDS.already_have_team;
+
+    const reply = `### Sales Objection Battlecard: "${card.objection}"\n\n` +
+      `**1. Psychological Driver:**\n${card.psychologicalInsight}\n\n` +
+      `**2. Powerful Re-frame Question:**\n> *"${card.reframeQuestion}"*\n\n` +
+      `**3. Executive Cold Email Script:**\n\`\`\`text\n${card.emailScript}\n\`\`\`\n\n` +
+      `**4. Phone / WhatsApp Voice Script:**\n\`\`\`text\n${card.phoneWhatsappScript}\n\`\`\`\n\n` +
+      `*Ground rule: Never argue with a prospect's objection—reframe it around unhedged opportunity cost.*`;
+
+    return {
+      query: q,
+      intent: "sales_strategy",
+      reply,
+      battlecardData: card,
+      actionItems: [
+        "Copy personalized email script to outreach queue",
+        "Set reminder to follow up in 48 hours",
+      ],
+      suggestedPills: [
+        "How to handle 'price is too high' objection?",
+        "What to say when they ask 'how did you get my number'?",
+        "Find 10 corporate law firms in Delhi",
+      ],
+      inferenceProvider: "self_sovereign_rules",
+    };
+  }
+
+  // ============================================================
+  // INTENT 6: TAX & COMPLIANCE CALCULATIONS & STATUTORY Q&A
   // e.g. "How much GST will I charge a client in Maharashtra vs. Delhi on a ₹1,50,000 retainer?"
+  // or "What are the Reverse Charge rules for legal services?", "Can I claim ITC on employee food?"
   // ============================================================
   if (
     lower.includes("gst") ||
@@ -473,8 +643,45 @@ export async function queryCopilotBrain(query: string): Promise<CopilotBrainResu
     lower.includes("igst") ||
     lower.includes("sac code") ||
     lower.includes("vat") ||
-    lower.includes("lut")
+    lower.includes("lut") ||
+    lower.includes("rcm") ||
+    lower.includes("reverse charge") ||
+    lower.includes("itc") ||
+    lower.includes("input tax credit") ||
+    lower.includes("blocked credit") ||
+    lower.includes("firc")
   ) {
+    // Check if it is a statutory tax rule question (RCM, ITC, LUT)
+    const knowledge = resolveUniversalKnowledge(q);
+    if (knowledge.matchedTax && (lower.includes("rule") || lower.includes("rcm") || lower.includes("reverse charge") || lower.includes("itc") || lower.includes("blocked") || lower.includes("section 17(5)") || lower.includes("lut") || lower.includes("firc"))) {
+      const taxGuide = knowledge.matchedTax;
+      const reply = `### Statutory Tax Guidance: ${taxGuide.topic}\n\n` +
+        `**Governing Authority:** ${taxGuide.applicableLaw}\n\n` +
+        `**Statutory Rules:**\n` +
+        taxGuide.rules.map((r) => `- ${r}`).join("\n") +
+        (taxGuide.formula ? `\n\n**Calculation Formula:** \`${taxGuide.formula}\`` : "") +
+        (taxGuide.sacOrHsnCode ? `\n\n**Applicable SAC Code:** \`${taxGuide.sacOrHsnCode}\`` : "") +
+        (taxGuide.complianceWarning ? `\n\n> [!WARNING]\n> ${taxGuide.complianceWarning}` : "") +
+        `\n\n*Computed in accordance with CBIC / statutory tax provisions.*`;
+
+      return {
+        query: q,
+        intent: "tax_calculation",
+        reply,
+        taxGuidance: taxGuide,
+        actionItems: [
+          "Apply compliance rule to current invoice draft",
+          "Verify counterparty GSTIN filing status",
+        ],
+        suggestedPills: [
+          "Calculate GST on ₹1,50,000 retainer",
+          "Can I claim ITC on motor vehicles?",
+          "How to file LUT for zero-rated export?",
+        ],
+        inferenceProvider: "self_sovereign_rules",
+      };
+    }
+
     // Extract monetary amount: matches ₹1,50,000 or 150000 or $5,000 or 1.5 lakh
     let amount = 150000;
     const amountMatch = q.match(/(?:[₹$£€]|rs\.?\s*|inr\s*)?([0-9]{1,3}(?:,[0-9]{2,3})*(?:\.[0-9]{1,2})?|[0-9]+(?:\.[0-9]{1,2})?)/i);

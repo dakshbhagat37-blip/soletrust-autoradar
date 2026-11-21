@@ -38,12 +38,12 @@ const COUNTRY_MAP: { pattern: RegExp; country: string; defaultCity: string; tld:
 
 // Known cities and states with direct country linkage
 const CITY_MAP: { pattern: RegExp; city: string; country: string }[] = [
-  // India
-  { pattern: /\b(mumbai|bombay)\b/i, city: "Mumbai", country: "India" },
-  { pattern: /\b(delhi|new delhi)\b/i, city: "Delhi", country: "India" },
-  { pattern: /\b(bangalore|bengaluru)\b/i, city: "Bangalore", country: "India" },
-  { pattern: /\b(hyderabad)\b/i, city: "Hyderabad", country: "India" },
-  { pattern: /\b(pune)\b/i, city: "Pune", country: "India" },
+  // India & Regional Metros
+  { pattern: /\b(delhi|new delhi|ncr|national capital region|gurugram|gurgaon|noida|faridabad|ghaziabad)\b/i, city: "Delhi", country: "India" },
+  { pattern: /\b(mumbai|bombay|navi mumbai|thane|kalyan|bkc|nariman point)\b/i, city: "Mumbai", country: "India" },
+  { pattern: /\b(bangalore|bengaluru|whitefield|electronic city)\b/i, city: "Bangalore", country: "India" },
+  { pattern: /\b(hyderabad|cyberabad|hitech city)\b/i, city: "Hyderabad", country: "India" },
+  { pattern: /\b(pune|hinjewadi)\b/i, city: "Pune", country: "India" },
   { pattern: /\b(chennai|madras)\b/i, city: "Chennai", country: "India" },
   { pattern: /\b(kolkata|calcutta)\b/i, city: "Kolkata", country: "India" },
   { pattern: /\b(ahmedabad)\b/i, city: "Ahmedabad", country: "India" },
@@ -53,12 +53,14 @@ const CITY_MAP: { pattern: RegExp; city: string; country: string }[] = [
   { pattern: /\b(lucknow)\b/i, city: "Lucknow", country: "India" },
   { pattern: /\b(chandigarh)\b/i, city: "Chandigarh", country: "India" },
   { pattern: /\b(indore)\b/i, city: "Indore", country: "India" },
+  { pattern: /\b(bhopal)\b/i, city: "Bhopal", country: "India" },
+  { pattern: /\b(patna)\b/i, city: "Patna", country: "India" },
   { pattern: /\b(jammu)\b/i, city: "Jammu", country: "India" },
 
-  // USA
-  { pattern: /\b(new york|nyc|manhattan|brooklyn)\b/i, city: "New York", country: "United States" },
-  { pattern: /\b(california|los angeles|san francisco|san diego|silicon valley|san jose)\b/i, city: "California", country: "United States" },
-  { pattern: /\b(texas|houston|dallas|austin|fort worth)\b/i, city: "Texas", country: "United States" },
+  // USA & Economic Hubs
+  { pattern: /\b(new york|nyc|manhattan|brooklyn|tri-state|tri state)\b/i, city: "New York", country: "United States" },
+  { pattern: /\b(california|los angeles|san francisco|san diego|silicon valley|san jose|bay area|socal|norcal|palo alto)\b/i, city: "California", country: "United States" },
+  { pattern: /\b(texas|houston|dallas|austin|fort worth|san antonio)\b/i, city: "Texas", country: "United States" },
   { pattern: /\b(florida|miami|orlando|tampa)\b/i, city: "Florida", country: "United States" },
   { pattern: /\b(chicago|illinois)\b/i, city: "Chicago", country: "United States" },
   { pattern: /\b(seattle|washington state)\b/i, city: "Seattle", country: "United States" },
@@ -67,23 +69,26 @@ const CITY_MAP: { pattern: RegExp; city: string; country: string }[] = [
   { pattern: /\b(denver|colorado)\b/i, city: "Denver", country: "United States" },
 
   // UK & Europe
-  { pattern: /\b(london|westminster|camden|the city)\b/i, city: "London", country: "United Kingdom" },
+  { pattern: /\b(london|westminster|camden|the city|canary wharf)\b/i, city: "London", country: "United Kingdom" },
   { pattern: /\b(manchester)\b/i, city: "Manchester", country: "United Kingdom" },
   { pattern: /\b(birmingham)\b/i, city: "Birmingham", country: "United Kingdom" },
+  { pattern: /\b(edinburgh|glasgow)\b/i, city: "Edinburgh", country: "United Kingdom" },
   { pattern: /\b(paris)\b/i, city: "Paris", country: "France" },
   { pattern: /\b(rotterdam|amsterdam|the hague)\b/i, city: "Rotterdam", country: "Netherlands" },
   { pattern: /\b(berlin)\b/i, city: "Berlin", country: "Germany" },
   { pattern: /\b(munich|münchen|bavaria)\b/i, city: "Munich", country: "Germany" },
-  { pattern: /\b(frankfurt)\b/i, city: "Frankfurt", country: "Germany" },
+  { pattern: /\b(frankfurt|stuttgart|hamburg)\b/i, city: "Frankfurt", country: "Germany" },
   { pattern: /\b(milan)\b/i, city: "Milan", country: "Italy" },
-  { pattern: /\b(madrid)\b/i, city: "Madrid", country: "Spain" },
-  { pattern: /\b(zurich)\b/i, city: "Zurich", country: "Switzerland" },
+  { pattern: /\b(madrid|barcelona)\b/i, city: "Madrid", country: "Spain" },
+  { pattern: /\b(zurich|geneva|basel)\b/i, city: "Zurich", country: "Switzerland" },
   { pattern: /\b(dublin)\b/i, city: "Dublin", country: "Ireland" },
+  { pattern: /\b(stockholm)\b/i, city: "Stockholm", country: "Sweden" },
 
   // UAE & Middle East
   { pattern: /\b(dubai)\b/i, city: "Dubai", country: "United Arab Emirates" },
   { pattern: /\b(abu dhabi)\b/i, city: "Abu Dhabi", country: "United Arab Emirates" },
-  { pattern: /\b(riyadh)\b/i, city: "Riyadh", country: "Saudi Arabia" },
+  { pattern: /\b(riyadh|jeddah)\b/i, city: "Riyadh", country: "Saudi Arabia" },
+  { pattern: /\b(doha)\b/i, city: "Doha", country: "Qatar" },
 
   // Australia & New Zealand
   { pattern: /\b(sydney|new south wales)\b/i, city: "Sydney", country: "Australia" },
@@ -97,12 +102,13 @@ const CITY_MAP: { pattern: RegExp; city: string; country: string }[] = [
   { pattern: /\b(vancouver|british columbia)\b/i, city: "Vancouver", country: "Canada" },
   { pattern: /\b(montreal|quebec)\b/i, city: "Montreal", country: "Canada" },
 
-  // Asia
+  // Asia & Africa
   { pattern: /\b(singapore)\b/i, city: "Singapore", country: "Singapore" },
-  { pattern: /\b(tokyo)\b/i, city: "Tokyo", country: "Japan" },
+  { pattern: /\b(tokyo|nagoya|osaka)\b/i, city: "Tokyo", country: "Japan" },
   { pattern: /\b(shanghai)\b/i, city: "Shanghai", country: "China" },
   { pattern: /\b(beijing)\b/i, city: "Beijing", country: "China" },
   { pattern: /\b(shenzhen)\b/i, city: "Shenzhen", country: "China" },
+  { pattern: /\b(nairobi)\b/i, city: "Nairobi", country: "Kenya" },
 ];
 
 // Universal Semantic Industry Rules across Global Sectors
@@ -128,14 +134,7 @@ const INDUSTRY_RULES: { pattern: RegExp; industry: string; serviceTrack: string;
     serviceTrack: "technical",
     persona: "Supply Chain & Fleet Operations",
   },
-  // 4. Manufacturing & Industrial
-  {
-    pattern: /\b(manufacturing|manufacturer|manufacturers|fabrication|machining|industrial equipment|assembly plant|factory|precision engineering|contract manufacturing)\b/i,
-    industry: "Manufacturing & Industrial Engineering",
-    serviceTrack: "technical",
-    persona: "Industrial Manufacturing & Operations",
-  },
-  // 5. EdTech & Educational Services
+  // 4. EdTech & Educational Services
   {
     pattern: /\b(edtech|education company|tutoring|academy|coaching institute|training institute|higher education|vocational)\b/i,
     industry: "EdTech & Educational Services",
@@ -170,7 +169,14 @@ const INDUSTRY_RULES: { pattern: RegExp; industry: string; serviceTrack: string;
     serviceTrack: "creative+technical",
     persona: "Dermatology & Aesthetic Medicine",
   },
-  // 10. Hospitals & Multispecialty Centers
+  // 10. Veterinary Clinics & Animal Hospitals
+  {
+    pattern: /\b(veterinary|vet clinic|animal hospital|animal hospitals|pet hospital|veterinarian)\b/i,
+    industry: "Veterinary Clinics & Animal Hospitals",
+    serviceTrack: "technical",
+    persona: "Veterinary Medicine & Clinical Animal Care",
+  },
+  // 11. Hospitals & Multispecialty Centers
   {
     pattern: /\b(hospital|hospitals|multispecialty hospital|trauma center|healthcare facility)\b/i,
     industry: "Hospitals & Medical Centers",
@@ -232,6 +238,160 @@ const INDUSTRY_RULES: { pattern: RegExp; industry: string; serviceTrack: string;
     industry: "Export & Import Trading",
     serviceTrack: "technical",
     persona: "International Trade & Merchant Export",
+  },
+  // 19. Aerospace & Defense
+  {
+    pattern: /\b(aerospace|defense|defence|avionics|military contractor|uav|drone manufacturer)\b/i,
+    industry: "Aerospace & Defense Engineering",
+    serviceTrack: "technical",
+    persona: "Aerospace & Defense Engineering Leadership",
+  },
+  // 20. FinTech & Wealth Management
+  {
+    pattern: /\b(fintech|wealth management|nbfc|asset management|family office|investment advisor|portfolio manager)\b/i,
+    industry: "FinTech & Wealth Management",
+    serviceTrack: "technical",
+    persona: "Wealth Management & Private Financial Advisory",
+  },
+  // 21. AgriTech & Farming
+  {
+    pattern: /\b(agritech|agriculture|hydroponics|precision farming|seed tech|fertilizer distributor|agribusiness)\b/i,
+    industry: "AgriTech & Modern Farming",
+    serviceTrack: "technical",
+    persona: "AgriTech & Precision Farm Operations",
+  },
+  // 22. BioTech & Pharma
+  {
+    pattern: /\b(biotech|pharma|pharmaceutical|formulations|active pharmaceutical ingredient|api manufacturer|clinical trials|cro)\b/i,
+    industry: "BioTech & Pharmaceutical Formulations",
+    serviceTrack: "technical",
+    persona: "Pharmaceutical Synthesis & Formulation Management",
+  },
+  // 23. Maritime & Port Logistics
+  {
+    pattern: /\b(maritime|shipping line|port logistics|stevedoring|ship chandler|marine engineering|bunkering)\b/i,
+    industry: "Maritime & Port Logistics",
+    serviceTrack: "technical",
+    persona: "Maritime Fleet Operations & Port Logistics",
+  },
+  // 24. Robotics & Industrial Automation
+  {
+    pattern: /\b(robotics|industrial automation|agv|amr|scada|plc programming|mechatronics|cobots)\b/i,
+    industry: "Robotics & Industrial Automation",
+    serviceTrack: "technical",
+    persona: "Robotics Engineering & Industrial Automation",
+  },
+  // 25. Architecture & Turnkey Interiors
+  {
+    pattern: /\b(architecture|architects|interior design|turnkey interiors|fit-out contractor|design build)\b/i,
+    industry: "Architecture & Turnkey Interiors",
+    serviceTrack: "creative+technical",
+    persona: "Commercial Architecture & Interior Design",
+  },
+  // 26. Cybersecurity & MSSP
+  {
+    pattern: /\b(cybersecurity|infosec|mssp|penetration testing|soc operations|managed security|vulnerability assessment)\b/i,
+    industry: "Cybersecurity & Managed Security (MSSP)",
+    serviceTrack: "technical",
+    persona: "Cyber Defense & Managed Security Operations",
+  },
+  // 27. Waste Management & Recycling
+  {
+    pattern: /\b(waste management|recycling|e-waste|hazardous waste|scrap recycling|circular economy)\b/i,
+    industry: "Waste Management & Recycling Services",
+    serviceTrack: "technical",
+    persona: "Environmental Services & Resource Recovery",
+  },
+  // 29. Telecommunications & Fiber
+  {
+    pattern: /\b(telecom|telecommunications|fiber optic|broadband isp|5g infrastructure|network contractor)\b/i,
+    industry: "Telecommunications & Fiber Infrastructure",
+    serviceTrack: "technical",
+    persona: "Telecom Infrastructure & Network Engineering",
+  },
+  // 30. Mining & Minerals
+  {
+    pattern: /\b(mining|minerals|quarry|aggregate mining|iron ore|mineral extraction)\b/i,
+    industry: "Mining & Mineral Extraction",
+    serviceTrack: "technical",
+    persona: "Mining Operations & Geological Extraction",
+  },
+  // 31. Staffing & Executive Search
+  {
+    pattern: /\b(staffing|recruitment|headhunting|executive search|hr consulting|talent acquisition)\b/i,
+    industry: "Executive Staffing & HR Consulting",
+    serviceTrack: "creative+technical",
+    persona: "Executive Search & Leadership Talent Acquisition",
+  },
+  // 32. Insurance Broking
+  {
+    pattern: /\b(insurance broker|insurance brokerage|risk advisory|underwriting|commercial insurance|group health insurance)\b/i,
+    industry: "Insurance Broking & Risk Advisory",
+    serviceTrack: "technical",
+    persona: "Corporate Insurance & Risk Underwriting",
+  },
+  // 33. Events & MICE Management
+  {
+    pattern: /\b(event management|mice|exhibitions|trade shows|corporate conferences|av production)\b/i,
+    industry: "Events, Exhibitions & MICE Management",
+    serviceTrack: "creative",
+    persona: "Corporate Event Production & MICE Operations",
+  },
+  // 34. Packaging & Corrugated Boxes
+  {
+    pattern: /\b(packaging|corrugated boxes|cartons|packaging supplies|rigid boxes|flexible packaging)\b/i,
+    industry: "Packaging & Corrugated Box Manufacturing",
+    serviceTrack: "technical",
+    persona: "Packaging Engineering & Corrugated Box Manufacturing",
+  },
+  // 35. Specialty Chemicals & Polymers
+  {
+    pattern: /\b(specialty chemicals|polymers|resins|industrial solvents|chemical manufacturing|adhesives)\b/i,
+    industry: "Specialty Chemicals & Polymers",
+    serviceTrack: "technical",
+    persona: "Specialty Chemical Synthesis & Polymer Operations",
+  },
+  // 36. HVAC & Cold Storage
+  {
+    pattern: /\b(hvac|commercial hvac|cold storage|chiller plant|industrial refrigeration|mep contractor)\b/i,
+    industry: "HVAC & Commercial Cold Storage",
+    serviceTrack: "technical",
+    persona: "HVAC Engineering & Cold Chain Facility Management",
+  },
+  // 37. Cleanroom Engineering
+  {
+    pattern: /\b(cleanroom|contamination control|iso cleanroom|modular cleanroom|laminar airflow)\b/i,
+    industry: "Cleanroom Engineering & Contamination Control",
+    serviceTrack: "technical",
+    persona: "Cleanroom Facility Engineering & Validation",
+  },
+  // 38. Commercial Printing
+  {
+    pattern: /\b(commercial printing|offset printing|digital printing|wide format printing|labels printing)\b/i,
+    industry: "Commercial Printing & Signage",
+    serviceTrack: "creative+technical",
+    persona: "Commercial Print Production & Signage",
+  },
+  // 39. Security Services & Surveillance
+  {
+    pattern: /\b(security services|security guards|facility protection|manned guarding|cctv surveillance)\b/i,
+    industry: "Security Services & Facility Protection",
+    serviceTrack: "technical",
+    persona: "Facility Security Operations & Physical Protection",
+  },
+  // 40. Luxury Goods & Fine Jewelry
+  {
+    pattern: /\b(fine jewelry|diamonds|gold jeweler|luxury watches|horology|gemstones)\b/i,
+    industry: "Luxury Goods & Fine Jewelry",
+    serviceTrack: "creative",
+    persona: "Luxury Fine Jewelry & Haute Horlogerie",
+  },
+  // 41. Manufacturing & Industrial Engineering (General)
+  {
+    pattern: /\b(manufacturing|manufacturer|manufacturers|fabrication|machining|industrial equipment|assembly plant|factory|precision engineering|contract manufacturing)\b/i,
+    industry: "Manufacturing & Industrial Engineering",
+    serviceTrack: "technical",
+    persona: "Industrial Manufacturing & Operations",
   },
 ];
 

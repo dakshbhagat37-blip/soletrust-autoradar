@@ -84,7 +84,7 @@ export class WaterfallOrchestrator {
         .filter((p): p is DiscoveryProvider => Boolean(p));
     }
 
-    if (providersToRun.length === 0) {
+    if (providersToRun.length === 0 && !options?.customProviderOrder && !options?.requestedProviderId) {
       providersToRun = this.listProviders();
     }
 

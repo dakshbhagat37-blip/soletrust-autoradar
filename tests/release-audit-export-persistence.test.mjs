@@ -76,9 +76,12 @@ describe("Release Blocker Audit - Persistence, Mock Guard, CRM & Export Validati
       listFollowUps,
     } = await import("../lib/crm/store.ts");
 
+    const uniqueSuffix = Date.now() + "_" + Math.floor(Math.random() * 10000);
+    const testAuditEmail = `dr.audit.${uniqueSuffix}@audittestdermatology.com`;
+
     const sampleLeadBiz = {
-      id: "biz-audit-" + Date.now(),
-      canonicalName: "Audit Test Dermatology Center",
+      id: "biz-audit-" + uniqueSuffix,
+      canonicalName: "Audit Test Dermatology Center " + uniqueSuffix,
       website: "https://audittestdermatology.com",
       domain: "audittestdermatology.com",
       industry: "Dermatology",
@@ -111,7 +114,7 @@ describe("Release Blocker Audit - Persistence, Mock Guard, CRM & Export Validati
           id: "c-dir",
           businessId: "biz-audit",
           contactType: "email",
-          contactValue: "dr.audit@audittestdermatology.com",
+          contactValue: testAuditEmail,
           ownershipType: "decision_maker_direct",
           verificationStatus: "deliverable",
         },
@@ -124,7 +127,7 @@ describe("Release Blocker Audit - Persistence, Mock Guard, CRM & Export Validati
           roleLabel: "Founder & Chief Dermatologist",
           roleCategory: "founder",
           isPurchasingAuthority: true,
-          email: "dr.audit@audittestdermatology.com",
+          email: testAuditEmail,
           verificationStatus: "verified",
         },
       ],
@@ -162,7 +165,7 @@ describe("Release Blocker Audit - Persistence, Mock Guard, CRM & Export Validati
       channel: "email",
       body: "Thanks, please unsubscribe me from your emails.",
       senderName: "Dr. Audit Patel",
-      senderEmail: "dr.audit@audittestdermatology.com",
+      senderEmail: testAuditEmail,
       classification: "unsubscribe",
       isManual: false,
       providerMessageId: "inbound_mime_987654",
